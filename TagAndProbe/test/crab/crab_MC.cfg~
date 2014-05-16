@@ -1,0 +1,25 @@
+[CRAB]
+jobtype = cmssw
+scheduler = remoteGlidein
+use_server = 0
+
+[CMSSW]
+use_dbs3=1
+allow_NonProductionCMSSW = 1
+pset = test_TagAndProbe.py
+#datasetpath =
+split_by_event = 1
+total_number_of_events  = -1
+events_per_job = 50000
+
+[USER]
+copy_data = 1
+storage_element = grid143.kfki.hu
+storage_port=8446
+storage_path=/srm/managerv2?SFN=/dpm/kfki.hu/home/cms/phedex/store
+user_remote_dir=/user/jkarancs/SusyAnalysis/TagAndProbe_140512/
+additional_input_files = PileupHistogram_2012Data_FlatPU_50bins.root
+
+[GRID]
+#se_black_list = T2_ES_CIEMAT,T2_US_UCSD,T2_UK_London_Brunel,T2_US_Florida,T2_IT_Bari,T2_BR_SPRACE,T2_IT_Pisa,T2_FR_GRIF_IRFU
+

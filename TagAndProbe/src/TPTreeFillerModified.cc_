@@ -1,0 +1,27 @@
+#include "RA4Efficiencies/TagAndProbe/interface/TPTreeFillerModified.h"
+
+tnp::TPTreeFillerModified::TPTreeFillerModified(const edm::ParameterSet config) :
+    tnp::BaseTreeFiller("fitter_tree",config) 
+{
+    // Add extra branch for the mass
+    tree_->Branch("mass",   &mass_,   "mass/F");
+
+    // set up MC if needed
+    if (config.getParameter<bool>("isMC")) {
+        tree_->Branch("mcTrue", &mcTrue_, "mcTrue/I");
+        tree_->Branch("mcMass", &mcMass_, "mcMass/F");
+    }
+}
+
+tnp::TPTreeFillerModified::~TPTreeFillerModified() {}
+
+void tnp::TPTreeFillerModified::init(const edm::Event &iEvent) const {
+    tnp::BaseTreeFiller::init(iEvent);
+}
+
+void tnp::TPTreeFillerModified::fill(const reco::CandidateBaseRef &probe, double mass, bool mcTrue, float mcMass) const {
+    mass_ = mass;
+    mcTrue_ = mcTrue;
+    mcMass_ = mcMass;
+    tnp::BaseTreeFiller::fill(probe);
+}
