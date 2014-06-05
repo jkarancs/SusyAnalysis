@@ -7,7 +7,7 @@
 
 import FWCore.ParameterSet.Config as cms
 
-def initTP(process, mcInfo=False, hltName="HLT"):
+def initTP_Electrons(process, mcInfo=False, hltName="HLT", is7X=True):
     
     ################################################################################################################################
     #   ___ ____ ____    ____ _  _ ___     ___  ____ ____ ___  ____ 
@@ -22,7 +22,14 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     #   |    |  |  |  [__  
     #   |___ |__|  |  ___] 
     
-    TAG_CUTS = "p4().Pt() > 10 && abs(eta) < 2.5 && electronID('simpleEleId80cIso') == 7"
+    SC_COLL_EB = "correctedHybridSuperClusters"
+    SC_COLL_EE = "correctedMulti5x5SuperClustersWithPreshower"
+    
+    ELE_COLL = "gedGsfElectrons" if is7X else "gsfElectrons"
+
+    JET_COLL = "cleanPatJets" if is7X else "cleanPatJetsAK5PF"
+    
+    TAG_CUTS = "p4().Pt() > 10 && abs(eta) < 2.5 && electronID('simpleEleId80relIso') == 7"
     
     SC_PROBE_CUTS = "et>5 && abs(eta)<2.5"
     GSF_PROBE_CUTS = "(ecalEnergy*sin(superClusterPosition.theta))>5 && abs(superCluster.eta) <= 2.5 && ecalDrivenSeed==1"
@@ -127,8 +134,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     # probe1: superclusters
     #  SuperClusters  ################
     process.superClusters = cms.EDProducer("SuperClusterMerger",
-       src = cms.VInputTag(cms.InputTag( "correctedHybridSuperClusters" ,""),
-                           cms.InputTag( "correctedMulti5x5SuperClustersWithPreshower" ,"") )  
+       src = cms.VInputTag(cms.InputTag( SC_COLL_EB ), cms.InputTag( SC_COLL_EE) )
     )
     
     process.superClusterCands = cms.EDProducer("ConcreteEcalCandidateProducer",
@@ -155,18 +161,18 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         srcObjectsToRemove = cms.VInputTag(cms.InputTag("JetsToRemoveFromSuperCluster")),
         deltaRMin = cms.double(0.1)
     )
-
+    
     ##    ____      __ _____ _           _                   
     ##   / ___|___ / _| ____| | ___  ___| |_ _ __ ___  _ __  
     ##  | |  _/ __| |_|  _| | |/ _ \/ __| __| '__/ _ \| '_ \ 
     ##  | |_| \__ \  _| |___| |  __/ (__| |_| | | (_) | | | |
     ##   \____|___/_| |_____|_|\___|\___|\__|_|  \___/|_| |_|
     ##
-
+    
     # probe2: GsfElectrons
     #  GsfElectron ################ 
     process.goodElectrons = cms.EDFilter("GsfElectronRefSelector",
-        src = cms.InputTag("gsfElectrons"),
+        src = cms.InputTag(ELE_COLL),
         cut = cms.string( GSF_PROBE_CUTS )
     )
     
@@ -176,7 +182,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         cut = cms.string( PAT_PROBE_CUTS ),
     )
     
-    process.allTagsAndProbes = cms.Sequence(
+    process.allEleTagsAndProbes = cms.Sequence(
         process.tagPATElectrons +
         (process.superClusters *
          process.superClusterCands *
@@ -185,7 +191,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         process.goodElectrons +
         process.goodPATElectrons
     )
-
+    
     ################################################################################################################################
     #   ___ ____ ____    _  _    ___  ____ ____ ___  ____    ___  ____ _ ____ ____ 
     #    |  |__| | __    |\ |    |__] |__/ |  | |__] |___    |__] |__| | |__/ [__  
@@ -201,20 +207,20 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     #  Tag & probe selection ######
     process.tagPATSC = cms.EDProducer("CandViewShallowCloneCombiner",
         decay = cms.string("tagPATElectrons@+ goodSuperClustersClean@-"),
-        checkCharge = cms.bool(False),                           
+        checkCharge = cms.bool(False),
         cut   = cms.string("40 < mass < 140"),
     )
     process.tagPATGsf = process.tagPATSC.clone()
     process.tagPATGsf.decay = cms.string("tagPATElectrons@+ goodElectrons@-")
     process.tagPATGoodPATElectron = process.tagPATSC.clone()
     process.tagPATGoodPATElectron.decay = cms.string("tagPATElectrons@+ goodPATElectrons@-")
-
-    process.allTPPairs = cms.Sequence(
+    
+    process.allEleTPPairs = cms.Sequence(
         process.tagPATSC +
         process.tagPATGsf +
         process.tagPATGoodPATElectron
     )
-
+    
     ################################################################################################################################
     #   _  _ ____ ___ ____ _  _    ____ _  _ ___     ___  ____ ____ ____ 
     #   |\/| |__|  |  |    |__|    |__| |\ | |  \    |__] |__| [__  [__  
@@ -227,13 +233,13 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     ##   |____/ \____|      /_/   \____|___/_|  
     ##
     # passing1: Superclusters passing as Gsf Electrons
-
+    
     process.GsfMatchedSuperClusterCands = cms.EDProducer("ElectronMatchedCandidateProducer",
        src     = cms.InputTag("goodSuperClustersClean"),
        ReferenceElectronCollection = cms.untracked.InputTag("goodElectrons"),
        deltaR =  cms.untracked.double(0.3)
     )
-
+    
     ##   ____      __       __    ___                 ___    _ 
     ##  / ___|___ / _|      \ \  |_ _|___  ___       |_ _|__| |
     ## | |  _/ __| |_   _____\ \  | |/ __|/ _ \       | |/ _` |
@@ -241,24 +247,47 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     ##  \____|___/_|        /_/  |___|___/\___/  ( ) |___\__,_|
     ##                                           |/            
     # passing2: Gsf electrons passing isolation, ID cuts (Pat electrons)
-    process.GSFPassingGoodPat = cms.EDProducer("MatchGsfElectronsToPAT",
-        electrons   = cms.InputTag("goodElectrons"),
-        pat = cms.InputTag("goodPATElectrons"),
-        patCut = cms.string("pt>0"),
-        matchByReference = cms.bool(False)
-    )
-    
-    # Same can be done for Gsf Matched Superclusters
-    process.GSFtoPATMatchedSuperClusterCandsClean = cms.EDProducer("ElectronMatchedCandidateProducer",
-       src     = cms.InputTag("goodSuperClustersClean"),
-       ReferenceElectronCollection = cms.untracked.InputTag("GSFPassingGoodPat"),
-       deltaR =  cms.untracked.double(0.3)
-    )
-    
-    process.allPassingProbes = cms.Sequence(
-        process.GsfMatchedSuperClusterCands +
-        process.GSFPassingGoodPat * process.GSFtoPATMatchedSuperClusterCandsClean
-    )
+    if is7X:
+        process.GSFtoPATMatchedElectrons = cms.EDProducer("PatMatchedGsfElectronProducer",
+            srcObject = cms.InputTag("goodElectrons"),
+            srcObjectsToMatch = cms.VInputTag(cms.InputTag("goodPATElectrons")),
+            deltaRMax = cms.double(0.1), # Because Pat Electrons are Gsf Electrons
+        ) # 0.01
+        process.GSFPassingGoodPat = cms.EDProducer("ElectronMatchedCandidateProducer",
+            src = cms.InputTag("goodElectrons"),
+            ReferenceElectronCollection = cms.untracked.InputTag("GSFtoPATMatchedElectrons"),
+            deltaR =  cms.untracked.double(0.3)
+        )
+        
+        process.GSFtoPATMatchedSuperClusterCandsClean = cms.EDProducer("ElectronMatchedCandidateProducer",
+            src     = cms.InputTag("goodSuperClustersClean"),
+            ReferenceElectronCollection = cms.untracked.InputTag("GSFtoPATMatchedElectrons"),
+            deltaR =  cms.untracked.double(0.3)
+        )
+        
+        process.allElePassingProbes = cms.Sequence(
+            process.GsfMatchedSuperClusterCands +
+            process.GSFtoPATMatchedElectrons *
+            ( process.GSFtoPATMatchedSuperClusterCandsClean +
+              process.GSFPassingGoodPat )
+        )
+    else:
+        process.GSFPassingGoodPat = cms.EDProducer("MatchGsfElectronsToPAT",
+            electrons   = cms.InputTag("goodElectrons"),
+            pat = cms.InputTag("goodPATElectrons"),
+            patCut = cms.string("pt>0"),
+            matchByReference = cms.bool(False)
+        )
+        
+        process.GSFtoPATMatchedSuperClusterCandsClean = cms.EDProducer("ElectronMatchedCandidateProducer",
+            src     = cms.InputTag("goodSuperClustersClean"),
+            ReferenceElectronCollection = cms.untracked.InputTag("GSFPassingGoodPat"),
+            deltaR =  cms.untracked.double(0.3)
+        )
+        process.allElePassingProbes = cms.Sequence(
+            process.GsfMatchedSuperClusterCands +
+            process.GSFPassingGoodPat * process.GSFtoPATMatchedSuperClusterCandsClean
+        )
     
     ##    ___    _       __    _   _ _   _____ 
     ##   |_ _|__| |      \ \  | | | | | |_   _|
@@ -289,7 +318,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     process.patEventPassingHLTCleanPFNoPUHT300Ele40        = process.patEventPassingHLTCleanPFHT350Ele5PFMET45.clone(HLTPaths = cms.vstring("HLT_CleanPFNoPUHT300_Ele40_CaloIdVT_TrkIdT_v.*"))
     process.patEventPassingHLTCleanPFNoPUHT300Ele60        = process.patEventPassingHLTCleanPFHT350Ele5PFMET45.clone(HLTPaths = cms.vstring("HLT_CleanPFNoPUHT300_Ele60_CaloIdVT_TrkIdT_v.*"))
     
-    process.allHLTResults = cms.Sequence(
+    process.allEleHLTResults = cms.Sequence(
         process.patEventPassingHLTCleanPFHT350Ele5PFMET45 +
         process.patEventPassingHLTCleanPFHT350Ele5PFMET50 +
         process.patEventPassingHLTCleanPFHT300Ele15PFMET45 +
@@ -319,13 +348,13 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     process.McMatchGsf = process.McMatchSC.clone()
     process.McMatchGsf.src = cms.InputTag("goodElectrons")
     process.McMatchGSF = process.McMatchSC.clone()
-    process.McMatchGSF.src = cms.InputTag("gsfElectrons")
+    process.McMatchGSF.src = cms.InputTag(ELE_COLL)
     process.McMatchPATElectron = process.McMatchSC.clone()
     process.McMatchPATElectron.src = cms.InputTag("goodPATElectrons")
     process.McMatchTagPATElectron = process.McMatchSC.clone()
     process.McMatchTagPATElectron.src = cms.InputTag("tagPATElectrons")
     
-    process.allMcMatches = cms.Sequence(
+    process.allEleMcMatches = cms.Sequence(
        process.McMatchSC +
        process.McMatchGSF +
        process.McMatchGsf +
@@ -349,10 +378,10 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         objects = cms.InputTag("offlinePrimaryVertices"),
         objectSelection = cms.string("!isFake && ndof > 4 && abs(z) <= 24 && position.Rho <= 2"),
     )
-    process.gsfNvertices = process.scNvertices.clone(probes = "gsfElectrons")
+    process.gsfNvertices = process.scNvertices.clone(probes = ELE_COLL)
     process.patNvertices = process.scNvertices.clone(probes = "cleanPatElectronsTriggerMatch")
     
-    process.allVertices = cms.Sequence(
+    process.allEleVertices = cms.Sequence(
         process.scNvertices +
         process.gsfNvertices +
         process.patNvertices
@@ -371,10 +400,10 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         mcLumiScale = cms.double(221.95),
         dataPileupInputFile = cms.string("run_ls_instlumi_pileup_2012.txt"),
     )
-    process.gsfPileup = process.scPileup.clone(probes = cms.InputTag("gsfElectrons"))
+    process.gsfPileup = process.scPileup.clone(probes = cms.InputTag(ELE_COLL))
     process.patPileup = process.scPileup.clone(probes = cms.InputTag("cleanPatElectronsTriggerMatch"))
 
-    process.allPileup = cms.Sequence(
+    process.allElePileup = cms.Sequence(
         process.scPileup +
         process.gsfPileup +
         process.patPileup
@@ -386,14 +415,14 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     #   | |  | |    |  | |___  |     |    |  | |  \ |  | |  | |___  |  |___ |  \ 
     
     process.gsfImpactParameter = cms.EDProducer("GsfElectronImpactParameter",
-        probes = cms.InputTag("gsfElectrons"),
+        probes = cms.InputTag(ELE_COLL),
     )
      
     process.patImpactParameter = cms.EDProducer("PatElectronImpactParameter",
         probes = cms.InputTag("cleanPatElectronsTriggerMatch"),
     )
 
-    process.allImpactParameters = cms.Sequence(
+    process.allEleImpactParameters = cms.Sequence(
         process.gsfImpactParameter +
         process.patImpactParameter
     )
@@ -404,7 +433,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     #   _| |___  |  ___] 
     
     process.selectedJets = cms.EDFilter("PATJetSelector",
-        src = cms.InputTag("cleanPatJetsAK5PF"),
+        src = cms.InputTag( JET_COLL ),
         cut = cms.string( JET_CUTS ), # <= anpassen
     )
 
@@ -415,7 +444,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         minDeltaR = cms.double(0.3),
         objectSelection = cms.InputTag(""),
     )
-    process.gsfDRToNearestJet = process.scDRToNearestJet.clone(probes = cms.InputTag("gsfElectrons"))
+    process.gsfDRToNearestJet = process.scDRToNearestJet.clone(probes = cms.InputTag(ELE_COLL))
     process.patDRToNearestJet = process.scDRToNearestJet.clone(probes = cms.InputTag("cleanPatElectronsTriggerMatch"))
 
     # Njet
@@ -425,7 +454,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         minDeltaR = cms.double(0.3),
         objectSelection = cms.InputTag(""),
     )
-    process.gsfJetMultiplicity = process.scJetMultiplicity.clone(probes = cms.InputTag("gsfElectrons"))
+    process.gsfJetMultiplicity = process.scJetMultiplicity.clone(probes = cms.InputTag(ELE_COLL))
     process.patJetMultiplicity = process.scJetMultiplicity.clone(probes = cms.InputTag("cleanPatElectronsTriggerMatch"))
 
     # HT
@@ -434,7 +463,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         objects = cms.InputTag("selectedJets"),
         objectSelection = cms.InputTag(""),
     )
-    process.gsfHT = process.scHT.clone(probes = cms.InputTag("gsfElectrons"))
+    process.gsfHT = process.scHT.clone(probes = cms.InputTag(ELE_COLL))
     process.patHT = process.scHT.clone(probes = cms.InputTag("cleanPatElectronsTriggerMatch"))
     
     # MET
@@ -442,17 +471,17 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         probes = cms.InputTag("goodSuperClusters"),
         metTag = cms.InputTag("patMETsPF"),
     )
-    process.gsfMet = process.scMet.clone(probes = cms.InputTag("gsfElectrons"))
+    process.gsfMet = process.scMet.clone(probes = cms.InputTag(ELE_COLL))
     process.patMet = process.scMet.clone(probes = cms.InputTag("cleanPatElectronsTriggerMatch"))
     
     # ST
     process.gsfST = cms.EDProducer("PatMetSTComputer",
-        probes = cms.InputTag("gsfElectrons"),
+        probes = cms.InputTag(ELE_COLL),
         metTag = cms.InputTag("patMETsPF"),
     )
     process.patST = process.gsfST.clone(probes = cms.InputTag("cleanPatElectronsTriggerMatch"))
     
-    process.allJets = cms.Sequence(
+    process.allEleJets = cms.Sequence(
         process.selectedJets*
         (process.scDRToNearestJet +
          process.gsfDRToNearestJet +
@@ -465,13 +494,13 @@ def initTP(process, mcInfo=False, hltName="HLT"):
          process.patHT)
     )
     
-    process.allMet = cms.Sequence(
+    process.allEleMet = cms.Sequence(
         process.scMet +
         process.gsfMet +
         process.patMet
     )
     
-    process.allST = cms.Sequence(
+    process.allEleST = cms.Sequence(
         process.gsfST +
         process.patST
     )
@@ -489,7 +518,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     #   Rho Corrected Relative Isolation
     process.gsfRelIso = cms.EDProducer("GsfElectronRelIsoProducer",
         isMC            = cms.bool(mcInfo),
-        ElectronProbes  = cms.InputTag("gsfElectrons"),
+        ElectronProbes  = cms.InputTag(ELE_COLL),
         rhoIsoInputTag  = cms.InputTag("kt6PFJetsForIsolation", "rho"),
         isoValInputTags = cms.VInputTag(
             cms.InputTag('elPFIsoValueCharged03PFIdPFIso'),
@@ -497,6 +526,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
             cms.InputTag('elPFIsoValueNeutral03PFIdPFIso')
         ),
     )
+    
     process.patRelIso = cms.EDProducer("PatElectronRelIsoProducer",
         isMC            = cms.bool(mcInfo),
         ElectronProbes  = cms.InputTag("cleanPatElectronsTriggerMatch"),
@@ -506,9 +536,22 @@ def initTP(process, mcInfo=False, hltName="HLT"):
             cms.InputTag('elPFIsoValueGamma03PFIdPFIso'),
             cms.InputTag('elPFIsoValueNeutral03PFIdPFIso')
         ),
-    )    
+    )
     
-    process.allRelIso = cms.Sequence(
+    if is7X:
+        process.gsfRelIso.isoValInputTags = cms.VInputTag(
+            cms.InputTag('elPFIsoValueCharged03PFId'),
+            cms.InputTag('elPFIsoValueGamma03PFId'),
+            cms.InputTag('elPFIsoValueNeutral03PFId')
+        )
+        process.patRelIso.isoValInputTags = cms.VInputTag(
+            cms.InputTag('elPFIsoValueCharged03PFId'),
+            cms.InputTag('elPFIsoValueGamma03PFId'),
+            cms.InputTag('elPFIsoValueNeutral03PFId')
+        )
+        
+    
+    process.allEleRelIso = cms.Sequence(
         process.kt6PFJetsForIsolation *
         ( process.gsfRelIso +
           process.patRelIso )
@@ -518,13 +561,13 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     #   Delta Reco-PF Electron Pt
     
     process.gsfDeltaPfRecoPt = cms.EDProducer("GsfElectronDeltaPfRecoPt",
-        probes = cms.InputTag("gsfElectrons"),
+        probes = cms.InputTag(ELE_COLL),
     )
     process.patDeltaPfRecoPt = cms.EDProducer("ElectronDeltaPfRecoPt",
         probes = cms.InputTag("cleanPatElectronsTriggerMatch"),
     )
     
-    process.allDeltaPfRecoPt = cms.Sequence(
+    process.allEleDeltaPfRecoPt = cms.Sequence(
         process.gsfDeltaPfRecoPt +
         process.patDeltaPfRecoPt
     )
@@ -532,9 +575,9 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     ################################################################################################################################
     #   Conversion Rejection
     
-    process.gsfConvRejVars = cms.EDProducer("ElectronConversionRejectionVars",
-        probes = cms.InputTag("gsfElectrons")
-    )
+    #process.gsfConvRejVars = cms.EDProducer("ElectronConversionRejectionVars",
+    #    probes = cms.InputTag(ELE_COLL)
+    #)
     
     ################################################################################################################################
     #   ___  ____ ____ ____ _  _ ____ ___ ____ ____ ____ 
@@ -630,7 +673,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
             #theta   = cms.string("theta"),
         ),
         tagVariables = cms.PSet(),
-        flags = cms.PSet(
+        flags = cms.PSet( # The flags below somehow don't work in 7X
             passing_gsf = cms.InputTag("GsfMatchedSuperClusterCands"),
             passing_pat = cms.InputTag("GSFtoPATMatchedSuperClusterCandsClean"),
         ),
@@ -665,7 +708,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
             st          = cms.InputTag("gsfST"),
             absdeltapt  = cms.InputTag("gsfDeltaPfRecoPt","absdeltapt"), # -9999: under 10 GeV
             reliso      = cms.InputTag("gsfRelIso","reliso"),
-            passConvRej = cms.InputTag("gsfConvRejVars","passConvRej"),
+            #passConvRej = cms.InputTag("gsfConvRejVars","passConvRej"),
             #conv_dist   = cms.InputTag("gsfConvRejVars","dist"),
             #conv_dcot   = cms.InputTag("gsfConvRejVars","dcot"),
             #conv_radius = cms.InputTag("gsfConvRejVars","convradius"),
@@ -841,11 +884,10 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         probeMatches  = cms.InputTag("McMatchPATElectron"),
     )
     
-    process.tree_sequence = cms.Sequence(
+    process.allEleTPTrees = cms.Sequence(
         process.SuperClusterToGsfElectronPATTag +
         process.GsfElectronToIdPATTag +
-        process.goodPATEleToHLT #+
-        #process.goodGsfEleProbeTree
+        process.goodPATEleToHLT
     )
     
     ##############################################################################################################
@@ -857,37 +899,37 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     ##
     
     if mcInfo:
-        process.TagAndProbe = cms.Sequence(
-            process.allTagsAndProbes *
-            ( process.allTPPairs +
-              process.allPassingProbes +
-              process.allHLTResults +
-              process.allMcMatches +
-              process.allVertices +
-              process.allPileup +
-              process.allImpactParameters +
-              process.allJets + 
-              process.allMet +
-              process.allST +
-              process.allDeltaPfRecoPt +
-              process.allRelIso +
-              process.gsfConvRejVars ) *
-            process.tree_sequence
+        process.TagAndProbe_Electrons = cms.Sequence(
+            process.allEleTagsAndProbes *
+            ( process.allEleTPPairs +
+              process.allElePassingProbes +
+              process.allEleHLTResults +
+              process.allEleMcMatches +
+              process.allEleVertices +
+              process.allElePileup +
+              process.allEleImpactParameters +
+              process.allEleJets + 
+              process.allEleMet +
+              process.allEleST +
+              process.allEleDeltaPfRecoPt +
+              process.allEleRelIso
+              #process.gsfConvRejVars
+            )*process.allEleTPTrees
         )
     else:
-        process.TagAndProbe = cms.Sequence(
-            process.allTagsAndProbes *
-            ( process.allTPPairs +
-              process.allPassingProbes +
-              process.allHLTResults +
-              process.allVertices +
-              process.allPileup +
-              process.allImpactParameters +
-              process.allJets + 
-              process.allMet +
-              process.allST +
-              process.allDeltaPfRecoPt +
-              process.allRelIso +
-              process.gsfConvRejVars ) *
-            process.tree_sequence
+        process.TagAndProbe_Electrons = cms.Sequence(
+            process.allEleTagsAndProbes *
+            ( process.allEleTPPairs +
+              process.allElePassingProbes +
+              process.allEleHLTResults +
+              process.allEleVertices +
+              process.allElePileup +
+              process.allEleImpactParameters +
+              process.allEleJets + 
+              process.allEleMet +
+              process.allEleST +
+              process.allEleDeltaPfRecoPt +
+              process.allEleRelIso 
+              #process.gsfConvRejVars
+            )*process.allEleTPTrees
         )

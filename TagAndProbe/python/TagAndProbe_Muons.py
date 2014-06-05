@@ -7,7 +7,7 @@
 
 import FWCore.ParameterSet.Config as cms
 
-def initTP(process, mcInfo=False, hltName="HLT"):
+def initTP_Muons(process, mcInfo=False, hltName="HLT", is7X=True):
     
     ################################################################################################################################
     #   ___ ____ ____    ____ _  _ ___     ___  ____ ____ ___  ____ 
@@ -31,6 +31,8 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     STA_PROBE_CUTS = "pt > 5 && abs(eta) < 2.4"
     TRK_PROBE_CUTS = "pt > 5 && abs(eta) < 2.4 && numberOfValidHits > 5"
     GLB_PROBE_CUTS = "abs(eta) < 2.4 && isGood('GlobalMuonPromptTight') && isPFMuon() && track().hitPattern().trackerLayersWithMeasurement() > 5 && numberOfMatchedStations() >= 2 && innerTrack().hitPattern().numberOfValidPixelHits() > 0"
+    
+    JET_COLL = "cleanPatJets" if is7X else "cleanPatJetsAK5PF"
     
     JET_CUTS       =  "pt() >= 40.0 && abs(eta()) <= 2.4 && neutralHadronEnergyFraction() < 0.99 && neutralEmEnergyFraction() < 0.99 && chargedHadronEnergyFraction() > 0  && chargedMultiplicity() > 0  && chargedEmEnergyFraction() < 0.99 && (chargedMultiplicity() + neutralMultiplicity() + muonMultiplicity()) > 1"
     
@@ -172,7 +174,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         cut = cms.string(TAG_CUTS + " && " + PASS_ANY),
     )
     
-    process.allTagsAndProbes = cms.Sequence(
+    process.allMuonTagsAndProbes = cms.Sequence(
         process.tagMuonsSingleEle +
         process.tagMuonsAll +
         process.staTracks * process.staProbes +
@@ -203,7 +205,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         cut   = cms.string("40 < mass < 140"),
     )
 
-    process.allTPPairs = cms.Sequence(
+    process.allMuonTPPairs = cms.Sequence(
         process.tpGlbSta +
         process.tpGlbTk +
         process.tpGlbGlb
@@ -253,7 +255,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         match = cms.InputTag("tkToGlbMatch"),
     )
     
-    process.allPassingProbes = cms.Sequence(
+    process.allMuonPassingProbes = cms.Sequence(
         process.tkToGlbMatch * process.tkPassingGlb +
         process.staToTkMatch * process.staPassingTk 
     )
@@ -280,7 +282,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     process.glbEventPassingHLTPFNoPUHT400Mu5PFMET45  = process.glbEventPassingHLTMu40PFHT350.clone(HLTPaths = cms.vstring("HLT_PFNoPUHT400_Mu5_PFMET45_v.*"))
     process.glbEventPassingHLTPFNoPUHT400Mu5PFMET50  = process.glbEventPassingHLTMu40PFHT350.clone(HLTPaths = cms.vstring("HLT_PFNoPUHT400_Mu5_PFMET50_v.*"))
     
-    process.allHLTResults = cms.Sequence(
+    process.allMuonHLTResults = cms.Sequence(
         process.glbEventPassingHLTMu40PFHT350 +
         process.glbEventPassingHLTMu60PFHT350 +
         process.glbEventPassingHLTMu40PFNoPUHT350 +
@@ -313,7 +315,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         process.tkMcMatch  = process.muMcMatch.clone(src = "tkTracks")
         process.staMcMatch = process.muMcMatch.clone(src = "staTracks",distMin = 0.6)
 
-        process.allMcMatches = cms.Sequence(
+        process.allMuonMcMatches = cms.Sequence(
             process.staMcMatch +
             process.tkMcMatch +
             process.muMcMatch 
@@ -339,7 +341,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     process.trkNvertices = process.staNvertices.clone(probes = "tkTracks")
     process.glbNvertices = process.staNvertices.clone(probes = "cleanPatMuonsTriggerMatch")
     
-    process.allVertices = cms.Sequence(
+    process.allMuonVertices = cms.Sequence(
         process.staNvertices +
         process.trkNvertices +
         process.glbNvertices
@@ -362,7 +364,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     process.trkPileupWeight = process.staPileupWeight.clone(probes = "tkTracks")
     process.glbPileupWeight = process.staPileupWeight.clone(probes = "cleanPatMuonsTriggerMatch")
     
-    process.allPileupWeights = cms.Sequence(
+    process.allMuonPileupWeights = cms.Sequence(
         process.staPileupWeight +
         process.trkPileupWeight +
         process.glbPileupWeight
@@ -381,7 +383,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         probes = cms.InputTag("cleanPatMuonsTriggerMatch"),
     )
     
-    process.allImpactParameters = cms.Sequence(
+    process.allMuonImpactParameters = cms.Sequence(
         process.staImpactParameter +
         process.trkImpactParameter +
         process.glbImpactParameter
@@ -393,7 +395,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     #   _| |___  |  ___] 
     
     process.selectedJets = cms.EDFilter("PATJetSelector",
-        src = cms.InputTag("cleanPatJetsAK5PF"),
+        src = cms.InputTag( JET_COLL ),
         cut = cms.string( JET_CUTS ),
     )
 
@@ -441,7 +443,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     process.trkST = process.staST.clone(probes = "tkTracks")
     process.glbST = process.staST.clone(probes = "cleanPatMuonsTriggerMatch")
     
-    process.allJets = cms.Sequence(
+    process.allMuonJets = cms.Sequence(
         process.selectedJets*
         ( process.stadRToNearestJet +
           process.trkdRToNearestJet +
@@ -454,13 +456,13 @@ def initTP(process, mcInfo=False, hltName="HLT"):
           process.glbHT)
     )
     
-    process.allMet = cms.Sequence(
+    process.allMuonMet = cms.Sequence(
         process.staMet +
         process.trkMet +
         process.glbMet
     )
     
-    process.allST = cms.Sequence(
+    process.allMuonST = cms.Sequence(
         process.staST +
         process.trkST +
         process.glbST
@@ -559,7 +561,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     # process.HcalIsolationForStA04               = process.HcalIsolationForStA.clone( coneSize = cms.double(0.4) )
     # process.RelIsolationForStA04                = process.RelIsolationForStA.clone( coneSize = cms.double(0.4) )
 
-    #process.allIsolations = cms.Sequence(
+    #process.allMuonIsolations = cms.Sequence(
     #    (process.trkIsoDepositTk +
     #     process.trkIsoDepositCalByAssociatorTowers) *
     #    (process.TrackIsolationForTrk +
@@ -820,7 +822,7 @@ def initTP(process, mcInfo=False, hltName="HLT"):
         allProbes     = cms.InputTag("glbProbes"),
     )
     
-    process.allTPTrees = cms.Sequence(
+    process.allMuonTPTrees = cms.Sequence(
         process.fitGlbFromTk +
         process.fitTkFromSta +
         process.fitHltFromGlb 
@@ -835,35 +837,35 @@ def initTP(process, mcInfo=False, hltName="HLT"):
     ##
     
     if mcInfo:
-        process.TagAndProbe = cms.Sequence(
-            process.allTagsAndProbes *
-            ( process.allTPPairs +
-              process.allPassingProbes +
-              process.allHLTResults +
-              process.allMcMatches +
-              process.allVertices +
-              process.allPileupWeights +
-              process.allImpactParameters +
-              process.allJets + 
-              process.allMet +
-              process.allST +
-              #process.allIsolations +
+        process.TagAndProbe_Muons = cms.Sequence(
+            process.allMuonTagsAndProbes *
+            ( process.allMuonTPPairs +
+              process.allMuonPassingProbes +
+              process.allMuonHLTResults +
+              process.allMuonMcMatches +
+              process.allMuonVertices +
+              process.allMuonPileupWeights +
+              process.allMuonImpactParameters +
+              process.allMuonJets + 
+              process.allMuonMet +
+              process.allMuonST +
+              #process.allMuonIsolations +
               process.glbDeltaPfRecoPt )
-            * process.allTPTrees
+            * process.allMuonTPTrees
         )
     else:
-        process.TagAndProbe = cms.Sequence(
-            process.allTagsAndProbes *
-            ( process.allTPPairs +
-              process.allPassingProbes +
-              process.allHLTResults +
-              process.allVertices +
-              process.allPileupWeights +
-              process.allImpactParameters +
-              process.allJets + 
-              process.allMet +
-              process.allST +
-              #process.allIsolations +
+        process.TagAndProbe_Muons = cms.Sequence(
+            process.allMuonTagsAndProbes *
+            ( process.allMuonTPPairs +
+              process.allMuonPassingProbes +
+              process.allMuonHLTResults +
+              process.allMuonVertices +
+              process.allMuonPileupWeights +
+              process.allMuonImpactParameters +
+              process.allMuonJets + 
+              process.allMuonMet +
+              process.allMuonST +
+              #process.allMuonIsolations +
               process.glbDeltaPfRecoPt )
-            * process.allTPTrees
+            * process.allMuonTPTrees
         )

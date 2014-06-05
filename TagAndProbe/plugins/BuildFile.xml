@@ -1,6 +1,6 @@
 <export>
 </export>
-<library   name="RA4EfficienciesTagAndProbe_plugins" file="*.cc">
+<library   name="SusyAnalysisTagAndProbe_plugins" file="*.cc">
   <flags   EDM_PLUGIN="1"/>
   <use   name="roofit"/>
   <use   name="PhysicsTools/RooStatsCms"/>

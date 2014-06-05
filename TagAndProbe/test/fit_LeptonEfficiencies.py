@@ -49,8 +49,8 @@ outputMuTrk  = "EffPlot"+data_suffix+"_Mu_Trk"+suffix+".root"
 outputMuId   = "EffPlot"+data_suffix+"_Mu_ID" +suffix+".root"
 outputMuHLT  = "EffPlot"+data_suffix+"_Mu_HLT"+suffix+".root"
 
-testFileEle = "TNP_Ntuple_MC_Ele.root"
-testFileMu  = "TNP_Ntuple_MC_Mu.root"
+testFileEle = "TNP_Ntuple_MC.root"
+testFileMu  = "TNP_Ntuple_MC.root"
 
 #################################################################
 
@@ -87,7 +87,7 @@ pathNames_Data_MuHad = [
     mainDir+"/Mu_Data/MuHad_Run2012C-22Jan2013-v1/",
     mainDir+"/Mu_Data/MuHad_Run2012D-22Jan2013-v1/",
 ]
-pathNames_MC_Ele = [
+pathNames_MC = [
     mainDir+"/Ele_MC/TT_Summer12_DR53X-DynIneff-FlatPUmax50_START53_V7A-v1/",
     #mainDir+"/Ele_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/",
     #mainDir+"/Ele_MC/QCD_HT-250To500_TuneZ2star_8TeV-madgraph-pythia6/",
@@ -105,30 +105,12 @@ pathNames_MC_Ele = [
     #mainDir+"/Ele_MC/WZ_TuneZ2star_8TeV_pythia6_tauola/",
     #mainDir+"/Ele_MC/ZZ_TuneZ2star_8TeV_pythia6_tauola/",
 ]
-pathNames_MC_Mu = [
-    mainDir+"/Mu_MC/TT_Summer12_DR53X-DynIneff-FlatPUmax50_START53_V7A-v1/",
-    #mainDir+"/Mu_MC/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/",
-    #mainDir+"/Mu_MC/QCD_HT-250To500_TuneZ2star_8TeV-madgraph-pythia6/",
-    #mainDir+"/Mu_MC/QCD_HT-500To1000_TuneZ2star_8TeV-madgraph-pythia6/",
-    #mainDir+"/Mu_MC/QCD_HT-1000ToInf_TuneZ2star_8TeV-madgraph-pythia6/",
-    #mainDir+"/Mu_MC/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/",
-    #mainDir+"/Mu_MC/T_s-channel_TuneZ2star_8TeV-powheg-tauola/",
-    #mainDir+"/Mu_MC/T_t-channel_TuneZ2star_8TeV-powheg-tauola/",
-    #mainDir+"/Mu_MC/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/",
-    #mainDir+"/Mu_MC/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola/",
-    #mainDir+"/Mu_MC/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/",
-    #mainDir+"/Mu_MC/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/",
-    #mainDir+"/Mu_MC/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/",
-    #mainDir+"/Mu_MC/WW_TuneZ2star_8TeV_pythia6_tauola/",
-    #mainDir+"/Mu_MC/WZ_TuneZ2star_8TeV_pythia6_tauola/",
-    #mainDir+"/Mu_MC/ZZ_TuneZ2star_8TeV_pythia6_tauola/",
-]
 
 if isMC:
     weightVar = "weight"
     theUnbinned = cms.vstring("mass",weightVar)
-    pathNames_Ele_All = [ pathNames_MC_Ele ]
-    pathNames_Mu_All = [ pathNames_MC_Mu ]
+    pathNames_Ele_All = [ pathNames_MC ]
+    pathNames_Mu_All = [ pathNames_MC ]
 else:
     weightVar = ""
     theUnbinned = cms.vstring("mass")
