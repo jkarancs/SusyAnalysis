@@ -5,7 +5,7 @@
 #  More information here:
 #  https://twiki.cern.ch/twiki/bin/viewauth/CMS/SusyPatLayer1DefV12
 
-is7X = False
+is7X = True
 useSusyPat = False if is7X else True
 savePatTuple = True
 
@@ -23,9 +23,9 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
         # 53X
-        'file:/data/store/mc/Summer12_DR53X/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/GEN-SIM-RECO/HLT8E33_PU_S10_START53_V7I-v1/20000/F8B40CFD-267A-E211-B13B-0025904B144E.root'
+        #'file:/data/store/mc/Summer12_DR53X/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/GEN-SIM-RECO/HLT8E33_PU_S10_START53_V7I-v1/20000/F8B40CFD-267A-E211-B13B-0025904B144E.root'
         # 70X
-        #'file:/data/store/mc/Spring14dr/DYJetsToLL_M-50_13TeV-pythia6/AODSIM/PU_S14_POSTLS170_V6-v1/00000/003944B6-CEC7-E311-A9BD-002590A2CD68.root'
+        'file:/data/store/mc/Spring14dr/DYJetsToLL_M-50_13TeV-pythia6/AODSIM/PU_S14_POSTLS170_V6-v1/00000/003944B6-CEC7-E311-A9BD-002590A2CD68.root'
     )
 )
 
