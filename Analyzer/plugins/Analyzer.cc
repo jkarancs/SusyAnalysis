@@ -127,12 +127,13 @@ void Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
   
   //___________________________________________________________________
   //                          Vertices  
+
   
   edm::Handle<reco::VertexCollection> vertices;
   iEvent.getByToken(vtxToken_, vertices);
   if (vertices->empty()) return; // skip the event if no PV found
-  //const reco::Vertex &pv = vertices->front();
-  
+  const reco::Vertex &PV = vertices->front();
+  /*
   VertexCollection::const_iterator firstGoodVertex = vertices->end();
   int firstGoodVertexIdx = 0;
   for (VertexCollection::const_iterator vtx = vertices->begin();
@@ -140,7 +141,7 @@ void Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
     // The "good vertex" selection is borrowed from Giovanni Zevi Della Porta
     // Replace isFake() for miniAOD because it requires tracks and miniAOD vertices don't have tracks:
     // Vertex.h: bool isFake() const {return (chi2_==0 && ndof_==0 && tracks_.empty());}
-    if ( /*!vtx->isFake() &&*/
+    if ( //!vtx->isFake() &&
 	!(vtx->chi2()==0 && vtx->ndof()==0)
 	&& vtx->ndof()>=4. && vtx->position().Rho()<=2.0
 	&& fabs(vtx->position().Z())<=24.0) {
@@ -151,7 +152,8 @@ void Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
   
   if ( firstGoodVertex==vertices->end() )
     return; // skip event if there are no good PVs
-  
+  */
+
   //___________________________________________________________________
   //                           Muons  
   
@@ -182,6 +184,8 @@ void Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
     // lines below taken from:
     // https://github.com/ikrav/ElectronWork/blob/master/ElectronNtupler/plugins/ElectronNtupler.cc
     // Kinematics
+
+    /*
     double pt = el.pt();
     double etaSC = el.superCluster()->eta();
     
@@ -282,6 +286,7 @@ void Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
     
     // Electron Cut Based ID:
     bool is_alignment_good = true;
+    */
     
   }
   
@@ -324,7 +329,7 @@ void Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
         if (print) printf("         constituent %3d: pt %6.2f, pdgId %+3d\n", i2,(*daus[i2]).pt(),(*daus[i2]).pdgId());
 	// for MiniAOD (PackedCandidate) only:
         //const pat::PackedCandidate &cand = dynamic_cast<const pat::PackedCandidate &>(*daus[i2]);
-        //printf("         constituent %3d: pt %6.2f, dz(pv) %+.3f, pdgId %+3d\n", i2,cand.pt(),cand.dz(PV.position()),cand.pdgId());
+        //printf("         constituent %3d: pt %6.2f, dz(PV) %+.3f, pdgId %+3d\n", i2,cand.pt(),cand.dz(PV.position()),cand.pdgId());
       }
     }
   }
@@ -359,7 +364,7 @@ void Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
   //                     Filter decisions
 
   edm::Handle<edm::TriggerResults> filterBits;
-  edm::InputTag labfilterBits("TriggerResults","","PAT");
+  edm::InputTag labfilterBits("TriggerResults");
   iEvent.getByLabel(labfilterBits,filterBits);
   const edm::TriggerNames &fnames = iEvent.triggerNames(*filterBits);
   for (unsigned int i = 0, n = filterBits->size(); i < n; ++i) {

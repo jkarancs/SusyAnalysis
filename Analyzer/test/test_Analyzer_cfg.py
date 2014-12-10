@@ -47,9 +47,10 @@ if not options.useMiniAOD:
 # MiniAOD
 else:
     process.source.fileNames= [
+        "file:miniAOD-prod_PAT.root" # generated from AOD (above)
         #"file:/data/jkarancs/CMSSW/SusyAnalysis/CMSSW_7_0_6_patch1/src/SusyAnalysis/Analyzer/test/miniAOD-prod_PAT.root" # generated from AOD (above)
         # signal sample
-        "file:/data/store/mc/Spring14miniaod/SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/26155C45-520E-E411-9910-20CF3027A624.root",
+        #"file:/data/store/mc/Spring14miniaod/SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/26155C45-520E-E411-9910-20CF3027A624.root",
         # background samples
         #"file:/data/store/mc/Spring14miniaod/TT_Tune4C_13TeV-pythia8-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/063013AD-9907-E411-8135-0026189438BD.root",
         #"file:/data/store/mc/Spring14miniaod/DYJetsToLL_M-50_13TeV-madgraph-pythia8-tauola_v2/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/00245653-EC23-E411-B9BF-02163E006C73.root",
