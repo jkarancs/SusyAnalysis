@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: miniAOD-prod -s PAT --eventcontent MINIAODSIM --runUnscheduled --mc --filein file:/data/store/mc/Spring14dr/DYJetsToLL_M-50_13TeV-pythia6/AODSIM/PU_S14_POSTLS170_V6-v1/00000/003944B6-CEC7-E311-A9BD-002590A2CD68.root --conditions PLS170_V6AN1::All --no_exec
+# with command line options: miniAOD-prod -s PAT --eventcontent MINIAODSIM --runUnscheduled --mc --filein file:/data/store/mc/Phys14DR/SMS-T2tt_2J_mStop-425_mLSP-325_Tune4C_13TeV-madgraph-tauola/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/0018F7C4-A46E-E411-B639-003048F0E3B2.root --conditions PHYS14_25_V1 -n -1
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('PAT')
@@ -15,9 +15,8 @@ process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
-process.load('Configuration.StandardSequences.PATMC_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -26,16 +25,7 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
     secondaryFileNames = cms.untracked.vstring(),
-    fileNames = cms.untracked.vstring(
-        #'file:/data/store/mc/Spring14dr/DYJetsToLL_M-50_13TeV-pythia6/AODSIM/PU_S14_POSTLS170_V6-v1/00000/003944B6-CEC7-E311-A9BD-002590A2CD68.root'
-        # T2tt
-        # PU25 - mStop-425 mLSP-325
-        #'file:/data/store/mc/Phys14DR/SMS-T2tt_2J_mStop-425_mLSP-325_Tune4C_13TeV-madgraph-tauola/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/0018F7C4-A46E-E411-B639-003048F0E3B2.root'
-        #'file:/data/store/mc/Phys14DR/SMS-T2tt_2J_mStop-650_mLSP-325_Tune4C_13TeV-madgraph-tauola/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/0A08BCDA-2C6C-E411-80CF-F04DA23BCE4C.root'
-        # Pu40
-        #'file:/data/store/mc/Phys14DR/SMS-T2tt_2J_mStop-500_mLSP-325_Tune4C_13TeV-madgraph-tauola/AODSIM/PU40bx25_PHYS14_25_V1-v1/00000/0002EB34-F575-E411-B958-002590A80DD4.root'
-                                
-    )
+    fileNames = cms.untracked.vstring('file:/data/store/mc/Phys14DR/SMS-T2tt_2J_mStop-425_mLSP-325_Tune4C_13TeV-madgraph-tauola/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/0018F7C4-A46E-E411-B639-003048F0E3B2.root')
 )
 
 process.options = cms.untracked.PSet(
@@ -45,7 +35,7 @@ process.options = cms.untracked.PSet(
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string('$Revision: 1.19 $'),
-    annotation = cms.untracked.string('miniAOD-prod nevts:1'),
+    annotation = cms.untracked.string('miniAOD-prod nevts:-1'),
     name = cms.untracked.string('Applications')
 )
 
@@ -56,7 +46,7 @@ process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
     compressionAlgorithm = cms.untracked.string('LZMA'),
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
     outputCommands = process.MINIAODSIMEventContent.outputCommands,
-    fileName = cms.untracked.string('T2tt_2J_mStop-650_mLSP-325.root'),
+    fileName = cms.untracked.string('miniAOD-prod_PAT.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('')
@@ -69,25 +59,17 @@ process.MINIAODSIMoutput = cms.OutputModule("PoolOutputModule",
 # Additional output definition
 
 # Other statements
-from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'PLS170_V6AN1::All', '')
+from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
+process.GlobalTag = GlobalTag(process.GlobalTag, 'PHYS14_25_V1', '')
 
 # Path and EndPath definitions
-process.Flag_trackingFailureFilter = cms.Path(process.goodVertices+process.trackingFailureFilter)
-process.Flag_goodVertices = cms.Path(process.goodVertices)
-process.Flag_CSCTightHaloFilter = cms.Path(process.CSCTightHaloFilter)
-process.Flag_trkPOGFilters = cms.Path(process.trkPOGFilters)
-process.Flag_trkPOG_logErrorTooManyClusters = cms.Path(~process.logErrorTooManyClusters)
-process.Flag_EcalDeadCellTriggerPrimitiveFilter = cms.Path(process.EcalDeadCellTriggerPrimitiveFilter)
-process.Flag_ecalLaserCorrFilter = cms.Path(process.ecalLaserCorrFilter)
-process.Flag_trkPOG_manystripclus53X = cms.Path(~process.manystripclus53X)
-process.Flag_eeBadScFilter = cms.Path(process.eeBadScFilter)
-process.Flag_METFilters = cms.Path(process.metFilters)
-process.Flag_HBHENoiseFilter = cms.Path(process.HBHENoiseFilter)
-process.Flag_trkPOG_toomanystripclus53X = cms.Path(~process.toomanystripclus53X)
-process.Flag_hcalLaserEventFilter = cms.Path(process.hcalLaserEventFilter)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.MINIAODSIMoutput_step = cms.EndPath(process.MINIAODSIMoutput)
+
+#do not add changes to your config after this point (unless you know what you are doing)
+from FWCore.ParameterSet.Utilities import convertToUnscheduled
+process=convertToUnscheduled(process)
+process.load('Configuration.StandardSequences.PATMC_cff')
 
 # customisation of the process.
 

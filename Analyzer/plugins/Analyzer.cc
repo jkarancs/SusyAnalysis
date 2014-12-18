@@ -178,8 +178,8 @@ void Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
     // NOTE: miniAOD does not store some of the info for electrons <5 GeV at all!
     if (el.pt() < 5) continue;
     sh_->Fill("electrons");
-    if (print) printf("elec with pt %4.1f, supercluster eta %+5.3f, sigmaIetaIeta %.3f (%.3f with full5x5 shower shapes), lost hits %d, pass conv veto %d\n",
-		      el.pt(), el.superCluster()->eta(), el.sigmaIetaIeta(), el.full5x5_sigmaIetaIeta(), el.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits(), el.passConversionVeto());
+    if (print) printf("elec with pt %4.1f, supercluster eta %+5.3f, sigmaIetaIeta %.3f (%.3f with full5x5 shower shapes), pass conv veto %d\n",
+		      el.pt(), el.superCluster()->eta(), el.sigmaIetaIeta(), el.full5x5_sigmaIetaIeta(), el.passConversionVeto());
     
     // lines below taken from:
     // https://github.com/ikrav/ElectronWork/blob/master/ElectronNtupler/plugins/ElectronNtupler.cc
@@ -297,8 +297,8 @@ void Analyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
   for (const pat::Photon &pho : *photons) {
     pho_ = pho;
     if (pho.pt() < 20 or pho.chargedHadronIso()/pho.pt() > 0.3) continue;
-    if (print) printf("phot with pt %4.1f, supercluster eta %+5.3f, sigmaIetaIeta %.3f (%.3f with full5x5 shower shapes)\n",
-		      pho.pt(), pho.superCluster()->eta(), pho.sigmaIetaIeta(), pho.full5x5_sigmaIetaIeta());
+    if (print) printf("phot with pt %4.1f, supercluster eta %+5.3f, sigmaIetaIeta %.3f\n",
+		      pho.pt(), pho.superCluster()->eta(), pho.sigmaIetaIeta());
   }
   
   //___________________________________________________________________
