@@ -24,7 +24,7 @@ int main() {
   sh.AddHistoType("met");
   
   // Define Postfixes here:
-  //sh.AddNewPostfix("mu", &it_gpe, "Gam;Pos;Ele", "Photon;Positron;Electron", "3,2,4");
+  sh.AddNewPostfix("AK4JetsPtOrdered", &d.jet.it, "Jet[1to10]", "Jet [1to10]", "1-10");
   
   // Define histo parameters and filling variable
   // X/Y/Z - axis parameters:
@@ -41,21 +41,27 @@ int main() {
   sh.AddNewFillParam("MetPt",             { .nbin= 100, .low= 0,   .high= 500, .fill=[&d](){ return d.met.Pt;      }, .axis_title="MET p_{T} (GeV/c)"});
   
   // Define Cuts here:
-  //sh.AddNewCut("stat=3", [&d](){ return d.stat==3; });
+  sh.AddNewCut("AK4Highest2Jet", [&d](){ return d.jet.jets_size>=2 && d.jet.it<2; });
+  sh.AddNewCut("AK8Highest2Jet", [&d](){ return d.jetAK8.jetsAK8_size>=2 && d.jetAK8.it<2; });
   
+  // Set Histogram weight (empty = 1)
+  sh.SetHistoWeights({});
   // --------------------------------------------------------------------------
   //                           Histogram Definitions
   
   sh.AddHistos("mu",     { .fill="MuonEnergy",    .pfs={}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
   sh.AddHistos("mu",     { .fill="MuonPt",        .pfs={}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
+  
   sh.AddHistos("ele",    { .fill="EleEnergy",     .pfs={}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
   sh.AddHistos("ele",    { .fill="ElePt",         .pfs={}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
-  sh.AddHistos("jet",    { .fill="AK4JetEnergy",  .pfs={}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
-  sh.AddHistos("jet",    { .fill="AK4JetPt",      .pfs={}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
-  sh.AddHistos("jet",    { .fill="AK4JetMass",    .pfs={}, .cuts={}, .draw="", .ranges={0,250, 0,0} });
+  
+  sh.AddHistos("jet",    { .fill="AK4JetEnergy",  .pfs={"AK4JetsPtOrdered"}, .cuts={"AK4Highest2Jet"}, .draw="", .ranges={0,0, 0,0} });
+  sh.AddHistos("jet",    { .fill="AK4JetPt",      .pfs={"AK4JetsPtOrdered"}, .cuts={"AK4Highest2Jet"}, .draw="", .ranges={0,0, 0,1000} });
+  sh.AddHistos("jet",    { .fill="AK4JetMass",    .pfs={"AK4JetsPtOrdered"}, .cuts={"AK4Highest2Jet"}, .draw="", .ranges={0,250, 0,0} });
   sh.AddHistos("jetAK8", { .fill="AK8JetEnergy",  .pfs={}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
   sh.AddHistos("jetAK8", { .fill="AK8JetPt",      .pfs={}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
   sh.AddHistos("jetAK8", { .fill="AK8JetMass",    .pfs={}, .cuts={}, .draw="", .ranges={0,250, 0,0} });
+  
   sh.AddHistos("met",    { .fill="MetPt",         .pfs={}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
   
   TFile *file;
@@ -77,7 +83,10 @@ int main() {
 	// loop on objects and fill their histos
 	while(d.mu.Loop())     sh.Fill("mu");
 	while(d.ele.Loop())    sh.Fill("ele");
-	while(d.jet.Loop())    sh.Fill("jet");
+	while(d.jet.Loop()) {
+	  //std::cout<<d.jet.it<<" "<<d.jet.Pt<<std::endl;
+	  sh.Fill("jet");
+	}
 	while(d.jetAK8.Loop()) sh.Fill("jetAK8");
 	while(d.met.Loop())    sh.Fill("met");
       }

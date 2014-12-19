@@ -59,6 +59,8 @@ public:
     float isTightOffline;
     float isLooseOffline;
 
+    size_t it;
+
     void init() {
       electrons_size = 0;
       for (int i=0; i<5; ++i) {
@@ -108,44 +110,40 @@ public:
       isTightOffline=NOVAL_F;
       isLooseOffline=NOVAL_F;
       
-      it_ = 0;
+      it=-1;
     }
 
     bool Loop() {
-      if (it_<electrons_size) {
-	E                  = elE[it_];			   
-	Pt		   = elPt[it_];		   
-        Mass		   = elMass[it_];		   
-        Eta		   = elEta[it_];		   
-        Phi		   = elPhi[it_];		   
-        Charge		   = elCharge[it_];		   
-        D0		   = elD0[it_];		   
-        Dz		   = elDz[it_];		   
-        HoE		   = elHoE[it_];		   
-        Iso03		   = elIso03[it_];		   
-        Y		   = elY[it_];			   
-        dEtaIn		   = eldEtaIn[it_];		   
-        dPhiIn		   = eldPhiIn[it_];		   
-        expectedMissInHits = elexpectedMissInHits[it_];   
-        full5x5siee	   = elfull5x5siee[it_];	   
-        ooEmooP		   = elooEmooP[it_];		   
-        pssConVeto	   = elpssConVeto[it_];	   
-        SFTrigger	   = electronsSFTrigger[it_];	   
-        SFReco		   = electronsSFReco[it_];	   
-        isQCD		   = electronsisQCD[it_];	   
-        isTightOffline	   = electronsisTightOffline[it_];
-        isLooseOffline	   = electronsisLooseOffline[it_];
-	
-	++it_;
+      ++it;
+      if (it<(size_t)electrons_size) {
+	E                  = elE[it];			   
+	Pt		   = elPt[it];		   
+        Mass		   = elMass[it];		   
+        Eta		   = elEta[it];		   
+        Phi		   = elPhi[it];		   
+        Charge		   = elCharge[it];		   
+        D0		   = elD0[it];		   
+        Dz		   = elDz[it];		   
+        HoE		   = elHoE[it];		   
+        Iso03		   = elIso03[it];		   
+        Y		   = elY[it];			   
+        dEtaIn		   = eldEtaIn[it];		   
+        dPhiIn		   = eldPhiIn[it];		   
+        expectedMissInHits = elexpectedMissInHits[it];   
+        full5x5siee	   = elfull5x5siee[it];	   
+        ooEmooP		   = elooEmooP[it];		   
+        pssConVeto	   = elpssConVeto[it];	   
+        SFTrigger	   = electronsSFTrigger[it];	   
+        SFReco		   = electronsSFReco[it];	   
+        isQCD		   = electronsisQCD[it];	   
+        isTightOffline	   = electronsisTightOffline[it];
+        isLooseOffline	   = electronsisLooseOffline[it];
 	return 1;
       } else {
-	it_=0;
+	it=-1;
 	return 0;
       }
     }
-
-  private:
-    int it_;
     
   } ele;
   
@@ -248,6 +246,8 @@ public:
     float isTightOffline;
     float isLooseOffline;
     
+    size_t it;
+    
     void init() {
       muons_size = 0;
       for (int i=0; i<5; ++i) {
@@ -345,69 +345,64 @@ public:
       isTightOffline=NOVAL_F;
       isLooseOffline=NOVAL_F;
       
-      it_ = 0;
+      it=-1;
     }
 
     bool Loop() {
-      if (it_<muons_size) {
-	E                        = muE[it_];			  
-        Pt			 = muPt[it_];			  
-        Mass			 = muMass[it_];			  
-        Eta			 = muEta[it_];			  
-        Phi			 = muPhi[it_];			  
-        Charge			 = muCharge[it_];			  
-        IsLooseMuon		 = muIsLooseMuon[it_];		  
-        IsSoftMuon		 = muIsSoftMuon[it_];		  
-        IsTightMuon		 = muIsTightMuon[it_];		  
-        D0			 = muD0[it_];			  
-        D0err			 = muD0err[it_];			  
-        Dz			 = muDz[it_];			  
-        Dzerr			 = muDzerr[it_];			  
-        GenMuonCharge		 = muGenMuonCharge[it_];		  
-        GenMuonEta		 = muGenMuonEta[it_];		  
-        GenMuonPt		 = muGenMuonPt[it_];		  
-        GenMuonE		 = muGenMuonE[it_];		  
-        GenMuonPhi		 = muGenMuonPhi[it_];		  
-        GenMuonY		 = muGenMuonY[it_];		  
-        GlbTrkNormChi2		 = muGlbTrkNormChi2[it_];		  
-        HLTmuonDeltaR		 = muHLTmuonDeltaR[it_];		  
-        HLTmuonE		 = muHLTmuonE[it_];		  
-        HLTmuonEta		 = muHLTmuonEta[it_];		  
-        HLTmuonPt		 = muHLTmuonPt[it_];		  
-        HLTmuonPhi		 = muHLTmuonPhi[it_];		  
-        InTrkNormChi2		 = muInTrkNormChi2[it_];		  
-        IsGlobalMuon		 = muIsGlobalMuon[it_];		  
-        IsPFMuon		 = muIsPFMuon[it_];		  
-        IsTrackerMuon		 = muIsTrackerMuon[it_];		  
-        Iso03			 = muIso03[it_];			  
-        NumberMatchedStations	 = muNumberMatchedStations[it_];	  
-        NumberOfPixelLayers	 = muNumberOfPixelLayers[it_];	  
-        NumberOfValidTrackerHits = muNumberOfValidTrackerHits[it_]; 
-        NumberTrackerLayers	 = muNumberTrackerLayers[it_];	  
-        NumberValidMuonHits	 = muNumberValidMuonHits[it_];	  
-        NumberValidPixelHits	 = muNumberValidPixelHits[it_];	  
-        SumChargedHadronPt	 = muSumChargedHadronPt[it_];	  
-        SumNeutralHadronPt	 = muSumNeutralHadronPt[it_];	  
-        SumPUPt			 = muSumPUPt[it_];		  
-        SumPhotonPt		 = muSumPhotonPt[it_];		  
-        Y			 = muY[it_];			  
-        SFTrigger		 = muonsSFTrigger[it_];		  
-        SFReco			 = muonsSFReco[it_];		  
-        isQCD			 = muonsisQCD[it_];		  
-        isTightOffline		 = muonsisTightOffline[it_];	  
-        isLooseOffline		 = muonsisLooseOffline[it_];        
-	
-	++it_;
+      ++it;
+      if (it<(size_t)muons_size) {
+	E                        = muE[it];			  
+        Pt			 = muPt[it];			  
+        Mass			 = muMass[it];			  
+        Eta			 = muEta[it];			  
+        Phi			 = muPhi[it];			  
+        Charge			 = muCharge[it];			  
+        IsLooseMuon		 = muIsLooseMuon[it];		  
+        IsSoftMuon		 = muIsSoftMuon[it];		  
+        IsTightMuon		 = muIsTightMuon[it];		  
+        D0			 = muD0[it];			  
+        D0err			 = muD0err[it];			  
+        Dz			 = muDz[it];			  
+        Dzerr			 = muDzerr[it];			  
+        GenMuonCharge		 = muGenMuonCharge[it];		  
+        GenMuonEta		 = muGenMuonEta[it];		  
+        GenMuonPt		 = muGenMuonPt[it];		  
+        GenMuonE		 = muGenMuonE[it];		  
+        GenMuonPhi		 = muGenMuonPhi[it];		  
+        GenMuonY		 = muGenMuonY[it];		  
+        GlbTrkNormChi2		 = muGlbTrkNormChi2[it];		  
+        HLTmuonDeltaR		 = muHLTmuonDeltaR[it];		  
+        HLTmuonE		 = muHLTmuonE[it];		  
+        HLTmuonEta		 = muHLTmuonEta[it];		  
+        HLTmuonPt		 = muHLTmuonPt[it];		  
+        HLTmuonPhi		 = muHLTmuonPhi[it];		  
+        InTrkNormChi2		 = muInTrkNormChi2[it];		  
+        IsGlobalMuon		 = muIsGlobalMuon[it];		  
+        IsPFMuon		 = muIsPFMuon[it];		  
+        IsTrackerMuon		 = muIsTrackerMuon[it];		  
+        Iso03			 = muIso03[it];			  
+        NumberMatchedStations	 = muNumberMatchedStations[it];	  
+        NumberOfPixelLayers	 = muNumberOfPixelLayers[it];	  
+        NumberOfValidTrackerHits = muNumberOfValidTrackerHits[it]; 
+        NumberTrackerLayers	 = muNumberTrackerLayers[it];	  
+        NumberValidMuonHits	 = muNumberValidMuonHits[it];	  
+        NumberValidPixelHits	 = muNumberValidPixelHits[it];	  
+        SumChargedHadronPt	 = muSumChargedHadronPt[it];	  
+        SumNeutralHadronPt	 = muSumNeutralHadronPt[it];	  
+        SumPUPt			 = muSumPUPt[it];		  
+        SumPhotonPt		 = muSumPhotonPt[it];		  
+        Y			 = muY[it];			  
+        SFTrigger		 = muonsSFTrigger[it];		  
+        SFReco			 = muonsSFReco[it];		  
+        isQCD			 = muonsisQCD[it];		  
+        isTightOffline		 = muonsisTightOffline[it];	  
+        isLooseOffline		 = muonsisLooseOffline[it];
 	return 1;
       } else {
-	it_=0;
+	it=-1;
 	return 0;
       }
-    }
-
-  private:
-    int it_;
-    
+    }    
   } mu;
   
   class JetData {
@@ -524,6 +519,8 @@ public:
     float CorrMass;
     float CorrNJets;
     float CorrPartonFlavour;
+
+    size_t it;
     
     void init() {
       jets_size=0;
@@ -638,77 +635,72 @@ public:
       CorrNJets=NOVAL_F;
       CorrPartonFlavour=NOVAL_F;
       
-      it_ = 0;
+      it=-1;
     }
     
     bool Loop() {
-      if (it_<jets_size) {
-	E                         = jetE[it_];			 
-        Pt			  = jetPt[it_];			 
-        Mass			  = jetMass[it_];			 
-        Eta			  = jetEta[it_];			 
-        PartonFlavour		  = jetPhi[it_];			 
-        Phi			  = jetPartonFlavour[it_];		 
-        CSV			  = jetCSV[it_];			 
-        CSVV1			  = jetCSVV1[it_];			 
-        Charge			  = jetCharge[it_];			 
-        ChargeMuEnergy		  = jetChargeMuEnergy[it_];		 
-        ChargedHadronMultiplicity = jetChargedHadronMultiplicity[it_]; 
-        ElectronEnergy		  = jetElectronEnergy[it_];		 
-        GenJetCharge		  = jetGenJetCharge[it_];		 
-        GenJetE			  = jetGenJetE[it_];			 
-        GenJetEta		  = jetGenJetEta[it_];		 
-        GenJetPhi		  = jetGenJetPhi[it_];		 
-        GenJetPt		  = jetGenJetPt[it_];			 
-        GenJetY			  = jetGenJetY[it_];			 
-        GenPartonCharge		  = jetGenPartonCharge[it_];		 
-        GenPartonE		  = jetGenPartonE[it_];		 
-        GenPartonEta		  = jetGenPartonEta[it_];		 
-        GenPartonPhi		  = jetGenPartonPhi[it_];		 
-        GenPartonPt		  = jetGenPartonPt[it_];		 
-        GenPartonY		  = jetGenPartonY[it_];		 
-        HFEMEnergy		  = jetHFEMEnergy[it_];		 
-        HFEMMultiplicity	  = jetHFEMMultiplicity[it_];		 
-        HFHadronEnergy		  = jetHFHadronEnergy[it_];		 
-        HFHadronMultiplicity	  = jetHFHadronMultiplicity[it_];	 
-        HLTjetDeltaR		  = jetHLTjetDeltaR[it_];		 
-        HLTjetE			  = jetHLTjetE[it_];			 
-        HLTjetEta		  = jetHLTjetEta[it_];		 
-        HLTjetPt		  = jetHLTjetPt[it_];			 
-        HLTjetPhi		  = jetHLTjetPhi[it_];		 
-        HadronFlavour		  = jetHadronFlavour[it_];		 
-        IsCSVL			  = jetIsCSVL[it_];			 
-        IsCSVM			  = jetIsCSVM[it_];			 
-        IsCSVT			  = jetIsCSVT[it_];			 
-        SmearedE		  = jetSmearedE[it_];			 
-        SmearedPt		  = jetSmearedPt[it_];		 
-        SmearedPEta		  = jetSmearedPEta[it_];		 
-        SmearedPhi		  = jetSmearedPhi[it_];		 
-        Y			  = jetY[it_];			 
-        electronMultiplicity	  = jetelectronMultiplicity[it_];	 
-        muonMultiplicity	  = jetmuonMultiplicity[it_];		 
-        neutralHadronMultiplicity = jetneutralHadronMultiplicity[it_]; 
-        neutralMultiplicity	  = jetneutralMultiplicity[it_];	 
-        photonMultiplicity	  = jetphotonMultiplicity[it_];	 
-        CorrPt			  = jetsCorrPt[it_];			 
-        CorrEta			  = jetsCorrEta[it_];			 
-        CorrPhi			  = jetsCorrPhi[it_];			 
-        CorrE			  = jetsCorrE[it_];			 
-        CorrMass		  = jetsCorrMass[it_];		 
-        CorrNJets		  = jetsCorrNJets[it_];		 
-        CorrPartonFlavour	  = jetsCorrPartonFlavour[it_];        
-	
-	++it_;
+      ++it;
+      if (it<(size_t)jets_size) {
+	E                         = jetE[it];			 
+        Pt			  = jetPt[it];			 
+        Mass			  = jetMass[it];			 
+        Eta			  = jetEta[it];			 
+        PartonFlavour		  = jetPhi[it];			 
+        Phi			  = jetPartonFlavour[it];		 
+        CSV			  = jetCSV[it];			 
+        CSVV1			  = jetCSVV1[it];			 
+        Charge			  = jetCharge[it];			 
+        ChargeMuEnergy		  = jetChargeMuEnergy[it];		 
+        ChargedHadronMultiplicity = jetChargedHadronMultiplicity[it]; 
+        ElectronEnergy		  = jetElectronEnergy[it];		 
+        GenJetCharge		  = jetGenJetCharge[it];		 
+        GenJetE			  = jetGenJetE[it];			 
+        GenJetEta		  = jetGenJetEta[it];		 
+        GenJetPhi		  = jetGenJetPhi[it];		 
+        GenJetPt		  = jetGenJetPt[it];			 
+        GenJetY			  = jetGenJetY[it];			 
+        GenPartonCharge		  = jetGenPartonCharge[it];		 
+        GenPartonE		  = jetGenPartonE[it];		 
+        GenPartonEta		  = jetGenPartonEta[it];		 
+        GenPartonPhi		  = jetGenPartonPhi[it];		 
+        GenPartonPt		  = jetGenPartonPt[it];		 
+        GenPartonY		  = jetGenPartonY[it];		 
+        HFEMEnergy		  = jetHFEMEnergy[it];		 
+        HFEMMultiplicity	  = jetHFEMMultiplicity[it];		 
+        HFHadronEnergy		  = jetHFHadronEnergy[it];		 
+        HFHadronMultiplicity	  = jetHFHadronMultiplicity[it];	 
+        HLTjetDeltaR		  = jetHLTjetDeltaR[it];		 
+        HLTjetE			  = jetHLTjetE[it];			 
+        HLTjetEta		  = jetHLTjetEta[it];		 
+        HLTjetPt		  = jetHLTjetPt[it];			 
+        HLTjetPhi		  = jetHLTjetPhi[it];		 
+        HadronFlavour		  = jetHadronFlavour[it];		 
+        IsCSVL			  = jetIsCSVL[it];			 
+        IsCSVM			  = jetIsCSVM[it];			 
+        IsCSVT			  = jetIsCSVT[it];			 
+        SmearedE		  = jetSmearedE[it];			 
+        SmearedPt		  = jetSmearedPt[it];		 
+        SmearedPEta		  = jetSmearedPEta[it];		 
+        SmearedPhi		  = jetSmearedPhi[it];		 
+        Y			  = jetY[it];			 
+        electronMultiplicity	  = jetelectronMultiplicity[it];	 
+        muonMultiplicity	  = jetmuonMultiplicity[it];		 
+        neutralHadronMultiplicity = jetneutralHadronMultiplicity[it]; 
+        neutralMultiplicity	  = jetneutralMultiplicity[it];	 
+        photonMultiplicity	  = jetphotonMultiplicity[it];	 
+        CorrPt			  = jetsCorrPt[it];			 
+        CorrEta			  = jetsCorrEta[it];			 
+        CorrPhi			  = jetsCorrPhi[it];			 
+        CorrE			  = jetsCorrE[it];			 
+        CorrMass		  = jetsCorrMass[it];		 
+        CorrNJets		  = jetsCorrNJets[it];		 
+        CorrPartonFlavour	  = jetsCorrPartonFlavour[it];        
 	return 1;
       } else {
-	it_=0;
+	it=-1;
 	return 0;
       }
     }
-
-  private:
-    int it_;
-    
   } jet;
   
   class JetAK8Data {
@@ -822,6 +814,8 @@ public:
     float CorrNJets;
     float CorrPartonFlavour;
     
+    size_t it;
+    
     void init() {
       jetsAK8_size=0;
       for (int i=0; i<20; ++i) {
@@ -931,75 +925,70 @@ public:
       CorrNJets=NOVAL_F;
       CorrPartonFlavour=NOVAL_F;
       
-      it_ = 0;
+      it=-1;
     }
 
     bool Loop() {
-      if (it_<jetsAK8_size) {
-	E                    = jetAK8E[it_];		       
-        Pt		     = jetAK8Pt[it_];		       
-        Mass		     = jetAK8Mass[it_];		       
-        Eta		     = jetAK8Eta[it_];		       
-        Phi		     = jetAK8Phi[it_];		       
-        PartonFlavour	     = jetAK8PartonFlavour[it_];	       
-        CSV		     = jetAK8CSV[it_];		       
-        CSVV1		     = jetAK8CSVV1[it_];		       
-        Charge		     = jetAK8Charge[it_];	       
-        ChargeMuEnergy	     = jetAK8ChargeMuEnergy[it_];       
-        ElectronEnergy	     = jetAK8ElectronEnergy[it_];       
-        GenJetCharge	     = jetAK8GenJetCharge[it_];	       
-        GenJetE		     = jetAK8GenJetE[it_];	       
-        GenJetEta	     = jetAK8GenJetEta[it_];	       
-        GenJetPhi	     = jetAK8GenJetPhi[it_];	       
-        GenJetPt	     = jetAK8GenJetPt[it_];	       
-        GenJetY		     = jetAK8GenJetY[it_];	       
-        GenPartonCharge	     = jetAK8GenPartonCharge[it_];      
-        GenPartonE	     = jetAK8GenPartonE[it_];	       
-        GenPartonEta	     = jetAK8GenPartonEta[it_];	       
-        GenPartonPhi	     = jetAK8GenPartonPhi[it_];	       
-        GenPartonPt	     = jetAK8GenPartonPt[it_];	       
-        GenPartonY	     = jetAK8GenPartonY[it_];	       
-        HFEMEnergy	     = jetAK8HFEMEnergy[it_];	       
-        HFEMMultiplicity     = jetAK8HFEMMultiplicity[it_];     
-        HFHadronEnergy	     = jetAK8HFHadronEnergy[it_];       
-        HFHadronMultiplicity = jetAK8HFHadronMultiplicity[it_]; 
-        HLTjetDeltaR	     = jetAK8HLTjetDeltaR[it_];	       
-        HLTjetE		     = jetAK8HLTjetE[it_];	       
-        HLTjetEta	     = jetAK8HLTjetEta[it_];	       
-        HLTjetPt	     = jetAK8HLTjetPt[it_];	       
-        HLTjetPhi	     = jetAK8HLTjetPhi[it_];	       
-        HadronFlavour	     = jetAK8HadronFlavour[it_];	       
-        IsCSVL		     = jetAK8IsCSVL[it_];	       
-        IsCSVM		     = jetAK8IsCSVM[it_];	       
-        IsCSVT		     = jetAK8IsCSVT[it_];	       
-        SmearedE	     = jetAK8SmearedE[it_];	       
-        SmearedPt	     = jetAK8SmearedPt[it_];	       
-        SmearedPEta	     = jetAK8SmearedPEta[it_];	       
-        SmearedPhi	     = jetAK8SmearedPhi[it_];	       
-        Y		     = jetAK8Y[it_];		       
-        electronMultiplicity = jetAK8electronMultiplicity[it_]; 
-        muonMultiplicity     = jetAK8muonMultiplicity[it_];     
-        neutralMultiplicity  = jetAK8neutralMultiplicity[it_];  
-        photonMultiplicity   = jetAK8photonMultiplicity[it_];   
-        CorrPt		     = jetsAK8CorrPt[it_];	       
-        CorrEta		     = jetsAK8CorrEta[it_];	       
-        CorrPhi		     = jetsAK8CorrPhi[it_];	       
-        CorrE		     = jetsAK8CorrE[it_];	       
-        CorrMass	     = jetsAK8CorrMass[it_];	       
-        CorrNJets	     = jetsAK8CorrNJets[it_];	       
-        CorrPartonFlavour    = jetsAK8CorrPartonFlavour[it_];   
-	
-	++it_;
+      ++it;
+      if (it<(size_t)jetsAK8_size) {
+	E                    = jetAK8E[it];		       
+        Pt		     = jetAK8Pt[it];		       
+        Mass		     = jetAK8Mass[it];		       
+        Eta		     = jetAK8Eta[it];		       
+        Phi		     = jetAK8Phi[it];		       
+        PartonFlavour	     = jetAK8PartonFlavour[it];	       
+        CSV		     = jetAK8CSV[it];		       
+        CSVV1		     = jetAK8CSVV1[it];		       
+        Charge		     = jetAK8Charge[it];	       
+        ChargeMuEnergy	     = jetAK8ChargeMuEnergy[it];       
+        ElectronEnergy	     = jetAK8ElectronEnergy[it];       
+        GenJetCharge	     = jetAK8GenJetCharge[it];	       
+        GenJetE		     = jetAK8GenJetE[it];	       
+        GenJetEta	     = jetAK8GenJetEta[it];	       
+        GenJetPhi	     = jetAK8GenJetPhi[it];	       
+        GenJetPt	     = jetAK8GenJetPt[it];	       
+        GenJetY		     = jetAK8GenJetY[it];	       
+        GenPartonCharge	     = jetAK8GenPartonCharge[it];      
+        GenPartonE	     = jetAK8GenPartonE[it];	       
+        GenPartonEta	     = jetAK8GenPartonEta[it];	       
+        GenPartonPhi	     = jetAK8GenPartonPhi[it];	       
+        GenPartonPt	     = jetAK8GenPartonPt[it];	       
+        GenPartonY	     = jetAK8GenPartonY[it];	       
+        HFEMEnergy	     = jetAK8HFEMEnergy[it];	       
+        HFEMMultiplicity     = jetAK8HFEMMultiplicity[it];     
+        HFHadronEnergy	     = jetAK8HFHadronEnergy[it];       
+        HFHadronMultiplicity = jetAK8HFHadronMultiplicity[it]; 
+        HLTjetDeltaR	     = jetAK8HLTjetDeltaR[it];	       
+        HLTjetE		     = jetAK8HLTjetE[it];	       
+        HLTjetEta	     = jetAK8HLTjetEta[it];	       
+        HLTjetPt	     = jetAK8HLTjetPt[it];	       
+        HLTjetPhi	     = jetAK8HLTjetPhi[it];	       
+        HadronFlavour	     = jetAK8HadronFlavour[it];	       
+        IsCSVL		     = jetAK8IsCSVL[it];	       
+        IsCSVM		     = jetAK8IsCSVM[it];	       
+        IsCSVT		     = jetAK8IsCSVT[it];	       
+        SmearedE	     = jetAK8SmearedE[it];	       
+        SmearedPt	     = jetAK8SmearedPt[it];	       
+        SmearedPEta	     = jetAK8SmearedPEta[it];	       
+        SmearedPhi	     = jetAK8SmearedPhi[it];	       
+        Y		     = jetAK8Y[it];		       
+        electronMultiplicity = jetAK8electronMultiplicity[it]; 
+        muonMultiplicity     = jetAK8muonMultiplicity[it];     
+        neutralMultiplicity  = jetAK8neutralMultiplicity[it];  
+        photonMultiplicity   = jetAK8photonMultiplicity[it];   
+        CorrPt		     = jetsAK8CorrPt[it];	       
+        CorrEta		     = jetsAK8CorrEta[it];	       
+        CorrPhi		     = jetsAK8CorrPhi[it];	       
+        CorrE		     = jetsAK8CorrE[it];	       
+        CorrMass	     = jetsAK8CorrMass[it];	       
+        CorrNJets	     = jetsAK8CorrNJets[it];	       
+        CorrPartonFlavour    = jetsAK8CorrPartonFlavour[it];   
 	return 1;
       } else {
-	it_=0;
+	it=-1;
 	return 0;
       }
     }
-    
-  private:
-    int it_;
-    
   } jetAK8;
   
   class MetData {
@@ -1021,6 +1010,8 @@ public:
     float CorrPt;
     float CorrPhi;
     
+    size_t it;
+    
     void init() {
       met_size=0;
       for (int i=0; i<20; ++i) {
@@ -1038,29 +1029,24 @@ public:
       CorrPt=NOVAL_F;
       CorrPhi=NOVAL_F;
       
-      it_ = 0;
+      it=-1;
     }
 
     bool Loop() {
-      if (it_<met_size) {
-	Pt      = metPt[it_];     
-	Phi	= metPhi[it_];    
-	Px	= metPx[it_];     
-	Py	= metPy[it_];     
-	CorrPt	= metCorrPt[it_]; 
-	CorrPhi	= metCorrPhi[it_];
-	
-	++it_;
+      ++it;
+      if (it<(size_t)met_size) {
+	Pt      = metPt[it];     
+	Phi	= metPhi[it];    
+	Px	= metPx[it];     
+	Py	= metPy[it];     
+	CorrPt	= metCorrPt[it]; 
+	CorrPhi	= metCorrPhi[it];
 	return 1;
       } else {
-	it_=0;
+	it=-1;
 	return 0;
       }
     }
-
-  private:
-    int it_;
-    
   } met;
   
   class EventData {
