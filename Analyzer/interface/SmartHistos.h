@@ -1088,7 +1088,7 @@ public:
   
   void multidraw_with_legend_(size_t skip, std::vector<TH1D*>& hvec, std::string opt,
 			      std::vector<std::string> pf, std::string colz,
-			      std::string legtitle="", float x1=0.55, float x2=0.75, float y1=0.15, float y2=0.35) {
+			      std::string legtitle="", float x1=0.6, float x2=0.8, float y1=0.4, float y2=0.6) {
     std::vector<Int_t> marker = { 20, 21, 22, 23, 29, //full circle, square, tri-up, tri-down, star
 				  20, 21, 22, 23, 29,
 				  20, 21, 22, 23, 29 };
@@ -1122,6 +1122,10 @@ public:
     // Then Draw legend for all histo with titles from a postfix
     std::vector<int> col = string_to_vector_(colz);
     std::string same = (stat ? "SAMES" : "SAME") + opt;
+    int nleg = 0;
+    for (size_t i=skip; i<hvec.size(); i++) if (hvec[i]->GetEntries()>0) ++nleg;
+    if (legtitle.size()>0) ++nleg;
+    y1 = 0.6 - nleg * 0.05;
     TLegend *leg = new TLegend(x1,y1,x2,y2,legtitle.c_str());
     int i_keep = -1;
     for (size_t i=skip; i<hvec.size(); i++) {

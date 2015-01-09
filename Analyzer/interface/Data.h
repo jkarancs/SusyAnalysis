@@ -451,6 +451,8 @@ public:
     float jetSmearedPt[20];
     float jetSmearedPEta[20];
     float jetSmearedPhi[20];
+    float jetJERup[20];
+    float jetJERdown[20];
     float jetY[20];
     float jetelectronMultiplicity[20];
     float jetmuonMultiplicity[20];
@@ -506,6 +508,8 @@ public:
     float SmearedPt;
     float SmearedPEta;
     float SmearedPhi;
+    float JERup;
+    float JERdown;
     float Y;
     float electronMultiplicity;
     float muonMultiplicity;
@@ -519,7 +523,12 @@ public:
     float CorrMass;
     float CorrNJets;
     float CorrPartonFlavour;
-
+    // Razor variables
+    float MR;
+    float MTR;
+    float R;
+    float R2;
+    
     size_t it;
     
     void init() {
@@ -566,6 +575,8 @@ public:
         jetSmearedPt[i]=NOVAL_F;
         jetSmearedPEta[i]=NOVAL_F;
         jetSmearedPhi[i]=NOVAL_F;
+	jetJERup[i]=NOVAL_F;
+	jetJERdown[i]=NOVAL_F;
         jetY[i]=NOVAL_F;
         jetelectronMultiplicity[i]=NOVAL_F;
         jetmuonMultiplicity[i]=NOVAL_F;
@@ -621,6 +632,8 @@ public:
       SmearedPt=NOVAL_F;
       SmearedPEta=NOVAL_F;
       SmearedPhi=NOVAL_F;
+      JERup=NOVAL_F;
+      JERdown=NOVAL_F;
       Y=NOVAL_F;
       electronMultiplicity=NOVAL_F;
       muonMultiplicity=NOVAL_F;
@@ -635,6 +648,11 @@ public:
       CorrNJets=NOVAL_F;
       CorrPartonFlavour=NOVAL_F;
       
+      MR = NOVAL_F;
+      MTR = NOVAL_F;
+      R = NOVAL_F;
+      R2 = NOVAL_F;
+
       it=-1;
     }
     
@@ -682,7 +700,9 @@ public:
         SmearedPt		  = jetSmearedPt[it];		 
         SmearedPEta		  = jetSmearedPEta[it];		 
         SmearedPhi		  = jetSmearedPhi[it];		 
-        Y			  = jetY[it];			 
+	JERup                     = jetJERup[it]; 
+	JERdown                   = jetJERdown[it];
+	Y			  = jetY[it];			 
         electronMultiplicity	  = jetelectronMultiplicity[it];	 
         muonMultiplicity	  = jetmuonMultiplicity[it];		 
         neutralHadronMultiplicity = jetneutralHadronMultiplicity[it]; 
@@ -701,7 +721,7 @@ public:
 	return 0;
       }
     }
-  } jet;
+  } jetAK4;
   
   class JetAK8Data {
   public:
@@ -760,6 +780,12 @@ public:
     float jetsAK8CorrMass[20];
     float jetsAK8CorrNJets[20];
     float jetsAK8CorrPartonFlavour[20];
+    float jetAK8tau1[20];
+    float jetAK8tau2[20];
+    float jetAK8tau3[20];
+    float jetAK8trimmedMass[20];
+    float jetAK8prunedMass[20];
+    float jetAK8filteredMass[20];
     
     float E;
     float Pt;
@@ -813,7 +839,18 @@ public:
     float CorrMass;
     float CorrNJets;
     float CorrPartonFlavour;
-    
+    float tau1;
+    float tau2;
+    float tau3;
+    float trimmedMass;
+    float prunedMass;
+    float filteredMass;
+    // Razor variables
+    float MR;
+    float MTR;
+    float R;
+    float R2;
+
     size_t it;
     
     void init() {
@@ -871,6 +908,12 @@ public:
         jetsAK8CorrMass[i]=NOVAL_F;
         jetsAK8CorrNJets[i]=NOVAL_F;
         jetsAK8CorrPartonFlavour[i]=NOVAL_F;
+	jetAK8tau1[i]=NOVAL_F;
+	jetAK8tau2[i]=NOVAL_F;
+	jetAK8tau3[i]=NOVAL_F;
+	jetAK8trimmedMass[i]=NOVAL_F;
+	jetAK8prunedMass[i]=NOVAL_F;
+	jetAK8filteredMass[i]=NOVAL_F;
       }
       E=NOVAL_F;
       Pt=NOVAL_F;
@@ -924,6 +967,17 @@ public:
       CorrMass=NOVAL_F;
       CorrNJets=NOVAL_F;
       CorrPartonFlavour=NOVAL_F;
+      tau1=NOVAL_F;
+      tau2=NOVAL_F;
+      tau3=NOVAL_F;
+      trimmedMass=NOVAL_F;
+      prunedMass=NOVAL_F;
+      filteredMass=NOVAL_F;
+      
+      MR = NOVAL_F;
+      MTR = NOVAL_F;
+      R = NOVAL_F;
+      R2 = NOVAL_F;
       
       it=-1;
     }
@@ -983,6 +1037,12 @@ public:
         CorrMass	     = jetsAK8CorrMass[it];	       
         CorrNJets	     = jetsAK8CorrNJets[it];	       
         CorrPartonFlavour    = jetsAK8CorrPartonFlavour[it];   
+	tau1                 = jetAK8tau1[it];	     
+	tau2 		     = jetAK8tau2[it];	     
+	tau3 		     = jetAK8tau3[it];	     
+	trimmedMass 	     = jetAK8trimmedMass[it]; 
+	prunedMass 	     = jetAK8prunedMass[it];  
+	filteredMass 	     = jetAK8filteredMass[it];
 	return 1;
       } else {
 	it=-1;
