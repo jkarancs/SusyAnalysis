@@ -86,8 +86,10 @@ public:
     // Calculate total number of entries - For ProgressEstimator
     total_entries_ += (nthfile_==1) ? samples_[size-1]->GetEntries() : 0;
     if (show_progress_&&nthfile_!=1) {
-      for (int nf=0; nf<samples_[size-1]->GetListOfFiles()->GetEntries(); ++nf) {
-        if (nf%nthfile_==nthfile_/2) {
+      int nadded = samples_[size-1]->GetListOfFiles()->GetEntries();
+      int nth = std::min(nadded, nthfile_);
+      for (int nf=0; nf<nadded; ++nf) {
+        if (nf%nth==nth/2) {
           TFile f(samples_[size-1]->GetListOfFiles()->At(nf)->GetTitle());
           total_entries_ += ((TTree*)f.Get(samples_[size-1]->GetListOfFiles()->At(nf)->GetName()))->GetEntries();
         }

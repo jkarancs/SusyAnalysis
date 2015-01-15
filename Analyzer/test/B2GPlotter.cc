@@ -7,7 +7,7 @@
 #include "../plugins/B2GTreeLooper.cc"
 #include "../interface/Razor.h"
 
-#define NTHFILE 10
+#define NTHFILE 1
 
 void calcVariables(Data& d) {
   
