@@ -1033,14 +1033,22 @@ public:
     gStyle->SetTitleFontSize(titlesize);
     TCanvas* canvas = new TCanvas(canname.c_str(), h->GetTitle(), padsize_x + 4, padsize_y + 26);
     canvas->SetGrid(gx,gy);
-    h->Draw(drawopt.c_str());
+    bool norm = false;
+    if (drawopt.find("NORM")!=std::string::npos) {
+      norm = true;
+      drawopt.erase(drawopt.find("NORM"),4);
+    }
+    if (norm) h = (TH2D*)h->DrawNormalized(drawopt.c_str());
+    else h->Draw(drawopt.c_str());
     if (h->GetEntries()>0&&drawopt=="COLZ") {
       gPad->Update();
       TPaletteAxis* palette = (TPaletteAxis*)h->GetListOfFunctions()->FindObject("palette");
-      palette->SetX1NDC(1 - (Float_t)(mar_right - pal_offset_x)/padsize_x);
-      palette->SetX2NDC(1 - (Float_t)(mar_right - pal_offset_x - pal_width_x)/padsize_x);
-      palette->SetY1NDC((Float_t)mar_bottom/padsize_y);
-      palette->SetY2NDC(1 - (Float_t)mar_top/padsize_y);
+      if (palette) {
+	palette->SetX1NDC(1 - (Float_t)(mar_right - pal_offset_x)/padsize_x);
+	palette->SetX2NDC(1 - (Float_t)(mar_right - pal_offset_x - pal_width_x)/padsize_x);
+	palette->SetY1NDC((Float_t)mar_bottom/padsize_y);
+	palette->SetY2NDC(1 - (Float_t)mar_top/padsize_y);
+      }
     }
     gStyle->SetOptTitle(0);
     return canvas;
@@ -1261,7 +1269,7 @@ public:
 	  dps2d[i].h->GetYaxis()->SetRangeUser(axis_ranges_[2],axis_ranges_[3]);
 	if (axis_ranges_.size()==6) if (axis_ranges_[4]!=axis_ranges_[5]) 
 	  dps2d[i].h->GetZaxis()->SetRangeUser(axis_ranges_[4],axis_ranges_[5]);
-	TCanvas *c = custom_can_(dps2d[i].h, dps2d[i].canname, (ndim_==2) ? "" : draw_opt_);
+	TCanvas *c = custom_can_(dps2d[i].h, dps2d[i].canname, draw_opt_);
 	write_(c);
       }
     }
@@ -1385,7 +1393,7 @@ public:
   void AddHistoType(std::string type) { sh_[type] = std::vector<SmartHisto*>(); }
 
   typedef struct HistoParams { std::string fill; std::vector<const char*> pfs; std::vector<const char*> cuts; std::string draw; std::vector<double> ranges; } HistoParams;
-  void AddHistos(std::string name, HistoParams hp) {
+  void AddHistos(std::string name, HistoParams hp, bool AddCutsToTitle = true) {
     if (sh_.count(name)) {
       std::vector<FillParams> hp_vec = get_hp_vec_(hp.fill);
       bool valid = 1;
@@ -1395,6 +1403,10 @@ public:
         for (size_t i=0; i<hp.pfs.size(); ++i) pfs.push_back(pf_->GetPostfix(hp.pfs[i]));
         std::string axis_titles = "";
         std::vector<std::function<double()>> fillfuncs;
+	if (AddCutsToTitle) for (size_t icut=0; icut<hp.cuts.size(); ++icut) {
+	  if (icut>0) axis_titles += ", ";
+	  axis_titles += hp.cuts[icut];
+	}
         for (size_t i=hp_vec.size(); i>0; --i) {
           axis_titles += ";" + hp_vec[i-1].axis_title;
           fillfuncs.push_back(hp_vec[i-1].fill);

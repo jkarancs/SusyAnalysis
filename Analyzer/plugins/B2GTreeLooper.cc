@@ -8,6 +8,7 @@
 #include <string>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
 class B2GTreeLooper {
 public:
@@ -29,6 +30,7 @@ private:
       processed_entries_=0;
       progress_=0;
       step_size_ = 0.0001;
+      total_entries_=0;
     }
     it_sample=-1;
   }
@@ -82,7 +84,7 @@ public:
     if (new_loop!=-1) samples_[size-1]->Add((fileaddress+treename).c_str());
 
     // Calculate total number of entries - For ProgressEstimator
-    total_entries_ = (nthfile_==1) ? samples_[size-1]->GetEntries() : 0;
+    total_entries_ += (nthfile_==1) ? samples_[size-1]->GetEntries() : 0;
     if (show_progress_&&nthfile_!=1) {
       for (int nf=0; nf<samples_[size-1]->GetListOfFiles()->GetEntries(); ++nf) {
         if (nf%nthfile_==nthfile_/2) {
@@ -90,7 +92,7 @@ public:
           total_entries_ += ((TTree*)f.Get(samples_[size-1]->GetListOfFiles()->At(nf)->GetName()))->GetEntries();
         }
       }
-      step_size_ = 500000/total_entries_;
+      step_size_ = 50000/total_entries_;
     }
   }
   
@@ -108,7 +110,7 @@ public:
   
   bool LoopOnFiles() {
     if (fileindex_==0&&show_progress_) {
-      std::cout<<"--------- Started Looping on Trees ---------"<<std::flush;
+      //std::cout<<"--------- Started Looping on Trees ---------"<<std::flush;
       sw_->Start(0);
     }
     while (fileindex_%nthfile_!=(nthfile_-1)/2) ++fileindex_; // Skip files if specified (/2 instead 0 --> distribute files evenly)

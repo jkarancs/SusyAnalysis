@@ -154,7 +154,7 @@ void DMAnalysisTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetu
   std::vector<edm::ParameterSet >::const_iterator itPsets = physObjects.begin();
 
   edm::Handle<LHEEventProduct > lhes;
-  iEvent.getByLabel(lhes_, lhes);
+  //iEvent.getByLabel(lhes_, lhes);
 
   
   //Part 1 taking the obs values from the edm file
@@ -266,9 +266,9 @@ void DMAnalysisTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetu
       ++float_values["Event_nLooseJets"]; 
     }
   } 
-  float weightsign = lhes->hepeup().XWGTUP;
-  float LHEWeightSign = weightsign/fabs(weightsign);
-  float_values["Event_LHEWeightSign"]=LHEWeightSign;
+  //float weightsign = lhes->hepeup().XWGTUP;
+  //float LHEWeightSign = weightsign/fabs(weightsign);
+  //float_values["Event_LHEWeightSign"]=LHEWeightSign;
 
   //Part 3: filling the additional variables
   treesBase->Fill(); 
@@ -331,7 +331,7 @@ vector<string> DMAnalysisTreeMaker::additionalVariables(string object){
     addvar.push_back("bWeight2TCSVT");
     addvar.push_back("bWeight2TCSVM");
     addvar.push_back("bWeight2TCSVL");
-    addvar.push_back("LHEWeightSign");
+    //addvar.push_back("LHEWeightSign");
   }
   return addvar;
 }

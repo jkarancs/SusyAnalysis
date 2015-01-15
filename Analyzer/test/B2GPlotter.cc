@@ -7,7 +7,103 @@
 #include "../plugins/B2GTreeLooper.cc"
 #include "../interface/Razor.h"
 
-#define NTHFILE 1
+#define NTHFILE 10
+
+void calcVariables(Data& d) {
+  
+  // find good leptons (for letponic tops)
+  int ngoodleptons = 0;
+  std::vector<TLorentzVector> goodleps_loose;
+  //while(d.ele.Loop()) if (d.ele.Pt > 35 && fabs(d.ele.Eta) < 2.5) {
+  while(d.ele.Loop()) if (d.ele.isLoose>0 && d.ele.Pt > 35 && fabs(d.ele.Eta) < 2.5) {
+    ngoodleptons++;
+    TLorentzVector goodele;
+    goodele.SetPtEtaPhiE(d.ele.Pt, d.ele.Eta, d.ele.Phi, d.ele.E);
+    goodleps_loose.push_back(goodele);
+  }
+  //while(d.mu.Loop())  if (d.mu.IsTightMuon>0 && d.mu.Pt > 45 && fabs(d.mu.Eta) < 2.1) {
+  while(d.mu.Loop())  if (d.mu.IsLooseMuon>0 && d.mu.Pt > 45 && fabs(d.mu.Eta) < 2.1) {
+    ngoodleptons++;
+    TLorentzVector goodmu;
+    goodmu.SetPtEtaPhiE(d.mu.Pt, d.mu.Eta, d.mu.Phi, d.mu.E);
+    goodleps_loose.push_back(goodmu);
+  }
+  
+  // Tag hadronic tops
+  TLorentzVector top1;
+  TLorentzVector top2;
+  d.evt.nhadtops = 0;
+  d.evt.nleptops_loose = 0;
+  d.evt.Ht = 0;
+  d.evt.Ht_extra = 0;
+  while(d.jetAK8.Loop()) {
+    bool is_top = false;
+    // hadronic tops
+    if (d.jetAK8.tau1>0 && d.jetAK8.tau2>0 ? d.jetAK8.Pt > 400 && d.jetAK8.prunedMass > 140 && (d.jetAK8.tau2/d.jetAK8.tau1) < 0.75 : 0) {
+      ++d.evt.nhadtops;
+      is_top = true;
+      if (d.evt.nhadtops==1) top1.SetPtEtaPhiE(d.jetAK8.Pt, d.jetAK8.Eta, d.jetAK8.Phi, d.jetAK8.E);
+      if (d.evt.nhadtops==2) top2.SetPtEtaPhiE(d.jetAK8.Pt, d.jetAK8.Eta, d.jetAK8.Phi, d.jetAK8.E);
+    }
+    // leptonic tops
+    double DeltaR_lep = 9999;
+    for (size_t i=0; i<goodleps_loose.size(); ++i) {
+      TLorentzVector jet;
+      jet.SetPtEtaPhiE(d.jetAK8.Pt, d.jetAK8.Eta, d.jetAK8.Phi, d.jetAK8.E);
+      if (goodleps_loose[i].DeltaR(jet)< DeltaR_lep) DeltaR_lep = goodleps_loose[i].DeltaR(jet);
+    }
+    if (DeltaR_lep<1.0) {
+      d.evt.nleptops_loose++;
+      is_top = true;
+    }
+    // Extra - all except above hadronic/leptonic tops
+    d.evt.Ht += d.jetAK8.Pt;
+    if (!is_top) d.evt.Ht_extra += d.jetAK8.Pt;
+  }
+  
+  // top pair variables
+  d.evt.tt_dR=NOVAL_F;
+  d.evt.tt_dPhi=NOVAL_F;
+  d.evt.tt_dEta=NOVAL_F;
+  d.evt.tt_Mass=NOVAL_F;
+  d.evt.tt_MR=NOVAL_F;
+  d.evt.tt_MTR=NOVAL_F;
+  d.evt.tt_R=NOVAL_F;
+  d.evt.tt_R2=NOVAL_F;
+  if (d.evt.nhadtops==2) {
+    /* python
+       tt_dR[0] = top1.DeltaR(top2)
+       tt_dPhi[0] = top1.DeltaPhi(top2)
+       tt_dEta[0] = fabs(top1.Eta() - top2.Eta())
+       tt_mtt[0] = (top1 + top2).M()
+       
+       tt_extra = top1 + top2
+       for jet in jets:
+         tt_extra += jet
+       pz_tt_extra[0] = tt_extra.Pz()
+       dHt[0] = math.fabs(top1.Pt() - top2.Pt())
+       dphi1 = delta_phi(metphi[0], top1.Phi())
+       dphi2 = delta_phi(metphi[0], top2.Phi())
+       dPhi_met_t1[0] = max(dphi1, dphi2)
+       dPhi_met_t2[0] = min(dphi1, dphi2)
+    */
+    d.evt.tt_dR = top1.DeltaR(top2);
+    d.evt.tt_dPhi = top1.DeltaPhi(top2);
+    d.evt.tt_dEta = fabs(top1.Eta() - top2.Eta());
+    d.evt.tt_Mass = (top1 + top2).M();
+    d.evt.tt_Pz = (top1 + top2).Pz();
+    d.evt.tt_Hz = top1.Pz() + top2.Pz();
+    d.evt.tt_dPz = fabs(top1.Pz() - top2.Pz());
+    
+    // Razor for hadronic top pair
+    TVector3 metl;
+    metl.SetPtEtaPhi(d.met.metPt[0], 0, d.met.metPhi[0]);
+    d.evt.tt_MR = CalcMR(top1, top2);
+    d.evt.tt_MTR = CalcMTR(top1, top2, metl);
+    d.evt.tt_R = d.evt.tt_MTR / d.evt.tt_MR;
+    d.evt.tt_R2 = pow(d.evt.tt_R, 2);
+  }
+}
 
 int main(int argc, char* argv[]) {
   // Get arguments from shell
@@ -29,6 +125,12 @@ int main(int argc, char* argv[]) {
   }
   
   bool Run = 1;
+
+  // Initialize TreeReader
+  B2GTreeReader reader;
+  
+  // Class to Loop on files and read the Trees
+  B2GTreeLooper looper(NTHFILE,1);
   
   // Data variable
   Data d;
@@ -43,72 +145,153 @@ int main(int argc, char* argv[]) {
   sh.AddHistoType("met");
   
   // Define Postfixes here:
+  sh.AddNewPostfix("ttbar,qcd", &looper.it_sample, "ttbar;qcd", "t#bar{t}; QCD", "2,6");
+  sh.AddNewPostfix("ttbar,qcd,Susy3,Susy4", &looper.it_sample, "ttbar;qcd;susy3body;susy4body", "t#bar{t};QCD;T5tttt - 3body;T5tttt - 4body", "2,6,4,3");
+  //sh.AddNewPostfix("ttbar,Susy3,Susy4", &looper.it_sample, "ttbar;susy3body;susy4body", "SM t#bar{t};T5tttt - 3body;T5tttt - 4body", "2,4,3");
   sh.AddNewPostfix("AK4JetsPtOrdered", &d.jetAK4.it, "Jet[1to10]", "1st Jet;2nd Jet;3rd Jet;[4to10]th Jet", "1-10");
   sh.AddNewPostfix("AK8JetsPtOrdered", &d.jetAK8.it, "Jet[1to10]", "1st Jet;2nd Jet;3rd Jet;[4to10]th Jet", "1-10");
   
   // Define histo parameters and filling variable
   // X/Y/Z - axis parameters:
-  sh.AddNewFillParam("MuonEnergy",        { .nbin= 100, .low= 0,   .high= 500, .fill=[&d](){ return d.mu.E;              }, .axis_title="Muon Energy (GeV)"});
-  sh.AddNewFillParam("MuonPt",            { .nbin= 100, .low= 0,   .high= 500, .fill=[&d](){ return d.mu.Pt;             }, .axis_title="Muon p_{T} (GeV/c)"});
-  sh.AddNewFillParam("EleEnergy",         { .nbin= 100, .low= 0,   .high= 500, .fill=[&d](){ return d.ele.E;             }, .axis_title="Electron Energy (GeV)"});
-  sh.AddNewFillParam("ElePt",             { .nbin= 100, .low= 0,   .high= 500, .fill=[&d](){ return d.ele.Pt;            }, .axis_title="Electron p_{T} (GeV/c)"});
-  sh.AddNewFillParam("AK4JetEnergy",      { .nbin= 100, .low= 0,   .high= 500, .fill=[&d](){ return d.jetAK4.E;          
-
-}, .axis_title="AK4-jet Energy (GeV)"});
-  sh.AddNewFillParam("AK4JetPt",          { .nbin= 100, .low= 0,   .high= 500, .fill=[&d](){ return d.jetAK4.Pt;                 }, .axis_title="AK4-jet p_{T} (GeV/c)"});
-  sh.AddNewFillParam("AK4JetMass",        { .nbin= 100, .low= 0,   .high= 500, .fill=[&d](){ return d.jetAK4.Mass;               }, .axis_title="AK4-jet Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("AK8JetEnergy",      { .nbin= 100, .low= 0,   .high= 500, .fill=[&d](){ return d.jetAK8.E;                  }, .axis_title="AK8-jet Energy (GeV)"});
-  sh.AddNewFillParam("AK8JetPt",          { .nbin= 200, .low= 0,   .high=1000, .fill=[&d](){ return d.jetAK8.Pt;                 }, .axis_title="AK8-jet p_{T} (GeV/c)"});
-  sh.AddNewFillParam("AK8JetMass",        { .nbin= 100, .low= 0,   .high= 500, .fill=[&d](){ return d.jetAK8.Mass;               }, .axis_title="AK8-jet Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("AK8JetPrunedMass",  { .nbin= 100, .low= 0,   .high= 500, .fill=[&d](){ return d.jetAK8.prunedMass;         }, .axis_title="AK8-jet Pruned Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("AK8JetTau1",        { .nbin= 100, .low= 0,   .high=   1, .fill=[&d](){ return d.jetAK8.tau1;               }, .axis_title="#tau_{1}"});
-  sh.AddNewFillParam("AK8JetTau2",        { .nbin= 100, .low= 0,   .high=   1, .fill=[&d](){ return d.jetAK8.tau2;               }, .axis_title="#tau_{2}"});
-  sh.AddNewFillParam("AK8JetTau3",        { .nbin= 100, .low= 0,   .high=   1, .fill=[&d](){ return d.jetAK8.tau3;               }, .axis_title="#tau_{3}"});
-  sh.AddNewFillParam("AK8JetTau21",       { .nbin= 100, .low= 0,   .high=   1, .fill=[&d](){ return d.jetAK8.tau2/d.jetAK8.tau1; }, .axis_title="#tau_{3}/#tau_{1}"});
-  sh.AddNewFillParam("AK8JetTau31",       { .nbin= 100, .low= 0,   .high=   1, .fill=[&d](){ return d.jetAK8.tau3/d.jetAK8.tau1; }, .axis_title="#tau_{3}/#tau_{1}"});
-  sh.AddNewFillParam("AK8JetTau32",       { .nbin= 100, .low= 0,   .high=   1, .fill=[&d](){ return d.jetAK8.tau3/d.jetAK8.tau2; }, .axis_title="#tau_{3}/#tau_{2}"});
-  sh.AddNewFillParam("AK8JetMR",          { .nbin=  50, .low= 0,   .high=5000, .fill=[&d](){ return d.jetAK8.MR;                 }, .axis_title="M_{R} (GeV)"});
-  sh.AddNewFillParam("AK8JetMTR",         { .nbin=  50, .low= 0,   .high=5000, .fill=[&d](){ return d.jetAK8.MTR;                }, .axis_title="M_{T}^{R} (GeV)"});
-  sh.AddNewFillParam("AK8JetR",           { .nbin=  50, .low= 0,   .high=   1, .fill=[&d](){ return d.jetAK8.R;                  }, .axis_title="R"});
-  sh.AddNewFillParam("AK8JetR2",          { .nbin=  50, .low= 0,   .high=   1, .fill=[&d](){ return d.jetAK8.R2;                 }, .axis_title="R^2"});
-  sh.AddNewFillParam("MetPt",             { .nbin= 100, .low= 0,   .high= 500, .fill=[&d](){ return d.met.Pt;                    }, .axis_title="MET p_{T} (GeV/c)"});
+  sh.AddNewFillParam("MuonEnergy",        { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.mu.E;              }, .axis_title="Muon Energy (GeV)"});
+  sh.AddNewFillParam("MuonPt",            { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.mu.Pt;             }, .axis_title="Muon p_{T} (GeV/c)"});
+  
+  sh.AddNewFillParam("EleEnergy",         { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.ele.E;             }, .axis_title="Electron Energy (GeV)"});
+  sh.AddNewFillParam("ElePt",             { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.ele.Pt;            }, .axis_title="Electron p_{T} (GeV/c)"});
+  
+  sh.AddNewFillParam("MetPt",             { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.met.Pt;                      }, .axis_title="MET p_{T} (GeV/c)"});
+  
+  sh.AddNewFillParam("AK4JetEnergy",      { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetAK4.E;                    }, .axis_title="AK4-jet Energy (GeV)"});
+  sh.AddNewFillParam("AK4JetPt",          { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetAK4.Pt;                   }, .axis_title="AK4-jet p_{T} (GeV/c)"});
+  sh.AddNewFillParam("AK4JetMass",        { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetAK4.Mass;                 }, .axis_title="AK4-jet Mass (GeV/c^{2})"});
+  
+  sh.AddNewFillParam("AK8JetEnergy",      { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetAK8.E;                    }, .axis_title="AK8-jet Energy (GeV)"});
+  sh.AddNewFillParam("AK8JetPt",          { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetAK8.Pt;                   }, .axis_title="AK8-jet p_{T} (GeV/c)"});
+  sh.AddNewFillParam("AK8JetMass",        { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetAK8.Mass;                 }, .axis_title="AK8-jet Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("AK8JetPrunedMass",  { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetAK8.prunedMass;           }, .axis_title="AK8-jet Pruned Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("AK8JetTau1",        { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetAK8.tau1;                 }, .axis_title="#tau_{1}"});
+  sh.AddNewFillParam("AK8JetTau2",        { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetAK8.tau2;                 }, .axis_title="#tau_{2}"});
+  sh.AddNewFillParam("AK8JetTau3",        { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetAK8.tau3;                 }, .axis_title="#tau_{3}"});
+  sh.AddNewFillParam("AK8JetTau21",       { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetAK8.tau2/d.jetAK8.tau1;   }, .axis_title="#tau_{3}/#tau_{1}"});
+  sh.AddNewFillParam("AK8JetTau31",       { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetAK8.tau3/d.jetAK8.tau1;   }, .axis_title="#tau_{3}/#tau_{1}"});
+  sh.AddNewFillParam("AK8JetTau32",       { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetAK8.tau3/d.jetAK8.tau2;   }, .axis_title="#tau_{3}/#tau_{2}"});
+  sh.AddNewFillParam("AK8JetMR",          { .nbin=  50, .low=   0,   .high=5000, .fill=[&d](){ return d.jetAK8.MR;                   }, .axis_title="M_{R} (GeV/c)"});
+  sh.AddNewFillParam("AK8JetMTR",         { .nbin=  50, .low=   0,   .high=5000, .fill=[&d](){ return d.jetAK8.MTR;                  }, .axis_title="M_{T}^{R} (GeV/c)"});
+  sh.AddNewFillParam("AK8JetR",           { .nbin=  50, .low=   0,   .high=   1, .fill=[&d](){ return d.jetAK8.R;                    }, .axis_title="R"});
+  sh.AddNewFillParam("AK8JetR2",          { .nbin=  50, .low=   0,   .high=   1, .fill=[&d](){ return d.jetAK8.R2;                   }, .axis_title="R^{2}"});
+  
+  sh.AddNewFillParam("TT_MR",             { .nbin=  50, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.tt_MR;                   }, .axis_title="M_{R,t#bar{t}} (GeV/c)"});
+  sh.AddNewFillParam("TT_MTR",            { .nbin=  50, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.tt_MTR;                  }, .axis_title="M_{T,t#bar{t}}^{R} (GeV/c)"});
+  sh.AddNewFillParam("TT_R",              { .nbin=  50, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.tt_R;                    }, .axis_title="R_{t#bar{t}}"});
+  sh.AddNewFillParam("TT_R2",             { .nbin=  50, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.tt_R2;                   }, .axis_title="R_{t#bar{t}}^{2}"});
+  sh.AddNewFillParam("TT_DeltaR",         { .nbin=  50, .low=   0,   .high=   5, .fill=[&d](){ return d.evt.tt_dR;                   }, .axis_title="#DeltaR_{t#bar{t}}"});
+  sh.AddNewFillParam("TT_DeltaPhi",       { .nbin=  64, .low=-3.2,   .high= 3.2, .fill=[&d](){ return d.evt.tt_dPhi;                 }, .axis_title="#Delta#phi_{t#bar{t}}"});
+  sh.AddNewFillParam("TT_AbsDeltaPhi",    { .nbin=  32, .low=   0,   .high= 3.2, .fill=[&d](){ return fabs(d.evt.tt_dPhi);           }, .axis_title="|#Delta#phi_{t#bar{t}}|"});
+  sh.AddNewFillParam("TT_DeltaEta",       { .nbin=  50, .low=   0,   .high=   5, .fill=[&d](){ return d.evt.tt_dEta;                 }, .axis_title="#Delta#eta_{t#bar{t}}"});
+  sh.AddNewFillParam("TT_Mass",           { .nbin= 100, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.tt_Mass;                 }, .axis_title="M_{t#bar{t}} (GeV/c^{2})"});
+  sh.AddNewFillParam("TT_Pz",             { .nbin= 100, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.tt_Pz;                   }, .axis_title="P_{Z,t#bar{t}} (GeV/c)"});
+  sh.AddNewFillParam("TT_Hz",             { .nbin= 100, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.tt_Hz;                   }, .axis_title="H_{Z,t#bar{t}} (GeV/c)"});
+  sh.AddNewFillParam("TT_dPz",            { .nbin= 100, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.tt_dPz;                  }, .axis_title="#DeltaP_{Z,t#bar{t}} (GeV/c)"});
+  sh.AddNewFillParam("NHadTop",           { .nbin=   6, .low=-0.5,   .high= 5.5, .fill=[&d](){ return d.evt.nhadtops;                }, .axis_title="N_{hadronic top}"});
+  sh.AddNewFillParam("HT",                { .nbin= 100, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.Ht;                      }, .axis_title="H_{T} (GeV/c)"});
+  sh.AddNewFillParam("HT_extra_per_HT",   { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.Ht_extra/d.evt.Ht;       }, .axis_title="H_{T,extra}/H_{T}"});
+  
+  // 2D binning of Signal cut variables
+  sh.AddNewFillParam("tt_AbsDeltaPhi",    { .nbin=  16, .low=   0,   .high= 3.2, .fill=[&d](){ return fabs(d.evt.tt_dPhi);           }, .axis_title="|#Delta#phi_{t#bar{t}}|"});
+  sh.AddNewFillParam("tt_R",              { .nbin=  20, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.tt_R;                    }, .axis_title="R_{t#bar{t}}"});
+  sh.AddNewFillParam("ak8jetR",           { .nbin=  20, .low=   0,   .high=   1, .fill=[&d](){ return d.jetAK8.R;                    }, .axis_title="R"});
+  sh.AddNewFillParam("ht",                { .nbin=  25, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.Ht;                      }, .axis_title="H_{T} (GeV/c)"});
+  sh.AddNewFillParam("ht_extra_per_ht",   { .nbin=  20, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.Ht_extra/d.evt.Ht;       }, .axis_title="H_{T,extra}/H_{T}"});
   
   // Define Cuts here:
-  sh.AddNewCut("AK4Highest2Jet", [&d](){ return d.jetAK4.jets_size>=2 && d.jetAK4.it<2; });
-  sh.AddNewCut("AK8Highest2Jet", [&d](){ return d.jetAK8.jetsAK8_size>=2 && d.jetAK8.it<2; });
-  sh.AddNewCut("AK4Highest3Jet", [&d](){ return d.jetAK4.jets_size>=3 && d.jetAK4.it<3; });
-  sh.AddNewCut("AK8Highest3Jet", [&d](){ return d.jetAK8.jetsAK8_size>=3 && d.jetAK8.it<3; });
+  sh.AddNewCut("AK4Highest2Jet",   [&d](){ return d.jetAK4.jets_size>=2 && d.jetAK4.it<2; });
+  sh.AddNewCut("AK4Highest3Jet",   [&d](){ return d.jetAK4.jets_size>=3 && d.jetAK4.it<3; });
+  sh.AddNewCut("AK8Highest2Jet",   [&d](){ return d.jetAK8.jetsAK8_size>=2 && d.jetAK8.it<2; });
+  sh.AddNewCut("AK8Highest3Jet",   [&d](){ return d.jetAK8.jetsAK8_size>=3 && d.jetAK8.it<3; });
+  
+  sh.AddNewCut("HadTop",           [&d](){ return d.jetAK8.tau1>0 && d.jetAK8.tau2>0 ? d.jetAK8.Pt > 400 && d.jetAK8.prunedMass > 140 && (d.jetAK8.tau2/d.jetAK8.tau1) < 0.75 : 0; });
+  sh.AddNewCut("HadTopNoPtCut",    [&d](){ return d.jetAK8.tau1>0 && d.jetAK8.tau2>0 ? d.jetAK8.prunedMass > 140 && (d.jetAK8.tau2/d.jetAK8.tau1) < 0.75 : 0; });
+  sh.AddNewCut("HadTopNoTauCut",   [&d](){ return d.jetAK8.Pt > 400 && d.jetAK8.prunedMass > 140; });
+  sh.AddNewCut("HadTopNoMassCut",  [&d](){ return d.jetAK8.tau1>0 && d.jetAK8.tau2>0 ? d.jetAK8.Pt > 400 && (d.jetAK8.tau2/d.jetAK8.tau1) < 0.75 : 0; });
+
+  sh.AddNewCut("NHadTop==2",       [&d](){ return d.evt.nhadtops==2; });
+  sh.AddNewCut("NTop==2",          [&d](){ return d.evt.nhadtops+d.evt.nleptops_loose==2; });
+  sh.AddNewCut("ttbar",            [&looper](){ return looper.it_sample==0; });
+  sh.AddNewCut("ttbar,qcd",        [&looper](){ return looper.it_sample<2; });
+  sh.AddNewCut("noqcd",            [&looper](){ return looper.it_sample!=1; });
   
   // Set Histogram weight (empty = 1)
   sh.SetHistoWeights({});
   // --------------------------------------------------------------------------
   //                           Histogram Definitions
   
-  sh.AddHistos("mu",     { .fill="MuonEnergy",       .pfs={}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
-  sh.AddHistos("mu",     { .fill="MuonPt",           .pfs={}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
+  sh.AddHistos("mu",     { .fill="MuonEnergy",       .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
+  sh.AddHistos("mu",     { .fill="MuonPt",           .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
+  sh.AddHistos("ele",    { .fill="EleEnergy",        .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
+  sh.AddHistos("ele",    { .fill="ElePt",            .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={}, .draw="", .ranges={0,1000, 0,0} });
+  sh.AddHistos("met",    { .fill="MetPt",            .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
   
-  sh.AddHistos("ele",    { .fill="EleEnergy",        .pfs={}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
-  sh.AddHistos("ele",    { .fill="ElePt",            .pfs={}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetAK4", { .fill="AK4JetEnergy",     .pfs={"AK4JetsPtOrdered"}, .cuts={"ttbar","AK4Highest2Jet"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetAK4", { .fill="AK4JetPt",         .pfs={"AK4JetsPtOrdered"}, .cuts={"ttbar","AK4Highest2Jet"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetAK4", { .fill="AK4JetMass",       .pfs={"AK4JetsPtOrdered"}, .cuts={"ttbar","AK4Highest2Jet"}, .draw="NORM", .ranges={0,500, 0,0} });
+  sh.AddHistos("jetAK8", { .fill="AK8JetEnergy",     .pfs={"AK8JetsPtOrdered"}, .cuts={"ttbar","AK8Highest2Jet"}, .draw="NORM", .ranges={0,0, 0,0} });
+
+  sh.AddHistos("jetAK8", { .fill="AK8JetPt",         .pfs={"AK8JetsPtOrdered"}, .cuts={"ttbar","AK8Highest2Jet"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetAK8", { .fill="AK8JetMass",       .pfs={"AK8JetsPtOrdered"}, .cuts={"ttbar","AK8Highest2Jet"}, .draw="NORM", .ranges={0,250, 0,0} });
+  sh.AddHistos("jetAK8", { .fill="AK8JetTau1",       .pfs={"AK8JetsPtOrdered"}, .cuts={"ttbar","AK8Highest2Jet"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetAK8", { .fill="AK8JetTau2",       .pfs={"AK8JetsPtOrdered"}, .cuts={"ttbar","AK8Highest2Jet"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetAK8", { .fill="AK8JetTau3",       .pfs={"AK8JetsPtOrdered"}, .cuts={"ttbar","AK8Highest2Jet"}, .draw="NORM", .ranges={0,0, 0,0} });
+  //sh.AddHistos("jetAK8", { .fill="AK8JetTau21",      .pfs={"AK8JetsPtOrdered"}, .cuts={"ttbar","AK8Highest3Jet"}, .draw="NORM", .ranges={0,0, 0,0} });
+  //sh.AddHistos("jetAK8", { .fill="AK8JetTau31",      .pfs={"AK8JetsPtOrdered"}, .cuts={"ttbar","AK8Highest3Jet"}, .draw="NORM", .ranges={0,0, 0,0} });
+  //sh.AddHistos("jetAK8", { .fill="AK8JetTau32",      .pfs={"AK8JetsPtOrdered"}, .cuts={"ttbar","AK8Highest3Jet"}, .draw="NORM", .ranges={0,0, 0,0} });
+
+  // Top Tagging
+  //  N-1 plots
+  sh.AddHistos("jetAK8", { .fill="AK8JetPrunedMass", .pfs={"ttbar,qcd"}, .cuts={"ttbar,qcd","HadTopNoMassCut"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetAK8", { .fill="AK8JetPt",         .pfs={"ttbar,qcd"}, .cuts={"ttbar,qcd","HadTopNoPtCut"},   .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetAK8", { .fill="AK8JetTau21",      .pfs={"ttbar,qcd"}, .cuts={"ttbar,qcd","HadTopNoTauCut"},  .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetAK8", { .fill="AK8JetTau31",      .pfs={"ttbar,qcd"}, .cuts={"ttbar,qcd","HadTopNoTauCut"},  .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetAK8", { .fill="AK8JetTau32",      .pfs={"ttbar,qcd"}, .cuts={"ttbar,qcd","HadTopNoTauCut"},  .draw="NORM", .ranges={0,0, 0,0} });
   
-  sh.AddHistos("jetAK4", { .fill="AK4JetEnergy",     .pfs={"AK4JetsPtOrdered"}, .cuts={"AK4Highest2Jet"}, .draw="", .ranges={0,0, 0,0} });
-  sh.AddHistos("jetAK4", { .fill="AK4JetPt",         .pfs={"AK4JetsPtOrdered"}, .cuts={"AK4Highest2Jet"}, .draw="", .ranges={0,0, 0,1000} });
-  sh.AddHistos("jetAK4", { .fill="AK4JetMass",       .pfs={"AK4JetsPtOrdered"}, .cuts={"AK4Highest2Jet"}, .draw="", .ranges={0,250, 0,0} });
-  sh.AddHistos("jetAK8", { .fill="AK8JetEnergy",     .pfs={"AK8JetsPtOrdered"}, .cuts={"AK8Highest2Jet"}, .draw="", .ranges={0,0, 0,0} });
-  sh.AddHistos("jetAK8", { .fill="AK8JetPt",         .pfs={"AK8JetsPtOrdered"}, .cuts={"AK8Highest2Jet"}, .draw="", .ranges={0,0, 0,300} });
-  sh.AddHistos("jetAK8", { .fill="AK8JetMass",       .pfs={"AK8JetsPtOrdered"}, .cuts={"AK8Highest2Jet"}, .draw="", .ranges={0,250, 0,0} });
-  sh.AddHistos("jetAK8", { .fill="AK8JetPrunedMass", .pfs={"AK8JetsPtOrdered"}, .cuts={"AK8Highest2Jet"}, .draw="", .ranges={0,0, 0,0} });
-  sh.AddHistos("jetAK8", { .fill="AK8JetTau1",       .pfs={"AK8JetsPtOrdered"}, .cuts={"AK8Highest2Jet"}, .draw="", .ranges={0,0, 0,100} });
-  sh.AddHistos("jetAK8", { .fill="AK8JetTau2",       .pfs={"AK8JetsPtOrdered"}, .cuts={"AK8Highest2Jet"}, .draw="", .ranges={0,0, 0,150} });
-  sh.AddHistos("jetAK8", { .fill="AK8JetTau3",       .pfs={"AK8JetsPtOrdered"}, .cuts={"AK8Highest2Jet"}, .draw="", .ranges={0,0, 0,200} });
-  sh.AddHistos("jetAK8", { .fill="AK8JetTau21",      .pfs={"AK8JetsPtOrdered"}, .cuts={"AK8Highest3Jet"}, .draw="", .ranges={0,0, 0,0} });
-  sh.AddHistos("jetAK8", { .fill="AK8JetTau31",      .pfs={"AK8JetsPtOrdered"}, .cuts={"AK8Highest3Jet"}, .draw="", .ranges={0,0, 0,0} });
-  sh.AddHistos("jetAK8", { .fill="AK8JetTau32",      .pfs={"AK8JetsPtOrdered"}, .cuts={"AK8Highest3Jet"}, .draw="", .ranges={0,0, 0,0} });
-  sh.AddHistos("jetAK8", { .fill="AK8JetMR",         .pfs={}, .cuts={"AK8Highest2Jet"}, .draw="", .ranges={0,0, 0,0} });
-  sh.AddHistos("jetAK8", { .fill="AK8JetMTR",        .pfs={}, .cuts={"AK8Highest2Jet"}, .draw="", .ranges={0,0, 0,0} });
-  sh.AddHistos("jetAK8", { .fill="AK8JetR",          .pfs={}, .cuts={"AK8Highest2Jet"}, .draw="", .ranges={0,0, 0,0} });
-  sh.AddHistos("jetAK8", { .fill="AK8JetR2",         .pfs={}, .cuts={"AK8Highest2Jet"}, .draw="", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="NHadTop",          .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={}, .draw="NORM", .ranges={0,4, 0,0} });
+  sh.AddHistos("evt",   { .fill="AK8JetMR",         .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="AK8JetMTR",        .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={}, .draw="NORM", .ranges={0,3000, 0,0} });
+  sh.AddHistos("evt",   { .fill="AK8JetR",          .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="TT_MR",            .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="TT_MTR",           .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="TT_R",             .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,2500, 0,0} });
+  sh.AddHistos("evt",   { .fill="TT_DeltaPhi",      .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="TT_DeltaEta",      .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,4, 0,0} });
+  sh.AddHistos("evt",   { .fill="TT_DeltaR",        .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="TT_Mass",          .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"noqcd","NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="TT_Pz",            .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"noqcd","NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="TT_Hz",            .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"noqcd","NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="TT_dPz",           .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"noqcd","NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
   
-  sh.AddHistos("met",    { .fill="MetPt",         .pfs={}, .cuts={}, .draw="", .ranges={0,0, 0,0} });
+  // Signal cut variables
+  sh.AddHistos("evt",   { .fill="HT",               .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="HT_extra_per_HT",  .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="TT_R2",            .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="AK8JetR2",         .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="TT_AbsDeltaPhi",   .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
+  
+  // 2D Correlation plots
+  sh.AddHistos("evt",   { .fill="ht_vs_tt_AbsDeltaPhi",               .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="ht_vs_tt_R",                         .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="ht_vs_ak8jetR",                      .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="ht_extra_per_ht_vs_tt_AbsDeltaPhi",  .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="ht_extra_per_ht_vs_tt_R",            .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="ht_extra_per_ht_vs_ak8jetR",         .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="ak8jetR_vs_ht",                      .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="ak8jetR_vs_ht_extra_per_ht",         .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="ak8jetR_vs_tt_AbsDeltaPhi",          .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="tt_R_vs_ht",                         .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="tt_R_vs_ht_extra_per_ht",            .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="tt_R_vs_tt_AbsDeltaPhi",             .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="tt_AbsDeltaPhi_vs_ht",               .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="tt_AbsDeltaPhi_vs_ht_extra_per_ht",  .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="tt_AbsDeltaPhi_vs_ak8jetR",          .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="tt_AbsDeltaPhi_vs_tt_R",             .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
   
   std::cout<<"-----------------------------------------------------------------\n";
   std::cout<<"Creating the following plots:\n"; sh.PrintNames();
@@ -116,16 +299,15 @@ int main(int argc, char* argv[]) {
   
   TFile *file;
   if (Run) {
-    // Initialize TreeReader
-    B2GTreeReader reader;
-    
-    // Class to Loop on files and read the Trees
-    B2GTreeLooper looper(NTHFILE,1);
     if (filelist.size()) {
       std::cout<<"Adding "<<filelist.size()<<" files from the shell arguments.\n";
       for (size_t i=0; i<filelist.size(); ++i) looper.AddFile(filelist[i]);
     } else {
-      looper.AddFile("b2gTree_T2tt_2J_mStop-650_mLSP-325.root");
+      //looper.AddFile("../../../b2gTree_T2tt_2J_mStop-650_mLSP-325.root");
+      looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/ttree/ttbar/*.root");
+      looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/ttree/qcd/*.root");
+      looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/ttree/susy3body/*.root");
+      looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/ttree/susy4body/*.root");
     }
     
     while (looper.LoopOnSamples()) {
@@ -135,6 +317,7 @@ int main(int argc, char* argv[]) {
         while(looper.LoopOnEntries()) {
           reader.GetEntry(looper.CurrentEntry());
           d = reader.data;
+	  calcVariables(d);
 	  calcRazorAK4(d);
 	  calcRazorAK8(d);
 	  
@@ -154,16 +337,16 @@ int main(int argc, char* argv[]) {
     }
     
     std::cout<<std::endl;
-    std::cout<<"Finished ..."<<std::endl;
-    std::cout<<"Writing Histograms to File: "<<outputfile<<std::endl;
-    file = new TFile(outputfile.c_str(),"recreate");
-    sh.DrawPlots();
-    sh.Write();
-    file->Close();
   } else {
     std::cout<<"Loading Histos from file: "<<outputfile<<std::endl;
     sh.Load(outputfile.c_str());
   }
+  std::cout<<"Finished ..."<<std::endl;
+  std::cout<<"Writing Histograms to File: "<<outputfile<<std::endl;
+  file = new TFile(outputfile.c_str(),"recreate");
+  sh.DrawPlots();
+  sh.Write();
+  file->Close();
   
   return 0;
 }
