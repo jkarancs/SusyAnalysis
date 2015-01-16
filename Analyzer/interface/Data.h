@@ -1546,7 +1546,8 @@ public:
     
     // Top tagging variables
     int nhadtops;
-    int nleptops_loose;
+    int nleptops;
+    int ntops;
     float tt_dR;
     float tt_dPhi;
     float tt_dEta;
@@ -1567,6 +1568,13 @@ public:
     float tt_R2;
     
     // Other Variables
+    float HT;
+    float HTevt;
+    float HTtt;
+    float HTlep;
+    float HTex;
+    float HTttFraction;
+    float HTexFraction;
     float Ht_extra;
     float Ht;
     
@@ -1591,7 +1599,7 @@ public:
       //Event_LHEWeightSign=NOVAL_F;
       
       nhadtops=NOVAL_I;
-      nleptops_loose=NOVAL_I;
+      nleptops=NOVAL_I;
       tt_dR=NOVAL_F;
       tt_dPhi=NOVAL_F;
       tt_dEta=NOVAL_F;
@@ -1612,6 +1620,12 @@ public:
       tt_R2 = NOVAL_F;
       
       // Other Variables
+      HT=NOVAL_F;
+      HTevt=NOVAL_F;
+      HTtt=NOVAL_F;
+      HTex=NOVAL_F;
+      HTttFraction=NOVAL_F;
+      HTexFraction=NOVAL_F;
       Ht_extra=NOVAL_F;
       Ht=NOVAL_F;
     }
