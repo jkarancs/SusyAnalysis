@@ -41,8 +41,6 @@ void calcVariables(Data& d) {
   d.evt.nhadtops = 0;
   d.evt.nleptops = 0;
   d.evt.HT = 0;
-  d.evt.Ht = 0;
-  d.evt.Ht_extra = 0;
   while(d.jetAK8.Loop()) {
     bool is_top = false;
     // hadronic tops
@@ -73,8 +71,6 @@ void calcVariables(Data& d) {
     // Extra - all except above hadronic/leptonic tops
     d.evt.HT += d.jetAK8.Pt;
     if (is_top) d.evt.HTtt += d.jetAK8.Pt;
-    d.evt.Ht += d.jetAK8.Pt;
-    if (!is_top) d.evt.Ht_extra += d.jetAK8.Pt;
   }
   d.evt.HTevt = d.evt.HT + d.met.metPt[0] + d.evt.HTlep;
 
@@ -152,7 +148,9 @@ void calcVariables(Data& d) {
     d.evt.HTex = d.evt.HTevt - d.evt.HTtt;
     d.evt.HTttFraction = d.evt.HTtt / d.evt.HTevt;
     d.evt.HTexFraction = d.evt.HTex / d.evt.HTevt;
-    
+    // Select signal region
+    d.evt.signal_region = d.evt.HTevt > 1500;
+
     // Razor for hadronic top pair
     TVector3 metl;
     metl.SetPtEtaPhi(d.met.metPt[0], 0, d.met.metPhi[0]);
@@ -203,8 +201,10 @@ int main(int argc, char* argv[]) {
   sh.AddHistoType("met");
   
   // Define Postfixes here:
-  sh.AddNewPostfix("ttbar,qcd", &looper.it_sample, "ttbar;qcd", "t#bar{t}; QCD", "2,6");
+  sh.AddNewPostfix("ttbar,qcd", &looper.it_sample, "ttbar;qcd", "t#bar{t};QCD", "2,6");
   sh.AddNewPostfix("ttbar,qcd,Susy3,Susy4", &looper.it_sample, "ttbar;qcd;susy3body;susy4body", "t#bar{t};QCD;T5tttt - 3body;T5tttt - 4body", "2,6,4,3");
+  sh.AddNewPostfix("SideBand,Signal", &d.evt.signal_region, "SideBand;Signal", "H_{T,all} < 1500 GeV/c;H_{T,all} > 1500 GeV/c", "4,2");
+  
   //sh.AddNewPostfix("ttbar,Susy3,Susy4", &looper.it_sample, "ttbar;susy3body;susy4body", "SM t#bar{t};T5tttt - 3body;T5tttt - 4body", "2,4,3");
   sh.AddNewPostfix("AK4JetsPtOrdered", &d.jetAK4.it, "Jet[1to10]", "1st Jet;2nd Jet;3rd Jet;[4to10]th Jet", "1-10");
   sh.AddNewPostfix("AK8JetsPtOrdered", &d.jetAK8.it, "Jet[1to10]", "1st Jet;2nd Jet;3rd Jet;[4to10]th Jet", "1-10");
@@ -235,39 +235,38 @@ int main(int argc, char* argv[]) {
   sh.AddNewFillParam("AK8JetTau32",       { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetAK8.tau3/d.jetAK8.tau2;   }, .axis_title="#tau_{3}/#tau_{2}"});
   sh.AddNewFillParam("AK8JetMR",          { .nbin=  50, .low=   0,   .high=5000, .fill=[&d](){ return d.jetAK8.MR;                   }, .axis_title="M_{R} (GeV/c)"});
   sh.AddNewFillParam("AK8JetMTR",         { .nbin=  50, .low=   0,   .high=5000, .fill=[&d](){ return d.jetAK8.MTR;                  }, .axis_title="M_{T}^{R} (GeV/c)"});
-  sh.AddNewFillParam("AK8JetR",           { .nbin=  50, .low=   0,   .high=   1, .fill=[&d](){ return d.jetAK8.R;                    }, .axis_title="R"});
-  sh.AddNewFillParam("AK8JetR2",          { .nbin=  50, .low=   0,   .high=   1, .fill=[&d](){ return d.jetAK8.R2;                   }, .axis_title="R^{2}"});
-  
+
+  sh.AddNewFillParam("NHadTop",           { .nbin=   6, .low=-0.5,   .high= 5.5, .fill=[&d](){ return d.evt.nhadtops;                }, .axis_title="N_{hadronic top}"});
   sh.AddNewFillParam("TT_MR",             { .nbin=  50, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.tt_MR;                   }, .axis_title="M_{R,t#bar{t}} (GeV/c)"});
   sh.AddNewFillParam("TT_MTR",            { .nbin=  50, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.tt_MTR;                  }, .axis_title="M_{T,t#bar{t}}^{R} (GeV/c)"});
-  sh.AddNewFillParam("TT_R",              { .nbin=  50, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.tt_R;                    }, .axis_title="R_{t#bar{t}}"});
-  sh.AddNewFillParam("TT_R2",             { .nbin=  50, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.tt_R2;                   }, .axis_title="R_{t#bar{t}}^{2}"});
   sh.AddNewFillParam("TT_DeltaR",         { .nbin=  50, .low=   0,   .high=   5, .fill=[&d](){ return d.evt.tt_dR;                   }, .axis_title="#DeltaR_{t#bar{t}}"});
   sh.AddNewFillParam("TT_DeltaPhi",       { .nbin=  64, .low=-3.2,   .high= 3.2, .fill=[&d](){ return d.evt.tt_dPhi;                 }, .axis_title="#Delta#phi_{t#bar{t}}"});
-  sh.AddNewFillParam("TT_AbsDeltaPhi",    { .nbin=  32, .low=   0,   .high= 3.2, .fill=[&d](){ return fabs(d.evt.tt_dPhi);           }, .axis_title="|#Delta#phi_{t#bar{t}}|"});
   sh.AddNewFillParam("TT_DeltaEta",       { .nbin=  50, .low=   0,   .high=   5, .fill=[&d](){ return d.evt.tt_dEta;                 }, .axis_title="#Delta#eta_{t#bar{t}}"});
   sh.AddNewFillParam("TT_Mass",           { .nbin= 100, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.tt_Mass;                 }, .axis_title="M_{t#bar{t}} (GeV/c^{2})"});
   sh.AddNewFillParam("TT_Pz",             { .nbin= 100, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.tt_Pz;                   }, .axis_title="P_{Z,t#bar{t}} (GeV/c)"});
   sh.AddNewFillParam("TT_Hz",             { .nbin= 100, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.tt_Hz;                   }, .axis_title="H_{Z,t#bar{t}} (GeV/c)"});
   sh.AddNewFillParam("TT_dPz",            { .nbin= 100, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.tt_dPz;                  }, .axis_title="#DeltaP_{Z,t#bar{t}} (GeV/c)"});
-  sh.AddNewFillParam("NHadTop",           { .nbin=   6, .low=-0.5,   .high= 5.5, .fill=[&d](){ return d.evt.nhadtops;                }, .axis_title="N_{hadronic top}"});
-  sh.AddNewFillParam("H_T",                { .nbin= 100, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.Ht;                      }, .axis_title="H_{T} (GeV/c)"});
-  sh.AddNewFillParam("H_T_extra_per_HT",   { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.Ht_extra/d.evt.Ht;       }, .axis_title="H_{T,extra}/H_{T}"});
-  sh.AddNewFillParam("H_T",                { .nbin= 100, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.HT;                      }, .axis_title="H_{T} (GeV/c)"});
-  sh.AddNewFillParam("H_Tevt",             { .nbin= 100, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.HTevt;                   }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
-  sh.AddNewFillParam("H_Ttt",              { .nbin= 100, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.HTtt;                    }, .axis_title="H_{T,tops} (GeV/c)"});
-  sh.AddNewFillParam("H_Tex",              { .nbin= 100, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.HTex;                    }, .axis_title="H_{T,extra} (GeV/c)"});
-  sh.AddNewFillParam("H_TttFraction",      { .nbin=  40, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.HTttFraction;            }, .axis_title="H_{T,tops}/(H_{T}+H_{T,leptonic}+#slash{p}_{T}) (GeV/c)"});
-  sh.AddNewFillParam("H_TexFraction",      { .nbin=  40, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.HTexFraction;            }, .axis_title="H_{T,extra}/(H_{T}+H_{T,leptonic}+#slash{p}_{T}) (GeV/c)"});
+
+  sh.AddNewFillParam("TT_AbsDeltaPhi",    { .nbin=  16, .low=   0,   .high= 3.2, .fill=[&d](){ return fabs(d.evt.tt_dPhi);           }, .axis_title="|#Delta#phi_{t#bar{t}}|"});
+  sh.AddNewFillParam("TT_R",              { .nbin=  20, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.tt_R;                    }, .axis_title="R_{t#bar{t}}"});
+  sh.AddNewFillParam("TT_R2",             { .nbin=  20, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.tt_R2;                   }, .axis_title="R_{t#bar{t}}^{2}"});
+  sh.AddNewFillParam("AK8JetR",           { .nbin=  20, .low=   0,   .high=   1, .fill=[&d](){ return d.jetAK8.R;                    }, .axis_title="R"});
+  sh.AddNewFillParam("AK8JetR2",          { .nbin=  20, .low=   0,   .high=   1, .fill=[&d](){ return d.jetAK8.R2;                   }, .axis_title="R^{2}"});
+  sh.AddNewFillParam("H_TttFraction",     { .nbin=  20, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.HTttFraction;            }, .axis_title="H_{T,tops}/(H_{T}+H_{T,leptonic}+#slash{p}_{T}) (GeV/c)"});
+  sh.AddNewFillParam("H_TexFraction",     { .nbin=  20, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.HTexFraction;            }, .axis_title="H_{T,extra}/(H_{T}+H_{T,leptonic}+#slash{p}_{T}) (GeV/c)"});
+  sh.AddNewFillParam("H_T",               { .nbin=  25, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.HT;                      }, .axis_title="H_{T} (GeV/c)"});
+  sh.AddNewFillParam("H_Tevt",            { .nbin=  25, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.HTevt;                   }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
+  sh.AddNewFillParam("H_Ttt",             { .nbin=  25, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.HTtt;                    }, .axis_title="H_{T,tops} (GeV/c)"});
+  sh.AddNewFillParam("H_Tex",             { .nbin=  25, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.HTex;                    }, .axis_title="H_{T,extra} (GeV/c)"});
   
   // 2D binning of Signal cut variables
   sh.AddNewFillParam("DeltaPhi",          { .nbin=  16, .low=   0,   .high= 3.2, .fill=[&d](){ return fabs(d.evt.tt_dPhi);           }, .axis_title="|#Delta#phi_{t#bar{t}}|"});
   sh.AddNewFillParam("Rtt",               { .nbin=  20, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.tt_R;                    }, .axis_title="R_{t#bar{t}}"});
   sh.AddNewFillParam("R",                 { .nbin=  20, .low=   0,   .high=   1, .fill=[&d](){ return d.jetAK8.R;                    }, .axis_title="R"});
-  sh.AddNewFillParam("HT",               { .nbin=  25, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.HT;                      }, .axis_title="H_{T} (GeV/c)"});
-  sh.AddNewFillParam("HTevt",            { .nbin=  25, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.HTevt;                   }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
-  sh.AddNewFillParam("HTex",             { .nbin=  20, .low=   0,   .high=5000, .fill=[&d](){ return d.evt.HTex;                    }, .axis_title="H_{T,extra} (GeV/c)"});
-  sh.AddNewFillParam("HTttFraction",     { .nbin=  20, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.HTttFraction;            }, .axis_title="H_{T,tops}/(H_{T}+H_{T,leptonic}+#slash{p}_{T}) (GeV/c)"});
+  sh.AddNewFillParam("HT",                { .nbin=  20, .low=   0,   .high=6000, .fill=[&d](){ return d.evt.HT;                      }, .axis_title="H_{T} (GeV/c)"});
+  sh.AddNewFillParam("HTevt",             { .nbin=  20, .low=   0,   .high=6000, .fill=[&d](){ return d.evt.HTevt;                   }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
+  sh.AddNewFillParam("HTex",              { .nbin=  20, .low=   0,   .high=6000, .fill=[&d](){ return d.evt.HTex;                    }, .axis_title="H_{T,extra} (GeV/c)"});
+  sh.AddNewFillParam("HTttFraction",      { .nbin=  20, .low=   0,   .high=   1, .fill=[&d](){ return d.evt.HTttFraction;            }, .axis_title="H_{T,tops}/(H_{T}+H_{T,leptonic}+#slash{p}_{T}) (GeV/c)"});
   
   // Define Cuts here:
   sh.AddNewCut("AK4Highest2Jet",   [&d](){ return d.jetAK4.jets_size>=2 && d.jetAK4.it<2; });
@@ -281,6 +280,7 @@ int main(int argc, char* argv[]) {
   sh.AddNewCut("HadTopNoMassCut",  [&d](){ return d.jetAK8.tau1>0 && d.jetAK8.tau2>0 ? d.jetAK8.Pt > 400 && (d.jetAK8.tau2/d.jetAK8.tau1) < 0.75 : 0; });
 
   sh.AddNewCut("NHadTop==2",       [&d](){ return d.evt.nhadtops==2; });
+  sh.AddNewCut("|DPhi|<2.8",       [&d](){ return fabs(d.evt.tt_dPhi)<2.8; });
   sh.AddNewCut("NTop==2",          [&d](){ return d.evt.nhadtops+d.evt.nleptops==2; });
   sh.AddNewCut("ttbar",            [&looper](){ return looper.it_sample==0; });
   sh.AddNewCut("ttbar,qcd",        [&looper](){ return looper.it_sample<2; });
@@ -334,28 +334,51 @@ int main(int argc, char* argv[]) {
   sh.AddHistos("evt",   { .fill="TT_Hz",            .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"noqcd","NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
   sh.AddHistos("evt",   { .fill="TT_dPz",           .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"noqcd","NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
   
+  //// Signal cut variables
+  //sh.AddHistos("evt",   { .fill="H_T",              .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="H_Tevt",           .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="H_Ttt",            .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="H_Tex" ,           .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="H_TttFraction",    .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="H_TexFraction",    .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="TT_R",             .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="TT_R2",            .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="AK8JetR",          .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="AK8JetR2",         .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="TT_AbsDeltaPhi",   .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  //
+  //// 2D Correlation plots
+  //sh.AddHistos("evt",   { .fill="HTevt_vs_DeltaPhi",        .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="HTevt_vs_R",               .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="HTevt_vs_Rtt",             .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="HTttFraction_vs_DeltaPhi", .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="HTttFraction_vs_R",        .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="HTttFraction_vs_Rtt",      .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="R_vs_DeltaPhi",            .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  //sh.AddHistos("evt",   { .fill="Rtt_vs_DeltaPhi",          .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  
   // Signal cut variables
-  sh.AddHistos("evt",   { .fill="H_T",              .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="H_Tevt",           .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="H_Ttt",            .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="H_Tex" ,           .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="H_TttFraction",    .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="H_TexFraction",    .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="TT_R",             .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="TT_R2",            .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="AK8JetR",          .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="AK8JetR2",         .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="TT_AbsDeltaPhi",   .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="H_T",              .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="H_Tevt",           .pfs={"ttbar,qcd,Susy3,Susy4"}                  , .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="H_Ttt",            .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="H_Tex" ,           .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="H_TttFraction",    .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="H_TexFraction",    .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="TT_R",             .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="TT_R2",            .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="AK8JetR",          .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="AK8JetR2",         .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORM", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="TT_AbsDeltaPhi",   .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2"}, .draw="NORM", .ranges={0,0, 0,0} });
   
   // 2D Correlation plots
-  sh.AddHistos("evt",   { .fill="HTevt_vs_DeltaPhi",        .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="HTevt_vs_R",               .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="HTevt_vs_Rtt",             .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="HTttFraction_vs_DeltaPhi", .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="HTttFraction_vs_R",        .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="HTttFraction_vs_Rtt",      .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="R_vs_DeltaPhi",            .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="Rtt_vs_DeltaPhi",          .pfs={"ttbar,qcd,Susy3,Susy4"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="HTevt_vs_DeltaPhi",        .pfs={"ttbar,qcd,Susy3,Susy4"},                   .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="HTevt_vs_R",               .pfs={"ttbar,qcd,Susy3,Susy4"},                   .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="HTevt_vs_Rtt",             .pfs={"ttbar,qcd,Susy3,Susy4"},                   .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="HTttFraction_vs_DeltaPhi", .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="HTttFraction_vs_R",        .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="HTttFraction_vs_Rtt",      .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2","|DPhi|<2.8"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="R_vs_DeltaPhi",            .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="Rtt_vs_DeltaPhi",          .pfs={"ttbar,qcd,Susy3,Susy4","SideBand,Signal"}, .cuts={"NHadTop==2"}, .draw="NORMCOLZ", .ranges={0,0, 0,0, 0,0} });
   
   std::cout<<"-----------------------------------------------------------------\n";
   std::cout<<"Creating the following plots:\n"; sh.PrintNames();

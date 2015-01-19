@@ -1575,8 +1575,7 @@ public:
     float HTex;
     float HTttFraction;
     float HTexFraction;
-    float Ht_extra;
-    float Ht;
+    size_t signal_region;
     
     void init() {
       Event_nTightMuons=NOVAL_F;
@@ -1626,8 +1625,7 @@ public:
       HTex=NOVAL_F;
       HTttFraction=NOVAL_F;
       HTexFraction=NOVAL_F;
-      Ht_extra=NOVAL_F;
-      Ht=NOVAL_F;
+      signal_region=-1;
     }
     
   } evt;
