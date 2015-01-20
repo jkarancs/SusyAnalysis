@@ -1569,13 +1569,12 @@ public:
     
     // Other Variables
     float HT;
-    float HTevt;
+    float HTall;
     float HTtt;
     float HTlep;
     float HTex;
     float HTttFraction;
     float HTexFraction;
-    size_t signal_region;
     
     void init() {
       Event_nTightMuons=NOVAL_F;
@@ -1620,12 +1619,11 @@ public:
       
       // Other Variables
       HT=NOVAL_F;
-      HTevt=NOVAL_F;
+      HTall=NOVAL_F;
       HTtt=NOVAL_F;
       HTex=NOVAL_F;
       HTttFraction=NOVAL_F;
       HTexFraction=NOVAL_F;
-      signal_region=-1;
     }
     
   } evt;

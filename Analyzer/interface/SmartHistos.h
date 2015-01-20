@@ -21,7 +21,7 @@ class Postfixes {
 public:
   Postfixes() {}
   ~Postfixes() {}
-  typedef struct Postfix { size_t* sel; std::vector<std::string> vec; std::vector<std::string> leg; std::string colz; } Postfix;
+  typedef struct Postfix { std::function<size_t()> sel; std::vector<std::string> vec; std::vector<std::string> leg; std::string colz; } Postfix;
   
 private:
   std::map<const char*, Postfix> pf_map_;
@@ -95,8 +95,8 @@ private:
     return v_str;
   }
 public:
-  void AddNew(const char* name, size_t* ptr, std::string pf, std::string leg, std::string colz) { 
-    pf_map_.insert(std::pair<const char*, Postfix>(name, { .sel=ptr, .vec=interpret_string_(pf,1), .leg=interpret_string_(leg), .colz=colz })); 
+  void AddNew(const char* name, std::function<size_t()> sel, std::string pf, std::string leg, std::string colz) { 
+    pf_map_.insert(std::pair<const char*, Postfix>(name, { .sel=sel, .vec=interpret_string_(pf,1), .leg=interpret_string_(leg), .colz=colz })); 
   }
   
   Postfix GetPostfix(const char* name) { 
@@ -132,7 +132,7 @@ public:
   // constructors, destructor
   SmartHisto(std::string name, std::vector<const char*>& pf_names, std::vector<Postfixes::Postfix> pfs,
 	     std::vector<std::function<double()> >& ffs, std::vector<float*>& weights, std::vector<std::function<bool()> >& cuts, 
-	     std::string draw_opt, std::vector<double> axis_ranges) { 
+	     std::string draw, std::string opt, std::vector<double> axis_ranges) { 
     name_=name;
     pf_names_=pf_names;
     pfs_ = pfs;
@@ -151,7 +151,11 @@ public:
     if (ncut_>2) cut3_ = cuts[2];
     if (ncut_>3) cut4_ = cuts[3];
     if (ncut_>4) cut5_ = cuts[4];
-    draw_opt_=draw_opt;
+    draw_=draw;
+    norm_  = opt.find("Norm")!=std::string::npos;
+    keep_  = opt.find("Keep")!=std::string::npos;
+    stat_  = opt.find("Stat")!=std::string::npos ? 1110 : 0;
+    sumw2_ = opt.find("Sumw2")!=std::string::npos;
     axis_ranges_=axis_ranges;
     if (npf_>4) std::cout<<"!!! ERROR: SmartHisto::constructor: Fixme! - More than 4 postfixes, only use max 4, or redefine functions!\n";
     if (ndim_>3) std::cout<<"!!! ERROR: SmartHisto::constructor: More than 4 dimension, define a maximum of 3!\n";
@@ -187,8 +191,15 @@ private:
   std::function<bool()> cut4_;
   std::function<bool()> cut5_;
   
-  // Draw options (standard ROOT Draw options plus: NORM - normalize, STAT - draw stat boxes)
-  std::string draw_opt_;
+  // Draw arguments and plot options
+  // options:
+  // NORM - normalize
+  // STAT - draw stat boxes)
+  std::string draw_;
+  bool norm_; // Normalize histo
+  bool keep_; // Keep colors/markers in order
+  Int_t stat_; // Draw Stat boxes
+  bool sumw2_;
   
   // axis ranges: xlow, xhigh, ylow, yhigh, zlow, zhigh
   // if low==high -> do not set
@@ -594,27 +605,34 @@ public:
   //
   // 1D
   void AddNew(std::string name, std::string title,
-	      int nbin1, double low1, double high1) { 
+	      int nbin1, double low1, double high1) {
     if (npf_==0) {
       h1d_0p_ = new TH1D(name.c_str(), title.c_str(), nbin1, low1, high1);
+      h1d_0p_->Sumw2();
     } else if (npf_==1) {
-      for (size_t i=0; i<pfs_[0].vec.size(); ++i) 
+      for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
 	h1d_1p_.push_back(new TH1D((name+"_"+pfs_[0].vec[i]).c_str(), title.c_str(), nbin1, low1, high1));
+	if (sumw2_) h1d_1p_[i]->Sumw2();
+      }
     } else if (npf_==2) {
       for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
 	h1d_2p_.push_back(std::vector<TH1D*>());
-	for (size_t j=0; j<pfs_[1].vec.size(); ++j)
+	for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
 	  h1d_2p_[i].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(),
 					title.c_str(), nbin1, low1, high1));
+	  if (sumw2_) h1d_2p_[i][j]->Sumw2();
+	}
       }
     } else if (npf_==3) {
       for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
 	h1d_3p_.push_back(std::vector<std::vector<TH1D*> > ());
 	for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
 	  h1d_3p_[i].push_back(std::vector<TH1D*>());
-	  for (size_t k=0; k<pfs_[2].vec.size(); ++k)
+	  for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
 	    h1d_3p_[i][j].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(),
 					     title.c_str(), nbin1, low1, high1));
+	    if (sumw2_) h1d_3p_[i][j][k]->Sumw2();
+	  }
 	}
       }
     } else if (npf_==4) {
@@ -624,9 +642,11 @@ public:
 	  h1d_4p_[i].push_back(std::vector<std::vector<TH1D*> >());
 	  for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
 	    h1d_4p_[i][j].push_back(std::vector<TH1D*>());
-	    for (size_t l=0; l<pfs_[3].vec.size(); ++l)
+	    for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
 	      h1d_4p_[i][j][k].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(),
 						  title.c_str(), nbin1, low1, high1));
+	      if (sumw2_) h1d_4p_[i][j][k][l]->Sumw2();
+	    }
 	  }
 	}
       }
@@ -861,8 +881,8 @@ public:
   // Fill Histograms using the std::function<double()>
   void Fill() {
     //std::cout<<name_<<std::endl;
-    //if (name_=="OnCluChargeNorm"&&npf_==2&&*pfs_[1].sel==0&&pass_cuts_()==1) std::cout<<*pfs_[0].sel<<" "<<*pfs_[1].sel<<" "<<fill_1d_()<<" "<<*weight1_<<std::endl;
-    //if (name_=="HitEfficiency_vs_LayersDisks"&&npf_==1&&pass_cuts_()==1) std::cout<<*pfs_[0].sel<<" "<<fill_1d_()<<" "<<*weight1_<<std::endl;
+    //if (name_=="OnCluChargeNorm"&&npf_==2&&pfs_[1].sel()==0&&pass_cuts_()==1) std::cout<<pfs_[0].sel()<<" "<<pfs_[1].sel()<<" "<<fill_1d_()<<" "<<*weight1_<<std::endl;
+    //if (name_=="HitEfficiency_vs_LayersDisks"&&npf_==1&&pass_cuts_()==1) std::cout<<pfs_[0].sel()<<" "<<fill_1d_()<<" "<<*weight1_<<std::endl;
     if (pass_cuts_()) {
       double weight = 0;
       switch (nweight_) {
@@ -880,31 +900,31 @@ public:
         case 3: h3d_0p_->Fill(fill_1d_(),fill_2d_(),fill_3d_(),weight); break;
         } break;
       case 1:
-        if (*pfs_[0].sel!=(size_t)-1) { switch (ndim_) {
-          case 1: h1d_1p_[*pfs_[0].sel]->Fill(fill_1d_(),weight); break;
-          case 2: h2d_1p_[*pfs_[0].sel]->Fill(fill_1d_(),fill_2d_(),weight); break;
-          case 3: h3d_1p_[*pfs_[0].sel]->Fill(fill_1d_(),fill_2d_(),fill_3d_(),weight); break;
+        if (pfs_[0].sel()!=(size_t)-1) { switch (ndim_) {
+          case 1: h1d_1p_[pfs_[0].sel()]->Fill(fill_1d_(),weight); break;
+          case 2: h2d_1p_[pfs_[0].sel()]->Fill(fill_1d_(),fill_2d_(),weight); break;
+          case 3: h3d_1p_[pfs_[0].sel()]->Fill(fill_1d_(),fill_2d_(),fill_3d_(),weight); break;
           }
         } break;
       case 2:
-        if (*pfs_[0].sel!=(size_t)-1&&*pfs_[1].sel!=(size_t)-1) { switch (ndim_) {
-          case 1: h1d_2p_[*pfs_[0].sel][*pfs_[1].sel]->Fill(fill_1d_(),weight); break;
-          case 2: h2d_2p_[*pfs_[0].sel][*pfs_[1].sel]->Fill(fill_1d_(),fill_2d_(),weight); break;
-          case 3: h3d_2p_[*pfs_[0].sel][*pfs_[1].sel]->Fill(fill_1d_(),fill_2d_(),fill_3d_(),weight); break;
+        if (pfs_[0].sel()!=(size_t)-1&&pfs_[1].sel()!=(size_t)-1) { switch (ndim_) {
+          case 1: h1d_2p_[pfs_[0].sel()][pfs_[1].sel()]->Fill(fill_1d_(),weight); break;
+          case 2: h2d_2p_[pfs_[0].sel()][pfs_[1].sel()]->Fill(fill_1d_(),fill_2d_(),weight); break;
+          case 3: h3d_2p_[pfs_[0].sel()][pfs_[1].sel()]->Fill(fill_1d_(),fill_2d_(),fill_3d_(),weight); break;
           }
         } break;
       case 3:
-        if (*pfs_[0].sel!=(size_t)-1&&*pfs_[1].sel!=(size_t)-1&&*pfs_[2].sel!=(size_t)-1) { switch (ndim_) {
-          case 1: h1d_3p_[*pfs_[0].sel][*pfs_[1].sel][*pfs_[2].sel]->Fill(fill_1d_(),weight); break;
-          case 2: h2d_3p_[*pfs_[0].sel][*pfs_[1].sel][*pfs_[2].sel]->Fill(fill_1d_(),fill_2d_(),weight); break;
-          case 3: h3d_3p_[*pfs_[0].sel][*pfs_[1].sel][*pfs_[2].sel]->Fill(fill_1d_(),fill_2d_(),fill_3d_(),weight); break;
+        if (pfs_[0].sel()!=(size_t)-1&&pfs_[1].sel()!=(size_t)-1&&pfs_[2].sel()!=(size_t)-1) { switch (ndim_) {
+          case 1: h1d_3p_[pfs_[0].sel()][pfs_[1].sel()][pfs_[2].sel()]->Fill(fill_1d_(),weight); break;
+          case 2: h2d_3p_[pfs_[0].sel()][pfs_[1].sel()][pfs_[2].sel()]->Fill(fill_1d_(),fill_2d_(),weight); break;
+          case 3: h3d_3p_[pfs_[0].sel()][pfs_[1].sel()][pfs_[2].sel()]->Fill(fill_1d_(),fill_2d_(),fill_3d_(),weight); break;
           }
         } break;
       case 4:
-        if (*pfs_[0].sel!=(size_t)-1&&*pfs_[1].sel!=(size_t)-1&&*pfs_[2].sel!=(size_t)-1&&*pfs_[3].sel!=(size_t)-1) { switch (ndim_) {
-          case 1: h1d_4p_[*pfs_[0].sel][*pfs_[1].sel][*pfs_[2].sel][*pfs_[3].sel]->Fill(fill_1d_(),weight); break;
-          case 2: h2d_4p_[*pfs_[0].sel][*pfs_[1].sel][*pfs_[2].sel][*pfs_[3].sel]->Fill(fill_1d_(),fill_2d_(),weight); break;
-          case 3: h3d_4p_[*pfs_[0].sel][*pfs_[1].sel][*pfs_[2].sel][*pfs_[3].sel]->Fill(fill_1d_(),fill_2d_(),fill_3d_(),weight); break;
+        if (pfs_[0].sel()!=(size_t)-1&&pfs_[1].sel()!=(size_t)-1&&pfs_[2].sel()!=(size_t)-1&&pfs_[3].sel()!=(size_t)-1) { switch (ndim_) {
+          case 1: h1d_4p_[pfs_[0].sel()][pfs_[1].sel()][pfs_[2].sel()][pfs_[3].sel()]->Fill(fill_1d_(),weight); break;
+          case 2: h2d_4p_[pfs_[0].sel()][pfs_[1].sel()][pfs_[2].sel()][pfs_[3].sel()]->Fill(fill_1d_(),fill_2d_(),weight); break;
+          case 3: h3d_4p_[pfs_[0].sel()][pfs_[1].sel()][pfs_[2].sel()][pfs_[3].sel()]->Fill(fill_1d_(),fill_2d_(),fill_3d_(),weight); break;
           }
         } break;
       }
@@ -952,10 +972,10 @@ public:
   //______________________________________________________________________
   //                       Multidraw functions
   
-  TCanvas* custom_can_(TH1D* h, std::string canname, int gx = 0, int gy = 0, 
+  TCanvas* custom_can_(TH1D* h, std::string canname, int gx = 0, int gy = 0,
         	       int histosize_x = 500, int histosize_y = 500,
         	       int mar_left = 80, int mar_right = 20, int mar_top = 20, int mar_bottom = 60) {
-    mar_top = mar_top + (std::string(h->GetTitle()).size()>0)*20;
+    mar_top += (std::string(h->GetTitle()).size()>0)*20;
     int titlefontsize = 32;
     int labelfontsize = 20;
     int yoffset_x = mar_left - titlefontsize - 4;
@@ -980,19 +1000,24 @@ public:
     h->GetZaxis()->SetTitleOffset(zoffset);
     h->GetYaxis()->SetDecimals(1);
     h->GetZaxis()->SetDecimals(1);
-    gStyle->SetPadLeftMargin((Float_t)mar_left/padsize_x);
-    gStyle->SetPadRightMargin((Float_t)mar_right/padsize_x);
-    gStyle->SetPadTopMargin((Float_t)mar_top/padsize_y);
-    gStyle->SetPadBottomMargin((Float_t)mar_bottom/padsize_y);
+    //gStyle->SetPadLeftMargin((Float_t)mar_left/padsize_x);
+    //gStyle->SetPadRightMargin((Float_t)mar_right/padsize_x);
+    //gStyle->SetPadTopMargin((Float_t)mar_top/padsize_y);
+    //gStyle->SetPadBottomMargin((Float_t)mar_bottom/padsize_y);
     gStyle->SetOptTitle(1);
     gStyle->SetTitleH(titlefontsize/padsize);
     gStyle->SetTitleFontSize(titlesize);
     TCanvas* canvas = new TCanvas(canname.c_str(), h->GetTitle(), padsize_x + 4, padsize_y + 26);
+    TVirtualPad* pad = canvas->cd(1);
+    pad->SetLeftMargin((Float_t)mar_left/padsize_x);
+    pad->SetRightMargin((Float_t)mar_right/padsize_x);
+    pad->SetTopMargin((Float_t)mar_top/padsize_y);
+    pad->SetBottomMargin((Float_t)mar_bottom/padsize_y);
     canvas->SetGrid(gx,gy);
     return canvas;
   }
   
-  TCanvas* custom_can_(TH2D* h, std::string canname, std::string drawopt="COLZ", int gx = 0, int gy = 0, 
+  TCanvas* custom_can_(TH2D* h, std::string canname, int gx = 0, int gy = 0, 
 		       int histosize_x = 500, int histosize_y = 500, int mar_left = 80, int mar_right = 120) {
     int mar_top = 20 + (std::string(h->GetTitle()).size()>0)*20;
     int mar_bottom = 60;
@@ -1024,23 +1049,23 @@ public:
     h->GetYaxis()->SetDecimals(1);
     h->GetZaxis()->SetDecimals(1);
     if (histosize_y<250) h->GetZaxis()->SetNdivisions(505);
-    gStyle->SetPadLeftMargin((Float_t)mar_left/padsize_x);
-    gStyle->SetPadRightMargin((Float_t)mar_right/padsize_x);
-    gStyle->SetPadTopMargin((Float_t)mar_top/padsize_y);
-    gStyle->SetPadBottomMargin((Float_t)mar_bottom/padsize_y);
+    //gStyle->SetPadLeftMargin((Float_t)mar_left/padsize_x);
+    //gStyle->SetPadRightMargin((Float_t)mar_right/padsize_x);
+    //gStyle->SetPadTopMargin((Float_t)mar_top/padsize_y);
+    //gStyle->SetPadBottomMargin((Float_t)mar_bottom/padsize_y);
     gStyle->SetOptTitle(1);
     gStyle->SetTitleH(titlefontsize/padsize);
     gStyle->SetTitleFontSize(titlesize);
     TCanvas* canvas = new TCanvas(canname.c_str(), h->GetTitle(), padsize_x + 4, padsize_y + 26);
+    TVirtualPad* pad = canvas->cd(1);
+    pad->SetLeftMargin((Float_t)mar_left/padsize_x);
+    pad->SetRightMargin((Float_t)mar_right/padsize_x);
+    pad->SetTopMargin((Float_t)mar_top/padsize_y);
+    pad->SetBottomMargin((Float_t)mar_bottom/padsize_y);
     canvas->SetGrid(gx,gy);
-    bool norm = false;
-    if (drawopt.find("NORM")!=std::string::npos) {
-      norm = true;
-      drawopt.erase(drawopt.find("NORM"),4);
-    }
-    if (norm) h = (TH2D*)h->DrawNormalized(drawopt.c_str());
-    else h->Draw(drawopt.c_str());
-    if (h->GetEntries()>0&&drawopt=="COLZ") {
+    if (norm_) h = (TH2D*)h->DrawNormalized(draw_.c_str());
+    else h->Draw(draw_.c_str());
+    if (h->GetEntries()>0&&draw_=="COLZ") {
       gPad->Update();
       TPaletteAxis* palette = (TPaletteAxis*)h->GetListOfFunctions()->FindObject("palette");
       if (palette) {
@@ -1089,70 +1114,50 @@ public:
     }
   }
   
-  const char* legmark_(std::string& opt) {
-    if ((opt.find("P")!=std::string::npos)) return "P";
-    else return "L";
-  }
-  
-  void multidraw_with_legend_(size_t skip, std::vector<TH1D*>& hvec, std::string opt,
-			      std::vector<std::string> pf, std::string colz,
+  void multidraw_with_legend_(size_t skip, std::vector<TH1D*>& hvec, std::vector<std::string> pf, std::string colz,
 			      std::string legtitle="", float x1=0.6, float x2=0.8, float y1=0.4, float y2=0.6) {
-    std::vector<Int_t> marker = { 20, 21, 22, 23, 29, //full circle, square, tri-up, tri-down, star
-				  20, 21, 22, 23, 29,
-				  20, 21, 22, 23, 29 };
-    // Normalize by the integral and set range according to the highest histogram
-    bool norm = false;
-    if (opt.find("NORM")!=std::string::npos) {
-      opt.erase(opt.find("NORM"),4);
-      norm = true;
-      //float max = 0;
-      //for (size_t i=skip; i<hvec.size(); i++) if (hvec[i]->GetEntries()>0) {
-      //  hvec[i]->Scale(1/hvec[i]->Integral());
-      //  float m = hvec[i]->GetMaximum();
-      //  if (m>max) max = m;
-      //}
-      //if (max>0) hvec[0]->GetYaxis()->SetRangeUser(0,max*1.1);
-    }
-    // Draw Stat boxes
-    Int_t stat = 0;
-    if (opt.find("STAT")!=std::string::npos) {
-      opt.erase(opt.find("STAT"),4);
-      stat = 1110;
-    }
-    gStyle->SetOptStat(stat);
-    // Keep colors/markers in order
-    bool keep = 0;
-    if (opt.find("Keep")!=std::string::npos) {
-      opt.erase(opt.find("Keep"),4);
-      keep = 1;
-    }
     // Draw multiple histograms, set their marker/line color/style
     // Then Draw legend for all histo with titles from a postfix
     std::vector<int> col = string_to_vector_(colz);
-    std::string same = (stat ? "SAMES" : "SAME") + opt;
+    std::vector<Int_t> marker = { 20, 21, 22, 23, 29, //full circle, square, tri-up, tri-down, star
+				  20, 21, 22, 23, 29,
+				  20, 21, 22, 23, 29 };
     int nleg = 0;
-    for (size_t i=skip; i<hvec.size(); i++) if (hvec[i]->GetEntries()>0) ++nleg;
+    //size_t i_highest = -1;
+    //double highest = 0;
+    for (size_t i=skip; i<hvec.size(); i++) if (hvec[i]->GetEntries()>0) {
+      ++nleg;
+      // Determine the highest histo
+      // we draw this histo first, so default range is ok for all histo
+      // then redraw all histo in predetedmined order
+      //double max = hvec[i]->GetMaximum() / (norm_ ? hvec[i]->GetSumOfWeights() : 1 );
+      //if (max > highest) {
+      //  highest = max;
+      //  i_highest = i;
+      //}
+      if ((draw_.find("P")!=std::string::npos)) { 
+	hvec[i]->SetMarkerColor((Color_t)col[i-(keep_?skip:0)]); 
+	hvec[i]->SetMarkerStyle(marker[i-(keep_?skip:0)]); 
+      } else { 
+	hvec[i]->SetLineColor((Color_t)col[i-(keep_?skip:0)]);
+	hvec[i]->SetLineWidth(2);
+      }
+      if (stat_) hvec[i]->SetStats(1);
+    }
     if (legtitle.size()>0) ++nleg;
     y1 = 0.6 - nleg * 0.05;
     TLegend *leg = new TLegend(x1,y1,x2,y2,legtitle.c_str());
-    int i_keep = -1;
-    for (size_t i=skip; i<hvec.size(); i++) {
-      if (hvec[i]->GetEntries()>0) {
-	++i_keep;
-	int j = keep ? i_keep : i;
-	if ((opt.find("P")!=std::string::npos)) { 
-	  hvec[i]->SetMarkerColor((Color_t)col[j]); 
-	  hvec[i]->SetMarkerStyle(marker[j]); 
-	} else { 
-	  hvec[i]->SetLineColor((Color_t)col[j]);
-	  hvec[i]->SetLineWidth(2);
-	}
-	if (stat) hvec[i]->SetStats(1);
-	if (norm) hvec[i]->DrawNormalized((i==skip) ? opt.c_str() : same.c_str());
-	else hvec[i]->Draw((i==skip) ? opt.c_str() : same.c_str());
-	if (stat) set_stat_(hvec[i],(Color_t)col[j],i_keep);
-	leg->AddEntry(hvec[i], pf[i].c_str(), legmark_(opt));
-      }
+    std::string same = (stat_ ? "SAMES" : "SAME") + draw_;
+    for (size_t i=skip; i<hvec.size(); i++) if (hvec[i]->GetEntries()>0) {
+      // Draw (highest plot first, then redraw all incorrect order)
+      //if (i==skip) {
+      //  if (norm_) hvec[i_highest]->DrawNormalized(draw_.c_str());
+      //  else hvec[i_highest]->Draw(draw_.c_str());	  
+      //}
+      if (norm_) hvec[i]->DrawNormalized((i==skip) ? draw_.c_str() : same.c_str());
+      else hvec[i]->Draw((i==skip) ? draw_.c_str() : same.c_str());
+      if (stat_) set_stat_(hvec[i], (Color_t)col[i-(keep_?skip:0)], i-skip);
+      leg->AddEntry(hvec[i], pf[i].c_str(), draw_.find("P")!=std::string::npos ? "P" : "L");
     }
     leg->SetFillColor(0);
     leg->SetFillStyle(0);
@@ -1161,31 +1166,18 @@ public:
     leg->Draw("SAME");
   }
   
-  void draw_(TH1D* h, std::string opt) {
-    // Normalize by the integral
-    bool norm = false;
-    if (opt.find("NORM")!=std::string::npos) {
-      opt.erase(opt.find("NORM"),4);
-      norm = true;
-    }
-    // Draw Stat box
-    Int_t stat = 0;
-    if (opt.find("STAT")!=std::string::npos) {
-      opt.erase(opt.find("STAT"),4);
-      stat = 1110;
-    }
-    gStyle->SetOptStat(stat);
-    if ((opt.find("P")!=std::string::npos)) { 
+  void draw_one_(TH1D* h) {
+    if ((draw_.find("P")!=std::string::npos)) { 
       h->SetMarkerColor(1); 
       h->SetMarkerStyle(20); 
     } else { 
       h->SetLineColor(1);
       h->SetLineWidth(2);
     }
-    if (stat) h->SetStats(1);
-    if (norm) h->DrawNormalized(opt.c_str());
-    else h->Draw(opt.c_str());
-    if (stat) set_stat_(h,1,0);
+    if (stat_) h->SetStats(1);
+    if (norm_) h->DrawNormalized(draw_.c_str());
+    else h->Draw(draw_.c_str());
+    if (stat_) set_stat_(h,1,0);
   }
   
   typedef struct DrawParams1D { std::vector<TH1D*> hvec; std::string canname; std::string legtitle;  } DrawParams1D;
@@ -1240,6 +1232,7 @@ public:
   }
   
   void DrawPlots() {
+    gStyle->SetOptStat(stat_);
     // 1D plots
     std::vector<DrawParams1D> dps1d = get_dps_1stpf_1d_();
     for (size_t i=0; i<dps1d.size(); ++i) {
@@ -1254,8 +1247,8 @@ public:
 	if (axis_ranges_.size()>=4) if (axis_ranges_[2]!=axis_ranges_[3]) 
 	  dps1d[i].hvec[skip]->GetYaxis()->SetRangeUser(axis_ranges_[2],axis_ranges_[3]);
 	TCanvas *c = custom_can_(dps1d[i].hvec[skip], dps1d[i].canname);
-	if (npf_) multidraw_with_legend_(skip, dps1d[i].hvec, draw_opt_, pfs_[0].leg, pfs_[0].colz, dps1d[i].legtitle);
-	else draw_(dps1d[i].hvec[0], draw_opt_);
+	if (npf_) multidraw_with_legend_(skip, dps1d[i].hvec, pfs_[0].leg, pfs_[0].colz, dps1d[i].legtitle);
+	else draw_one_(dps1d[i].hvec[0]);
 	write_(c);
       }
     }
@@ -1269,7 +1262,7 @@ public:
 	  dps2d[i].h->GetYaxis()->SetRangeUser(axis_ranges_[2],axis_ranges_[3]);
 	if (axis_ranges_.size()==6) if (axis_ranges_[4]!=axis_ranges_[5]) 
 	  dps2d[i].h->GetZaxis()->SetRangeUser(axis_ranges_[4],axis_ranges_[5]);
-	TCanvas *c = custom_can_(dps2d[i].h, dps2d[i].canname, draw_opt_);
+	TCanvas *c = custom_can_(dps2d[i].h, dps2d[i].canname);
 	write_(c);
       }
     }
@@ -1384,7 +1377,7 @@ private:
 public:
   void AddNewFillParam(std::string name, FillParams hp) { hp_map_.insert(std::pair<std::string, FillParams>(name, hp )); }
   
-  void AddNewPostfix(const char* name, size_t* ptr, std::string pf, std::string leg, std::string colz) { pf_->AddNew(name, ptr, pf, leg, colz); }
+  void AddNewPostfix(const char* name, std::function<size_t()> sel, std::string pf, std::string leg, std::string colz) { pf_->AddNew(name, sel, pf, leg, colz); }
   
   void AddNewCut(const char* name, std::function<bool()> cut) { cut_->AddNew(name, cut); }
   
@@ -1392,7 +1385,7 @@ public:
   
   void AddHistoType(std::string type) { sh_[type] = std::vector<SmartHisto*>(); }
 
-  typedef struct HistoParams { std::string fill; std::vector<const char*> pfs; std::vector<const char*> cuts; std::string draw; std::vector<double> ranges; } HistoParams;
+  typedef struct HistoParams { std::string fill; std::vector<const char*> pfs; std::vector<const char*> cuts; std::string draw; std::string opt; std::vector<double> ranges; } HistoParams;
   void AddHistos(std::string name, HistoParams hp, bool AddCutsToTitle = true) {
     if (sh_.count(name)) {
       std::vector<FillParams> hp_vec = get_hp_vec_(hp.fill);
@@ -1413,7 +1406,7 @@ public:
         }
 	std::vector<std::function<bool()>> cuts;
         for (size_t i=0; i<hp.cuts.size(); ++i) cuts.push_back(cut_->GetCut(hp.cuts[i]));
-        sh_[name].push_back(new SmartHisto(hp.fill.c_str(), hp.pfs, pfs, fillfuncs, weights_, cuts, hp.draw, hp.ranges));
+        sh_[name].push_back(new SmartHisto(hp.fill.c_str(), hp.pfs, pfs, fillfuncs, weights_, cuts, hp.draw, hp.opt, hp.ranges));
         if (hp_vec.size()==1) sh_[name][sh_[name].size()-1]->AddNew(hp.fill, axis_titles, 
 								    hp_vec[0].nbin, hp_vec[0].low, hp_vec[0].high);
         else if (hp_vec.size()==2) sh_[name][sh_[name].size()-1]->AddNew(hp.fill, axis_titles,
