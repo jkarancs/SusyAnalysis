@@ -68,13 +68,13 @@ void RatioPlots() {
   TFile *f = TFile::Open("plots.root");
   
   // 01/20
-  make_ratio_plot(f, "TT_AbsDeltaPhi/RBelow0p25,RAbove0p25",          "TT_AbsDeltaPhi_RCuts", 1);
-  make_ratio_plot(f, "TT_AbsDeltaPhi/RBelow0p25,RAbove0p25_SideBand", "TT_AbsDeltaPhi_RCuts_SideBand", 1);
-  make_ratio_plot(f, "TT_AbsDeltaPhi/RBelow0p25,RAbove0p25_Signal",   "TT_AbsDeltaPhi_RCuts_Signal", 1);
-  make_ratio_plot(f, "AK8JetR/DPhiBelow0p28,DPhiAbove0p28",           "TT_AbsDeltaPhi_DPhiCuts", 1);
-  make_ratio_plot(f, "AK8JetR/DPhiBelow0p28,DPhiAbove0p28_SideBand",  "TT_AbsDeltaPhi_DPhiCuts_SideBand", 1);
-  make_ratio_plot(f, "AK8JetR/DPhiBelow0p28,DPhiAbove0p28_Signal",    "TT_AbsDeltaPhi_DPhiCuts_Signal", 1);
-  make_ratio_plot(f, "AK8JetR/SideBand,Signal_DPhiBelow0p28",         "TT_AbsDeltaPhi_HTallCuts_DPhiBelow0p28", 1);
-  make_ratio_plot(f, "AK8JetR/SideBand,Signal_DPhiAbove0p28",         "TT_AbsDeltaPhi_HTallCuts_DPhiAbove0p28", 1);
+  make_ratio_plot(f, "TT_AbsDeltaPhi/RBelow0p25,RAbove0p25",          "DeltaPhi_RBins", 1);
+  make_ratio_plot(f, "TT_AbsDeltaPhi/RBelow0p25,RAbove0p25_SideBand", "DeltaPhi_RBins_SideBand", 1);
+  make_ratio_plot(f, "TT_AbsDeltaPhi/RBelow0p25,RAbove0p25_Signal",   "DeltaPhi_RBins_Signal", 1);
+  make_ratio_plot(f, "AK8JetR/DPhiBelow0p28,DPhiAbove0p28",           "R_DPhiBins", 1);
+  make_ratio_plot(f, "AK8JetR/DPhiBelow0p28,DPhiAbove0p28_SideBand",  "R_DPhiBins_SideBand", 1);
+  make_ratio_plot(f, "AK8JetR/DPhiBelow0p28,DPhiAbove0p28_Signal",    "R_DPhiBins_Signal", 1);
+  make_ratio_plot(f, "AK8JetR/SideBand,Signal_DPhiBelow0p28",         "R_HTallBins_DPhiBelow0p28", 1);
+  make_ratio_plot(f, "AK8JetR/SideBand,Signal_DPhiAbove0p28",         "R_HTallBins_DPhiAbove0p28", 1);
 }
 
