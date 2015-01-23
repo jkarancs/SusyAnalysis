@@ -200,11 +200,11 @@ int main(int argc, char* argv[]) {
   sh.AddHistoType("met");
   
   // Define Postfixes here:
-  sh.AddNewPostfix("ttbar,qcd",                   [&looper](){ return looper.it_sample; }, "ttbar;qcd", "t#bar{t};QCD", "2,6");
-  sh.AddNewPostfix("ttbar,qcd,Susy3,Susy4",       [&looper](){ return looper.it_sample; }, "ttbar;qcd;susy3body;susy4body", "t#bar{t};QCD;T5tttt - 3body;T5tttt - 4body", "2,6,4,3");
-  sh.AddNewPostfix("SideBand,Signal",             [&d](){ return d.evt.HTall > 1500; }, "SideBand;Signal", "H_{T,all} < 1500 GeV/c;H_{T,all} > 1500 GeV/c", "4,2");
-  sh.AddNewPostfix("RBelow0p25,RAbove0p25",       [&d](){ return d.jetAK8.R > 0.25; },  "RBelow0p25;RAbove0p25", "R < 0.25;R > 0.25", "4,2");
-  sh.AddNewPostfix("DPhiBelow0p28,DPhiAbove0p28", [&d](){ return fabs(d.evt.tt_dPhi) > 0.28; },  "DPhiBelow0p28;DPhiAbove0p28", "#Delta#phi_{t#bar{t}} < 0.28;#Delta#phi_{t#bar{t}} > 0.28", "4,2");
+  sh.AddNewPostfix("ttbar,qcd",                 [&looper](){ return looper.it_sample; }, "ttbar;qcd", "t#bar{t};QCD", "2,6");
+  sh.AddNewPostfix("ttbar,qcd,Susy3,Susy4",     [&looper](){ return looper.it_sample; }, "ttbar;qcd;susy3body;susy4body", "t#bar{t};QCD;T5tttt - 3body;T5tttt - 4body", "2,6,4,3");
+  sh.AddNewPostfix("SideBand,Signal",           [&d](){ return d.evt.HTall > 1500; }, "SideBand;Signal", "H_{T,all} < 1500 GeV/c;H_{T,all} > 1500 GeV/c", "4,2");
+  sh.AddNewPostfix("RBelow0p25,RAbove0p25",     [&d](){ return d.jetAK8.R > 0.25; },  "RBelow0p25;RAbove0p25", "R < 0.25;R > 0.25", "4,2");
+  sh.AddNewPostfix("DPhiBelow2p8,DPhiAbove2p8", [&d](){ return fabs(d.evt.tt_dPhi) > 2.8; },  "DPhiBelow2p8;DPhiAbove2p8", "#Delta#phi_{t#bar{t}} < 2.8;#Delta#phi_{t#bar{t}} > 2.8", "4,2");
   
   //sh.AddNewPostfix("ttbar,Susy3,Susy4", &looper.it_sample, "ttbar;susy3body;susy4body", "SM t#bar{t};T5tttt - 3body;T5tttt - 4body", "2,4,3");
   sh.AddNewPostfix("AK4JetsPtOrdered", [&d](){ return d.jetAK4.it; }, "Jet[1to10]", "1st Jet;2nd Jet;3rd Jet;[4to10]th Jet", "1-10");
@@ -387,9 +387,9 @@ int main(int argc, char* argv[]) {
   // Signal cut variables
   sh.AddHistos("evt",   { .fill="TT_AbsDeltaPhi", .pfs={"RBelow0p25,RAbove0p25"},                         .cuts={"ttbar","NHadTop==2"}, .draw="HIST", .opt="Sumw2Norm", .ranges={0,0, 0,0} });
   sh.AddHistos("evt",   { .fill="TT_AbsDeltaPhi", .pfs={"RBelow0p25,RAbove0p25","SideBand,Signal"},       .cuts={"ttbar","NHadTop==2"}, .draw="HIST", .opt="Sumw2Norm", .ranges={0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="AK8JetR",        .pfs={"DPhiBelow0p28,DPhiAbove0p28"},                   .cuts={"ttbar","NHadTop==2"}, .draw="HIST", .opt="Sumw2Norm", .ranges={0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="AK8JetR",        .pfs={"DPhiBelow0p28,DPhiAbove0p28","SideBand,Signal"}, .cuts={"ttbar","NHadTop==2"}, .draw="HIST", .opt="Sumw2Norm", .ranges={0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="AK8JetR",        .pfs={"SideBand,Signal","DPhiBelow0p28,DPhiAbove0p28"}, .cuts={"ttbar","NHadTop==2"}, .draw="HIST", .opt="Sumw2Norm", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="AK8JetR",        .pfs={"DPhiBelow2p8,DPhiAbove2p8"},                   .cuts={"ttbar","NHadTop==2"}, .draw="HIST", .opt="Sumw2Norm", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="AK8JetR",        .pfs={"DPhiBelow2p8,DPhiAbove2p8","SideBand,Signal"}, .cuts={"ttbar","NHadTop==2"}, .draw="HIST", .opt="Sumw2Norm", .ranges={0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="AK8JetR",        .pfs={"SideBand,Signal","DPhiBelow2p8,DPhiAbove2p8"}, .cuts={"ttbar","NHadTop==2"}, .draw="HIST", .opt="Sumw2Norm", .ranges={0,0, 0,0} });
   
   std::cout<<"-----------------------------------------------------------------\n";
   std::cout<<"Creating the following plots:\n"; sh.PrintNames();

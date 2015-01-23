@@ -15,7 +15,7 @@ void make_ratio_plot(TFile* f, std::string name, std::string canname, float limi
     TH1D* h2 = (TH1D*)c->GetListOfPrimitives()->At(1);
     TLegend* leg = (TLegend*)c->GetListOfPrimitives()->At(2);
     leg->SetX1(0.4);leg->SetX2(0.6);leg->SetY1(0.65);leg->SetY2(0.8);
-    if (limit>0) h1->GetYaxis()->SetRangeUser(0.002,limit);
+    if (limit>0) h1->GetYaxis()->SetRangeUser(0.0002,limit);
     h1->SetLabelSize(20.0/(y1+40),"xyz");
     c = new TCanvas(canname.c_str(), c->GetTitle(), 604,626+(y1-500)+y2+mid2); // 600, 600
     c->Divide(1,2);
@@ -71,10 +71,10 @@ void RatioPlots() {
   make_ratio_plot(f, "TT_AbsDeltaPhi/RBelow0p25,RAbove0p25",          "DeltaPhi_RBins", 1);
   make_ratio_plot(f, "TT_AbsDeltaPhi/RBelow0p25,RAbove0p25_SideBand", "DeltaPhi_RBins_SideBand", 1);
   make_ratio_plot(f, "TT_AbsDeltaPhi/RBelow0p25,RAbove0p25_Signal",   "DeltaPhi_RBins_Signal", 1);
-  make_ratio_plot(f, "AK8JetR/DPhiBelow0p28,DPhiAbove0p28",           "R_DPhiBins", 1);
-  make_ratio_plot(f, "AK8JetR/DPhiBelow0p28,DPhiAbove0p28_SideBand",  "R_DPhiBins_SideBand", 1);
-  make_ratio_plot(f, "AK8JetR/DPhiBelow0p28,DPhiAbove0p28_Signal",    "R_DPhiBins_Signal", 1);
-  make_ratio_plot(f, "AK8JetR/SideBand,Signal_DPhiBelow0p28",         "R_HTallBins_DPhiBelow0p28", 1);
-  make_ratio_plot(f, "AK8JetR/SideBand,Signal_DPhiAbove0p28",         "R_HTallBins_DPhiAbove0p28", 1);
+  make_ratio_plot(f, "AK8JetR/DPhiBelow2p8,DPhiAbove2p8",             "R_DPhiBins", 1);
+  make_ratio_plot(f, "AK8JetR/DPhiBelow2p8,DPhiAbove2p8_SideBand",    "R_DPhiBins_SideBand", 1);
+  make_ratio_plot(f, "AK8JetR/DPhiBelow2p8,DPhiAbove2p8_Signal",      "R_DPhiBins_Signal", 1);
+  make_ratio_plot(f, "AK8JetR/SideBand,Signal_DPhiBelow2p8",          "R_HTallBins_DPhiBelow2p8", 1);
+  make_ratio_plot(f, "AK8JetR/SideBand,Signal_DPhiAbove2p8",          "R_HTallBins_DPhiAbove2p8", 1);
 }
 
