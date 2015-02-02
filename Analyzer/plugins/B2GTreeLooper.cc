@@ -117,6 +117,7 @@ public:
     }
     while (fileindex_%nthfile_!=(nthfile_-1)/2) ++fileindex_; // Skip files if specified (/2 instead 0 --> distribute files evenly)
     if (fileindex_<files_->GetEntries()) {
+      //std::cout<<"Opening file: "<<files_->At(fileindex_)->GetTitle()<<std::endl;
       file_ = TFile::Open(files_->At(fileindex_)->GetTitle());
       treename_ = files_->At(fileindex_)->GetName();
       all_entries_ = ((TTree*)file_->Get(treename_))->GetEntries();

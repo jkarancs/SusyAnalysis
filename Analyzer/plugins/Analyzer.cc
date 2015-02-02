@@ -98,12 +98,12 @@ void Analyzer::beginJob() {
   //                           Histogram Definitions
   // Validation  
   //sh_->SetHistoWeights({&v.corr_pu_weight, &v.norm_factor});
-  //sh_->AddHistos("evt", { .fill="NVertices", .pfs={"Validation"}, .cuts={"ZeroBias","Nvtx"}, .draw="", .ranges={} });
+  //sh_->AddHistos("evt", { .fill="NVertices", .pfs={"Validation"}, .cuts={"ZeroBias","Nvtx"}, .draw="", .opt="", .ranges={} });
   
-  sh_->AddHistos("muons",     { .fill="MuPt",     .pfs={}, .cuts={}, .draw="", .ranges={} });
-  sh_->AddHistos("electrons", { .fill="ElePt",    .pfs={}, .cuts={}, .draw="", .ranges={} });
-  sh_->AddHistos("met",       { .fill="MetPt",    .pfs={}, .cuts={"GenMetPt>1"}, .draw="", .ranges={} });
-  sh_->AddHistos("met",       { .fill="GenMetPt", .pfs={}, .cuts={"GenMetPt>1"}, .draw="", .ranges={} });
+  sh_->AddHistos("muons",     { .fill="MuPt",     .pfs={}, .cuts={}, .draw="", .opt="", .ranges={} });
+  sh_->AddHistos("electrons", { .fill="ElePt",    .pfs={}, .cuts={}, .draw="", .opt="", .ranges={} });
+  sh_->AddHistos("met",       { .fill="MetPt",    .pfs={}, .cuts={"GenMetPt>1"}, .draw="", .opt="", .ranges={} });
+  sh_->AddHistos("met",       { .fill="GenMetPt", .pfs={}, .cuts={"GenMetPt>1"}, .draw="", .opt="", .ranges={} });
   std::cout<<"-----------------------------------------------------------------\n";
   std::cout<<"SmartHistos: Creating the following plots:\n"; sh_->PrintNames();
   std::cout<<"-----------------------------------------------------------------\n";

@@ -1063,7 +1063,7 @@ public:
     pad->SetTopMargin((Float_t)mar_top/padsize_y);
     pad->SetBottomMargin((Float_t)mar_bottom/padsize_y);
     canvas->SetGrid(gx,gy);
-    if (norm_) h = (TH2D*)h->DrawNormalized(draw_.c_str());
+    if (norm_&&h->GetEntries()>0) h = (TH2D*)h->DrawNormalized(draw_.c_str());
     else h->Draw(draw_.c_str());
     if (h->GetEntries()>0&&draw_=="COLZ") {
       gPad->Update();
@@ -1154,7 +1154,7 @@ public:
       //  if (norm_) hvec[i_highest]->DrawNormalized(draw_.c_str());
       //  else hvec[i_highest]->Draw(draw_.c_str());	  
       //}
-      if (norm_) hvec[i]->DrawNormalized((i==skip) ? draw_.c_str() : same.c_str());
+      if (norm_&&hvec[i]->GetEntries()>0) hvec[i]->DrawNormalized((i==skip) ? draw_.c_str() : same.c_str());
       else hvec[i]->Draw((i==skip) ? draw_.c_str() : same.c_str());
       if (stat_) set_stat_(hvec[i], (Color_t)col[i-(keep_?skip:0)], i-skip);
       leg->AddEntry(hvec[i], pf[i].c_str(), draw_.find("P")!=std::string::npos ? "P" : "L");
@@ -1175,7 +1175,7 @@ public:
       h->SetLineWidth(2);
     }
     if (stat_) h->SetStats(1);
-    if (norm_) h->DrawNormalized(draw_.c_str());
+    if (norm_&&h->GetEntries()>0) h->DrawNormalized(draw_.c_str());
     else h->Draw(draw_.c_str());
     if (stat_) set_stat_(h,1,0);
   }

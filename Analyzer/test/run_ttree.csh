@@ -14,10 +14,10 @@ set is_miniaod=`echo $input_dir | grep "MINIAOD" | wc -l`
 ls $input_dir | grep ".root" | awk '{ print "'$input_dir'/"$1 }' >! files.txt
 set n=`cat files.txt | wc -l`
 if ( -f make_ttrees_$name.csh ) then
-    mv make_ttrees_$name.csh make_ttrees_$name_prev.csh
+    mv make_ttrees_$name.csh make_ttrees_"$name"_prev.csh
 endif
 if ( -f make_edmtrees_$name.csh ) then
-    mv make_edmtrees_$name.csh make_edmtrees_$name_prev.csh
+    mv make_edmtrees_$name.csh make_edmtrees_"$name"_prev.csh
 endif
 foreach i ( `seq 1 $n` )
     set infile=`sed -n "$i"p files.txt`

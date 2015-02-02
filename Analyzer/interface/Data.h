@@ -4,166 +4,112 @@
 #define NOVAL_I -9999
 #define NOVAL_F -9999.0
 
+#define NJET 20
+#define NLEP 5
+
+#include <vector>
+#include "TLorentzVector.h"
+#include <iostream>
+
+using namespace std;
+
 class Data {
 public:
-  Data() {};
-  ~Data() {};
+  Data() {}
+  ~Data() {}
   
-  class ElectronData {
+  class ElectronVars {
   public:
-    ElectronData() { init(); };
+    ElectronVars() { init(); }
+    ~ElectronVars() {}
     
-    int electrons_size;
-    float elE[5];
-    float elPt[5];
-    float elMass[5];
-    float elEta[5];
-    float elPhi[5];
-    float elCharge[5];
-    float elD0[5];
-    float elDz[5];
-    float elHoE[5];
-    float elIso03[5];
-    float elY[5];
-    float eldEtaIn[5];
-    float eldPhiIn[5];
-    float elmissHits[5];
-    float elfull5x5siee[5];
-    float elooEmooP[5];
-    float elhasMatchedConVeto[5];
-    float elisEB[5];
-    float elisVeto[5];
-    float elisLoose[5];
-    float elisTight[5];
-    float elisMedium[5];
-    float electronsSFTrigger[5];
-    float electronsSFReco[5];
-    float electronsisQCD[5];
-    float electronsisTightOffline[5];
-    float electronsisLooseOffline[5];
+    // Basic
+    float Mass[NLEP+1];
+    float Pt[NLEP+1];
+    float Eta[NLEP+1];
+    float Y[NLEP+1];
+    float Phi[NLEP+1];
+    float E[NLEP+1];
+    float Charge[NLEP+1];
+    // ElectronVars
+    float Iso03[NLEP+1];
+    float D0[NLEP+1];
+    float Dz[NLEP+1];
+    float dEtaIn[NLEP+1];
+    float dPhiIn[NLEP+1];
+    float HoE[NLEP+1];
+    float full5x5siee[NLEP+1];
+    float ooEmooP[NLEP+1];
+    float missHits[NLEP+1];
+    float hasMatchedConVeto[NLEP+1];
+    float isEB[NLEP+1];
+    float isVeto[NLEP+1];
+    float isLoose[NLEP+1];
+    float isTight[NLEP+1];
+    float isMedium[NLEP+1];
     
-    float E;
-    float Pt;
-    float Mass;
-    float Eta;
-    float Phi;
-    float Charge;
-    float D0;
-    float Dz;
-    float HoE;
-    float Iso03;
-    float Y;
-    float dEtaIn;
-    float dPhiIn;
-    float missHits;
-    float full5x5siee;
-    float ooEmooP;
-    float hasMatchedConVeto;
-    float isEB;
-    float isVeto;
-    float isLoose;
-    float isTight;
-    float isMedium;
-    float SFTrigger;
-    float SFReco;
-    float isQCD;
-    float isTightOffline;
-    float isLooseOffline;
-
     size_t it;
+    int size;
 
+    
     void init() {
-      electrons_size = 0;
-      for (int i=0; i<5; ++i) {
-	elE[i]=NOVAL_F;
-        elPt[i]=NOVAL_F;
-        elMass[i]=NOVAL_F;
-        elEta[i]=NOVAL_F;
-        elPhi[i]=NOVAL_F;
-        elCharge[i]=NOVAL_F;
-        elD0[i]=NOVAL_F;
-        elDz[i]=NOVAL_F;
-        elHoE[i]=NOVAL_F;
-        elIso03[i]=NOVAL_F;
-        elY[i]=NOVAL_F;
-        eldEtaIn[i]=NOVAL_F;
-        eldPhiIn[i]=NOVAL_F;
-        elmissHits[i]=NOVAL_F;
-        elfull5x5siee[i]=NOVAL_F;
-        elooEmooP[i]=NOVAL_F;
-        elhasMatchedConVeto[i]=NOVAL_F;
-	elisEB[i]=NOVAL_F;
-	elisVeto[i]=NOVAL_F;
-	elisLoose[i]=NOVAL_F;
-	elisTight[i]=NOVAL_F;
-	elisMedium[i]=NOVAL_F;
-        electronsSFTrigger[i]=NOVAL_F;
-        electronsSFReco[i]=NOVAL_F;
-        electronsisQCD[i]=NOVAL_F;
-        electronsisTightOffline[i]=NOVAL_F;
-        electronsisLooseOffline[i]=NOVAL_F;
+      for (size_t i=0; i<=NLEP; ++i) {
+        Mass[i]=NOVAL_F;
+        Pt[i]=NOVAL_F;
+        Eta[i]=NOVAL_F;
+        Y[i]=NOVAL_F;
+        Phi[i]=NOVAL_F;
+        E[i]=NOVAL_F;
+        Charge[i]=NOVAL_F;
+        Iso03[i]=NOVAL_F;
+        D0[i]=NOVAL_F;
+        Dz[i]=NOVAL_F;
+        dEtaIn[i]=NOVAL_F;
+        dPhiIn[i]=NOVAL_F;
+        HoE[i]=NOVAL_F;
+        full5x5siee[i]=NOVAL_F;
+        ooEmooP[i]=NOVAL_F;
+        missHits[i]=NOVAL_F;
+        hasMatchedConVeto[i]=NOVAL_F;
+        isEB[i]=NOVAL_F;
+        isVeto[i]=NOVAL_F;
+        isLoose[i]=NOVAL_F;
+        isTight[i]=NOVAL_F;
+        isMedium[i]=NOVAL_F;
       }
-      E=NOVAL_F;
-      Pt=NOVAL_F;
-      Mass=NOVAL_F;
-      Eta=NOVAL_F;
-      Phi=NOVAL_F;
-      Charge=NOVAL_F;
-      D0=NOVAL_F;
-      Dz=NOVAL_F;
-      HoE=NOVAL_F;
-      Iso03=NOVAL_F;
-      Y=NOVAL_F;
-      dEtaIn=NOVAL_F;
-      dPhiIn=NOVAL_F;
-      missHits=NOVAL_F;
-      full5x5siee=NOVAL_F;
-      ooEmooP=NOVAL_F;
-      hasMatchedConVeto=NOVAL_F;
-      isEB=NOVAL_F;
-      isVeto=NOVAL_F;
-      isLoose=NOVAL_F;
-      isTight=NOVAL_F;
-      isMedium=NOVAL_F;
-      SFTrigger=NOVAL_F;
-      SFReco=NOVAL_F;
-      isQCD=NOVAL_F;
-      isTightOffline=NOVAL_F;
-      isLooseOffline=NOVAL_F;
-      
-      it=-1;
+      it = -1;
+      size = 0;
     }
-
+    
+    void SetCurrent(size_t it) {
+      Mass[NLEP]              = Mass[it];             
+      Pt[NLEP]		      = Pt[it];		     
+      Eta[NLEP]		      = Eta[it];		     
+      Y[NLEP]		      = Y[it];		     
+      Phi[NLEP]		      = Phi[it];		     
+      E[NLEP]		      = E[it];		     
+      Charge[NLEP]	      = Charge[it];	     
+      Iso03[NLEP]	      = Iso03[it];	     
+      D0[NLEP]		      = D0[it];		     
+      Dz[NLEP]		      = Dz[it];		     
+      dEtaIn[NLEP]	      = dEtaIn[it];	     
+      dPhiIn[NLEP]	      = dPhiIn[it];	     
+      HoE[NLEP]		      = HoE[it];		     
+      full5x5siee[NLEP]	      = full5x5siee[it];	     
+      ooEmooP[NLEP]	      = ooEmooP[it];	     
+      missHits[NLEP]	      = missHits[it];	     
+      hasMatchedConVeto[NLEP] = hasMatchedConVeto[it];
+      isEB[NLEP]	      = isEB[it];	     
+      isVeto[NLEP]	      = isVeto[it];	     
+      isLoose[NLEP]	      = isLoose[it];	     
+      isTight[NLEP]	      = isTight[it];	     
+      isMedium[NLEP]          = isMedium[it];         
+    }
+    
     bool Loop() {
       ++it;
-      if (it<(size_t)electrons_size) {
-	E                  = elE[it];			   
-	Pt		   = elPt[it];		   
-        Mass		   = elMass[it];		   
-        Eta		   = elEta[it];		   
-        Phi		   = elPhi[it];		   
-        Charge		   = elCharge[it];		   
-        D0		   = elD0[it];		   
-        Dz		   = elDz[it];		   
-        HoE		   = elHoE[it];		   
-        Iso03		   = elIso03[it];		   
-        Y		   = elY[it];			   
-        dEtaIn		   = eldEtaIn[it];		   
-        dPhiIn		   = eldPhiIn[it];		   
-        missHits           = elmissHits[it];   
-        full5x5siee	   = elfull5x5siee[it];	   
-        ooEmooP		   = elooEmooP[it];		   
-        hasMatchedConVeto  = elhasMatchedConVeto[it];	   
-	isEB               = elisEB[it];
-	isVeto             = elisVeto[it];
-	isLoose            = elisLoose[it];
-	isTight            = elisTight[it];
-	isMedium           = elisMedium[it];
-        SFTrigger	   = electronsSFTrigger[it];	   
-        SFReco		   = electronsSFReco[it];	   
-        isQCD		   = electronsisQCD[it];	   
-        isTightOffline	   = electronsisTightOffline[it];
-        isLooseOffline	   = electronsisLooseOffline[it];
+      if (it<(size_t)size) {
+	SetCurrent(it);
 	return 1;
       } else {
 	it=-1;
@@ -172,979 +118,405 @@ public:
     }
     
   } ele;
-  
-  class MuonData {
+
+  class MuonVars {
   public:
-    MuonData() { init(); };
+    MuonVars() { init(); }
+    ~MuonVars() {}
     
-    int muons_size;
-    float muE[5];
-    float muPt[5];
-    float muMass[5];
-    float muEta[5];
-    float muPhi[5];
-    float muCharge[5];
-    float muIsLooseMuon[5];
-    float muIsSoftMuon[5];
-    float muIsTightMuon[5];
-    float muD0[5];
-    float muD0err[5];
-    float muDz[5];
-    float muDzerr[5];
-    float muGenMuonCharge[5];
-    float muGenMuonEta[5];
-    float muGenMuonPt[5];
-    float muGenMuonE[5];
-    float muGenMuonPhi[5];
-    float muGenMuonY[5];
-    float muGlbTrkNormChi2[5];
-    float muHLTmuonDeltaR[5];
-    float muHLTmuonE[5];
-    float muHLTmuonEta[5];
-    float muHLTmuonPt[5];
-    float muHLTmuonPhi[5];
-    float muInTrkNormChi2[5];
-    float muIsGlobalMuon[5];
-    float muIsPFMuon[5];
-    float muIsTrackerMuon[5];
-    float muIso03[5];
-    float muNumberMatchedStations[5];
-    float muNumberOfPixelLayers[5];
-    float muNumberOfValidTrackerHits[5];
-    float muNumberTrackerLayers[5];
-    float muNumberValidMuonHits[5];
-    float muNumberValidPixelHits[5];
-    float muSumChargedHadronPt[5];
-    float muSumNeutralHadronPt[5];
-    float muSumPUPt[5];
-    float muSumPhotonPt[5];
-    float muY[5];
-    float muonsSFTrigger[5];
-    float muonsSFReco[5];
-    float muonsisQCD[5];
-    float muonsisTightOffline[5];
-    float muonsisLooseOffline[5];
-    
-    float E;
-    float Pt;
-    float Mass;
-    float Eta;
-    float Phi;
-    float Charge;
-    float IsLooseMuon;
-    float IsSoftMuon;
-    float IsTightMuon;
-    float D0;
-    float D0err;
-    float Dz;
-    float Dzerr;
-    float GenMuonCharge;
-    float GenMuonEta;
-    float GenMuonPt;
-    float GenMuonE;
-    float GenMuonPhi;
-    float GenMuonY;
-    float GlbTrkNormChi2;
-    float HLTmuonDeltaR;
-    float HLTmuonE;
-    float HLTmuonEta;
-    float HLTmuonPt;
-    float HLTmuonPhi;
-    float InTrkNormChi2;
-    float IsGlobalMuon;
-    float IsPFMuon;
-    float IsTrackerMuon;
-    float Iso03;
-    float NumberMatchedStations;
-    float NumberOfPixelLayers;
-    float NumberOfValidTrackerHits;
-    float NumberTrackerLayers;
-    float NumberValidMuonHits;
-    float NumberValidPixelHits;
-    float SumChargedHadronPt;
-    float SumNeutralHadronPt;
-    float SumPUPt;
-    float SumPhotonPt;
-    float Y;
-    float SFTrigger;
-    float SFReco;
-    float isQCD;
-    float isTightOffline;
-    float isLooseOffline;
+    // Basic
+    float Mass[NLEP+1];
+    float Pt[NLEP+1];
+    float Eta[NLEP+1];
+    float Y[NLEP+1];
+    float Phi[NLEP+1];
+    float E[NLEP+1];
+    float Charge[NLEP+1];
+    // MuonVars
+    float Iso03[NLEP+1];
+    float D0[NLEP+1];
+    float D0err[NLEP+1];
+    float Dz[NLEP+1];
+    float Dzerr[NLEP+1];
+    float IsLooseMuon[NLEP+1];
+    float IsSoftMuon[NLEP+1];
+    float IsTightMuon[NLEP+1];
+    float IsPFMuon[NLEP+1];
+    float IsGlobalMuon[NLEP+1];
+    float IsTrackerMuon[NLEP+1];
+    float GlbTrkNormChi2[NLEP+1];
+    float NumberValidMuonHits[NLEP+1];
+    float NumberMatchedStations[NLEP+1];
+    float NumberValidPixelHits[NLEP+1];
+    float NumberTrackerLayers[NLEP+1];
+    float NumberOfValidTrackerHits[NLEP+1];
+    float NumberOfPixelLayers[NLEP+1];
+    float InTrkNormChi2[NLEP+1];
+    float SumChargedHadronPt[NLEP+1];
+    float SumNeutralHadronPt[NLEP+1];
+    float SumPhotonPt[NLEP+1];
+    float SumPUPt[NLEP+1];
+    float GenMuonY[NLEP+1];
+    float GenMuonEta[NLEP+1];
+    float GenMuonPhi[NLEP+1];
+    float GenMuonPt[NLEP+1];
+    float GenMuonE[NLEP+1];
+    float GenMuonCharge[NLEP+1];
+    float HLTmuonDeltaR[NLEP+1];
+    float HLTmuonPt[NLEP+1];
+    float HLTmuonEta[NLEP+1];
+    float HLTmuonPhi[NLEP+1];
+    float HLTmuonE[NLEP+1];
     
     size_t it;
+    int size;
     
     void init() {
-      muons_size = 0;
-      for (int i=0; i<5; ++i) {
-        muE[i]=NOVAL_F;
-        muPt[i]=NOVAL_F;
-        muMass[i]=NOVAL_F;
-        muEta[i]=NOVAL_F;
-        muPhi[i]=NOVAL_F;
-        muCharge[i]=NOVAL_F;
-        muIsLooseMuon[i]=NOVAL_F;
-        muIsSoftMuon[i]=NOVAL_F;
-        muIsTightMuon[i]=NOVAL_F;
-        muD0[i]=NOVAL_F;
-        muD0err[i]=NOVAL_F;
-        muDz[i]=NOVAL_F;
-        muDzerr[i]=NOVAL_F;
-        muGenMuonCharge[i]=NOVAL_F;
-        muGenMuonEta[i]=NOVAL_F;
-        muGenMuonPt[i]=NOVAL_F;
-        muGenMuonE[i]=NOVAL_F;
-        muGenMuonPhi[i]=NOVAL_F;
-        muGenMuonY[i]=NOVAL_F;
-        muGlbTrkNormChi2[i]=NOVAL_F;
-        muHLTmuonDeltaR[i]=NOVAL_F;
-        muHLTmuonE[i]=NOVAL_F;
-        muHLTmuonEta[i]=NOVAL_F;
-        muHLTmuonPt[i]=NOVAL_F;
-        muHLTmuonPhi[i]=NOVAL_F;
-        muInTrkNormChi2[i]=NOVAL_F;
-        muIsGlobalMuon[i]=NOVAL_F;
-        muIsPFMuon[i]=NOVAL_F;
-        muIsTrackerMuon[i]=NOVAL_F;
-        muIso03[i]=NOVAL_F;
-        muNumberMatchedStations[i]=NOVAL_F;
-        muNumberOfPixelLayers[i]=NOVAL_F;
-        muNumberOfValidTrackerHits[i]=NOVAL_F;
-        muNumberTrackerLayers[i]=NOVAL_F;
-        muNumberValidMuonHits[i]=NOVAL_F;
-        muNumberValidPixelHits[i]=NOVAL_F;
-        muSumChargedHadronPt[i]=NOVAL_F;
-        muSumNeutralHadronPt[i]=NOVAL_F;
-        muSumPUPt[i]=NOVAL_F;
-        muSumPhotonPt[i]=NOVAL_F;
-        muY[i]=NOVAL_F;
-        muonsSFTrigger[i]=NOVAL_F;
-        muonsSFReco[i]=NOVAL_F;
-        muonsisQCD[i]=NOVAL_F;
-        muonsisTightOffline[i]=NOVAL_F;
-        muonsisLooseOffline[i]=NOVAL_F;
+      for (size_t i=0; i<=NLEP; ++i) {
+        Mass[i]=NOVAL_F;
+        Pt[i]=NOVAL_F;
+        Eta[i]=NOVAL_F;
+        Y[i]=NOVAL_F;
+        Phi[i]=NOVAL_F;
+        E[i]=NOVAL_F;
+        Charge[i]=NOVAL_F;
+        Iso03[i]=NOVAL_F;
+        D0[i]=NOVAL_F;
+        D0err[i]=NOVAL_F;
+        Dz[i]=NOVAL_F;
+        Dzerr[i]=NOVAL_F;
+        IsLooseMuon[i]=NOVAL_F;
+        IsSoftMuon[i]=NOVAL_F;
+        IsTightMuon[i]=NOVAL_F;
+        IsPFMuon[i]=NOVAL_F;
+        IsGlobalMuon[i]=NOVAL_F;
+        IsTrackerMuon[i]=NOVAL_F;
+        GlbTrkNormChi2[i]=NOVAL_F;
+        NumberValidMuonHits[i]=NOVAL_F;
+        NumberMatchedStations[i]=NOVAL_F;
+        NumberValidPixelHits[i]=NOVAL_F;
+        NumberTrackerLayers[i]=NOVAL_F;
+        NumberOfValidTrackerHits[i]=NOVAL_F;
+        NumberOfPixelLayers[i]=NOVAL_F;
+        InTrkNormChi2[i]=NOVAL_F;
+        SumChargedHadronPt[i]=NOVAL_F;
+        SumNeutralHadronPt[i]=NOVAL_F;
+        SumPhotonPt[i]=NOVAL_F;
+        SumPUPt[i]=NOVAL_F;
+        GenMuonY[i]=NOVAL_F;
+        GenMuonEta[i]=NOVAL_F;
+        GenMuonPhi[i]=NOVAL_F;
+        GenMuonPt[i]=NOVAL_F;
+        GenMuonE[i]=NOVAL_F;
+        GenMuonCharge[i]=NOVAL_F;
+        HLTmuonDeltaR[i]=NOVAL_F;
+        HLTmuonPt[i]=NOVAL_F;
+        HLTmuonEta[i]=NOVAL_F;
+        HLTmuonPhi[i]=NOVAL_F;
+        HLTmuonE[i]=NOVAL_F;
       }
-      E=NOVAL_F;
-      Pt=NOVAL_F;
-      Mass=NOVAL_F;
-      Eta=NOVAL_F;
-      Phi=NOVAL_F;
-      Charge=NOVAL_F;
-      IsLooseMuon=NOVAL_F;
-      IsSoftMuon=NOVAL_F;
-      IsTightMuon=NOVAL_F;
-      D0=NOVAL_F;
-      D0err=NOVAL_F;
-      Dz=NOVAL_F;
-      Dzerr=NOVAL_F;
-      GenMuonCharge=NOVAL_F;
-      GenMuonEta=NOVAL_F;
-      GenMuonPt=NOVAL_F;
-      GenMuonE=NOVAL_F;
-      GenMuonPhi=NOVAL_F;
-      GenMuonY=NOVAL_F;
-      GlbTrkNormChi2=NOVAL_F;
-      HLTmuonDeltaR=NOVAL_F;
-      HLTmuonE=NOVAL_F;
-      HLTmuonEta=NOVAL_F;
-      HLTmuonPt=NOVAL_F;
-      HLTmuonPhi=NOVAL_F;
-      InTrkNormChi2=NOVAL_F;
-      IsGlobalMuon=NOVAL_F;
-      IsPFMuon=NOVAL_F;
-      IsTrackerMuon=NOVAL_F;
-      Iso03=NOVAL_F;
-      NumberMatchedStations=NOVAL_F;
-      NumberOfPixelLayers=NOVAL_F;
-      NumberOfValidTrackerHits=NOVAL_F;
-      NumberTrackerLayers=NOVAL_F;
-      NumberValidMuonHits=NOVAL_F;
-      NumberValidPixelHits=NOVAL_F;
-      SumChargedHadronPt=NOVAL_F;
-      SumNeutralHadronPt=NOVAL_F;
-      SumPUPt=NOVAL_F;
-      SumPhotonPt=NOVAL_F;
-      Y=NOVAL_F;
-      SFTrigger=NOVAL_F;
-      SFReco=NOVAL_F;
-      isQCD=NOVAL_F;
-      isTightOffline=NOVAL_F;
-      isLooseOffline=NOVAL_F;
-      
-      it=-1;
+      it = -1;
+      size = 0;
     }
-
+    
+    void SetCurrent(size_t it) {
+      Mass[NLEP]              = Mass[it];             
+      Pt[NLEP]		      = Pt[it];		     
+      Eta[NLEP]		      = Eta[it];		     
+      Y[NLEP]		      = Y[it];		     
+      Phi[NLEP]		      = Phi[it];		     
+      E[NLEP]		      = E[it];		     
+      Charge[NLEP]	      = Charge[it];
+      Iso03[NLEP]                    = Iso03[it];                   
+      D0[NLEP] 			     = D0[it]; 			    
+      D0err[NLEP] 		     = D0err[it]; 		    
+      Dz[NLEP] 			     = Dz[it]; 			    
+      Dzerr[NLEP] 		     = Dzerr[it]; 		    
+      IsLooseMuon[NLEP] 	     = IsLooseMuon[it]; 	    
+      IsSoftMuon[NLEP] 		     = IsSoftMuon[it]; 		    
+      IsTightMuon[NLEP] 	     = IsTightMuon[it]; 	    
+      IsPFMuon[NLEP] 		     = IsPFMuon[it]; 		    
+      IsGlobalMuon[NLEP] 	     = IsGlobalMuon[it]; 	    
+      IsTrackerMuon[NLEP] 	     = IsTrackerMuon[it]; 	    
+      GlbTrkNormChi2[NLEP] 	     = GlbTrkNormChi2[it]; 	    
+      NumberValidMuonHits[NLEP]      = NumberValidMuonHits[it];     
+      NumberMatchedStations[NLEP]    = NumberMatchedStations[it];   
+      NumberValidPixelHits[NLEP]     = NumberValidPixelHits[it];    
+      NumberTrackerLayers[NLEP]      = NumberTrackerLayers[it];     
+      NumberOfValidTrackerHits[NLEP] = NumberOfValidTrackerHits[it];
+      NumberOfPixelLayers[NLEP]      = NumberOfPixelLayers[it];     
+      InTrkNormChi2[NLEP] 	     = InTrkNormChi2[it]; 	    
+      SumChargedHadronPt[NLEP] 	     = SumChargedHadronPt[it]; 	    
+      SumNeutralHadronPt[NLEP] 	     = SumNeutralHadronPt[it]; 	    
+      SumPhotonPt[NLEP] 	     = SumPhotonPt[it]; 	    
+      SumPUPt[NLEP] 		     = SumPUPt[it]; 		    
+      GenMuonY[NLEP] 		     = GenMuonY[it]; 		    
+      GenMuonEta[NLEP] 		     = GenMuonEta[it];		    
+      GenMuonPhi[NLEP]		     = GenMuonPhi[it]; 		    
+      GenMuonPt[NLEP] 		     = GenMuonPt[it]; 		    
+      GenMuonE[NLEP] 		     = GenMuonE[it]; 		    
+      GenMuonCharge[NLEP] 	     = GenMuonCharge[it]; 	    
+      HLTmuonDeltaR[NLEP] 	     = HLTmuonDeltaR[it]; 	    
+      HLTmuonPt[NLEP] 		     = HLTmuonPt[it]; 		    
+      HLTmuonEta[NLEP] 		     = HLTmuonEta[it]; 		    
+      HLTmuonPhi[NLEP] 		     = HLTmuonPhi[it]; 		    
+      HLTmuonE[NLEP] 	             = HLTmuonE[it]; 	            
+    }
+    
     bool Loop() {
       ++it;
-      if (it<(size_t)muons_size) {
-	E                        = muE[it];			  
-        Pt			 = muPt[it];			  
-        Mass			 = muMass[it];			  
-        Eta			 = muEta[it];			  
-        Phi			 = muPhi[it];			  
-        Charge			 = muCharge[it];			  
-        IsLooseMuon		 = muIsLooseMuon[it];		  
-        IsSoftMuon		 = muIsSoftMuon[it];		  
-        IsTightMuon		 = muIsTightMuon[it];		  
-        D0			 = muD0[it];			  
-        D0err			 = muD0err[it];			  
-        Dz			 = muDz[it];			  
-        Dzerr			 = muDzerr[it];			  
-        GenMuonCharge		 = muGenMuonCharge[it];		  
-        GenMuonEta		 = muGenMuonEta[it];		  
-        GenMuonPt		 = muGenMuonPt[it];		  
-        GenMuonE		 = muGenMuonE[it];		  
-        GenMuonPhi		 = muGenMuonPhi[it];		  
-        GenMuonY		 = muGenMuonY[it];		  
-        GlbTrkNormChi2		 = muGlbTrkNormChi2[it];		  
-        HLTmuonDeltaR		 = muHLTmuonDeltaR[it];		  
-        HLTmuonE		 = muHLTmuonE[it];		  
-        HLTmuonEta		 = muHLTmuonEta[it];		  
-        HLTmuonPt		 = muHLTmuonPt[it];		  
-        HLTmuonPhi		 = muHLTmuonPhi[it];		  
-        InTrkNormChi2		 = muInTrkNormChi2[it];		  
-        IsGlobalMuon		 = muIsGlobalMuon[it];		  
-        IsPFMuon		 = muIsPFMuon[it];		  
-        IsTrackerMuon		 = muIsTrackerMuon[it];		  
-        Iso03			 = muIso03[it];			  
-        NumberMatchedStations	 = muNumberMatchedStations[it];	  
-        NumberOfPixelLayers	 = muNumberOfPixelLayers[it];	  
-        NumberOfValidTrackerHits = muNumberOfValidTrackerHits[it]; 
-        NumberTrackerLayers	 = muNumberTrackerLayers[it];	  
-        NumberValidMuonHits	 = muNumberValidMuonHits[it];	  
-        NumberValidPixelHits	 = muNumberValidPixelHits[it];	  
-        SumChargedHadronPt	 = muSumChargedHadronPt[it];	  
-        SumNeutralHadronPt	 = muSumNeutralHadronPt[it];	  
-        SumPUPt			 = muSumPUPt[it];		  
-        SumPhotonPt		 = muSumPhotonPt[it];		  
-        Y			 = muY[it];			  
-        SFTrigger		 = muonsSFTrigger[it];		  
-        SFReco			 = muonsSFReco[it];		  
-        isQCD			 = muonsisQCD[it];		  
-        isTightOffline		 = muonsisTightOffline[it];	  
-        isLooseOffline		 = muonsisLooseOffline[it];
+      if (it<(size_t)size) {
+	SetCurrent(it);
 	return 1;
       } else {
 	it=-1;
 	return 0;
       }
-    }    
+    }
+    
   } mu;
   
-  class JetData {
+  class JetVars {
   public:
-    JetData() { init(); };
-    
-    int jets_size;
-    float jetE[20];
-    float jetPt[20];
-    float jetMass[20];
-    float jetEta[20];
-    float jetPhi[20];
-    float jetPartonFlavour[20];
-    float jetCSV[20];
-    float jetCSVV1[20];
-    float jetCharge[20];
-    float jetChargeMuEnergy[20];
-    float jetChargedHadronMultiplicity[20];
-    float jetElectronEnergy[20];
-    float jetGenJetCharge[20];
-    float jetGenJetE[20];
-    float jetGenJetEta[20];
-    float jetGenJetPhi[20];
-    float jetGenJetPt[20];
-    float jetGenJetY[20];
-    float jetGenPartonCharge[20];
-    float jetGenPartonE[20];
-    float jetGenPartonEta[20];
-    float jetGenPartonPhi[20];
-    float jetGenPartonPt[20];
-    float jetGenPartonY[20];
-    float jetHFEMEnergy[20];
-    float jetHFEMMultiplicity[20];
-    float jetHFHadronEnergy[20];
-    float jetHFHadronMultiplicity[20];
-    float jetHLTjetDeltaR[20];
-    float jetHLTjetE[20];
-    float jetHLTjetEta[20];
-    float jetHLTjetPt[20];
-    float jetHLTjetPhi[20];
-    float jetHadronFlavour[20];
-    float jetIsCSVL[20];
-    float jetIsCSVM[20];
-    float jetIsCSVT[20];
-    float jetSmearedE[20];
-    float jetSmearedPt[20];
-    float jetSmearedPEta[20];
-    float jetSmearedPhi[20];
-    float jetJERup[20];
-    float jetJERdown[20];
-    float jetY[20];
-    float jetelectronMultiplicity[20];
-    float jetmuonMultiplicity[20];
-    float jetneutralHadronMultiplicity[20];
-    float jetneutralMultiplicity[20];
-    float jetphotonMultiplicity[20];
-    float jetsCorrPt[20];
-    float jetsCorrEta[20];
-    float jetsCorrPhi[20];
-    float jetsCorrE[20];
-    float jetsCorrMass[20];
-    float jetsCorrNJets[20];
-    float jetsCorrPartonFlavour[20];
-    float jettau1[20];
-    float jettau2[20];
-    float jettau3[20];
-    float jettau4[20];
-    float jetsjc2j0pt[20];
-    float jetsjc2j0mass[20];
-    float jetsjc2j0eta[20];
-    float jetsjc2j0phi[20];
-    float jetsjc2j1pt[20];
-    float jetsjc2j1mass[20];
-    float jetsjc2j1eta[20];
-    float jetsjc2j1phi[20];
-    float jetsjc3j0pt[20];
-    float jetsjc3j0mass[20];
-    float jetsjc3j0eta[20];
-    float jetsjc3j0phi[20];
-    float jetsjc3j1pt[20];
-    float jetsjc3j1mass[20];
-    float jetsjc3j1eta[20];
-    float jetsjc3j1phi[20];
-    float jetsjc3j2pt[20];
-    float jetsjc3j2mass[20];
-    float jetsjc3j2eta[20];
-    float jetsjc3j2phi[20];
-    float jetsjc4j0pt[20];
-    float jetsjc4j0mass[20];
-    float jetsjc4j0eta[20];
-    float jetsjc4j0phi[20];
-    float jetsjc4j1pt[20];
-    float jetsjc4j1mass[20];
-    float jetsjc4j1eta[20];
-    float jetsjc4j1phi[20];
-    float jetsjc4j2pt[20];
-    float jetsjc4j2mass[20];
-    float jetsjc4j2eta[20];
-    float jetsjc4j2phi[20];
-    float jetsjc4j3pt[20];
-    float jetsjc4j3mass[20];
-    float jetsjc4j3eta[20];
-    float jetsjc4j3phi[20];
-    
-    float E;
-    float Pt;
-    float Mass;
-    float Eta;
-    float Phi;
-    float PartonFlavour;
-    float CSV;
-    float CSVV1;
-    float Charge;
-    float ChargeMuEnergy;
-    float ChargedHadronMultiplicity;
-    float ElectronEnergy;
-    float GenJetCharge;
-    float GenJetE;
-    float GenJetEta;
-    float GenJetPhi;
-    float GenJetPt;
-    float GenJetY;
-    float GenPartonCharge;
-    float GenPartonE;
-    float GenPartonEta;
-    float GenPartonPhi;
-    float GenPartonPt;
-    float GenPartonY;
-    float HFEMEnergy;
-    float HFEMMultiplicity;
-    float HFHadronEnergy;
-    float HFHadronMultiplicity;
-    float HLTjetDeltaR;
-    float HLTjetE;
-    float HLTjetEta;
-    float HLTjetPt;
-    float HLTjetPhi;
-    float HadronFlavour;
-    float IsCSVL;
-    float IsCSVM;
-    float IsCSVT;
-    float SmearedE;
-    float SmearedPt;
-    float SmearedPEta;
-    float SmearedPhi;
-    float JERup;
-    float JERdown;
-    float Y;
-    float electronMultiplicity;
-    float muonMultiplicity;
-    float neutralHadronMultiplicity;
-    float neutralMultiplicity;
-    float photonMultiplicity;
-    float CorrPt;
-    float CorrEta;
-    float CorrPhi;
-    float CorrE;
-    float CorrMass;
-    float CorrNJets;
-    float CorrPartonFlavour;
-    float tau1;
-    float tau2;
-    float tau3;
-    float tau4;
-    float DoubleSubJet0Pt;
-    float DoubleSubJet0Mass;
-    float DoubleSubJet0Eta;
-    float DoubleSubJet0Phi;
-    float DoubleSubJet1Pt;
-    float DoubleSubJet1Mass;
-    float DoubleSubJet1Eta;
-    float DoubleSubJet1Phi;
-    float TripleSubJet0Pt;
-    float TripleSubJet0Mass;
-    float TripleSubJet0Eta;
-    float TripleSubJet0Phi;
-    float TripleSubJet1Pt;
-    float TripleSubJet1Mass;
-    float TripleSubJet1Eta;
-    float TripleSubJet1Phi;
-    float TripleSubJet2Pt;
-    float TripleSubJet2Mass;
-    float TripleSubJet2Eta;
-    float TripleSubJet2Phi;
-    float QuadSubJet0Pt;
-    float QuadSubJet0Mass;
-    float QuadSubJet0Eta;
-    float QuadSubJet0Phi;
-    float QuadSubJet1Pt;
-    float QuadSubJet1Mass;
-    float QuadSubJet1Eta;
-    float QuadSubJet1Phi;
-    float QuadSubJet2Pt;
-    float QuadSubJet2Mass;
-    float QuadSubJet2Eta;
-    float QuadSubJet2Phi;
-    float QuadSubJet3Pt;
-    float QuadSubJet3Mass;
-    float QuadSubJet3Eta;
-    float QuadSubJet3Phi;
-    // Razor variables
-    float MR;
-    float MTR;
-    float R;
-    float R2;
-    
-    size_t it;
+    // Basic
+    float Mass[NJET+1];
+    float Pt[NJET+1];
+    float Eta[NJET+1];
+    float Y[NJET+1];
+    float Phi[NJET+1];
+    float E[NJET+1];
+    float Charge[NJET+1];
+    // B-TAGGING
+    float IsCSVL[NJET+1];
+    float IsCSVM[NJET+1];
+    float IsCSVT[NJET+1];
+    float CSV[NJET+1];
+    float CSVV1[NJET+1];
+    // GEN PARTON
+    float GenPartonY[NJET+1];
+    float GenPartonEta[NJET+1];
+    float GenPartonPhi[NJET+1];
+    float GenPartonPt[NJET+1];
+    float GenPartonE[NJET+1];
+    float GenPartonCharge[NJET+1];
+    float PartonFlavour[NJET+1];
+    float HadronFlavour[NJET+1];
+    // GEN JET
+    float GenJetY[NJET+1];
+    float GenJetEta[NJET+1];
+    float GenJetPhi[NJET+1];
+    float GenJetPt[NJET+1];
+    float GenJetE[NJET+1];
+    float GenJetCharge[NJET+1];
+    // TRIGGER MATHING
+    float HLTjetEta[NJET+1];
+    float HLTjetPhi[NJET+1];
+    float HLTjetPt[NJET+1];
+    float HLTjetE[NJET+1];
+    float HLTjetDeltaR[NJET+1];
+    // CONSTITUENTS
+    float muonMultiplicity[NJET+1];
+    float PhotonEnergy[NJET+1];
+    float ElectronEnergy[NJET+1];
+    float MuonEnergy[NJET+1];
+    float HFHadronEnergy[NJET+1];
+    float HFEMEnergy[NJET+1];
+    float ChargedHadronMultiplicity[NJET+1];
+    float numberOfDaughters[NJET+1];
+    float chargedMultiplicity[NJET+1];
+    float neutralHadronMultiplicity[NJET+1];
+    float neutralHadronEnergyFraction[NJET+1];
+    float neutralEmEnergyFraction[NJET+1];
+    float chargedEmEnergyFraction[NJET+1];
+    float chargedHadronEnergyFraction[NJET+1];
+    float photonMultiplicity[NJET+1];
+    float electronMultiplicity[NJET+1];
+    float HFHadronMultiplicity[NJET+1];
+    float HFEMMultiplicity[NJET+1];
+    float ChargeMuEnergy[NJET+1];
+    float neutralMultiplicity[NJET+1];
+    // FOR LEPTON MATCHING 
+    float matchedMuIdx[NJET+1];
+    float matchedElIdx[NJET+1];
+    //FOR JEC
+    float jecFactor0[NJET+1];
+    // FOR SYSTEMATICS
+    float SmearedPt[NJET+1];
+    float SmearedPEta[NJET+1];
+    float SmearedPhi[NJET+1];
+    float SmearedE[NJET+1];
+    float JERup[NJET+1];
+    float JERdown[NJET+1];
     
     void init() {
-      jets_size=0;
-      for (int i=0; i<20; ++i) {
-        jetE[i]=NOVAL_F;
-        jetPt[i]=NOVAL_F;
-        jetMass[i]=NOVAL_F;
-        jetEta[i]=NOVAL_F;
-        jetPhi[i]=NOVAL_F;
-        jetPartonFlavour[i]=NOVAL_F;
-        jetCSV[i]=NOVAL_F;
-        jetCSVV1[i]=NOVAL_F;
-        jetCharge[i]=NOVAL_F;
-        jetChargeMuEnergy[i]=NOVAL_F;
-        jetChargedHadronMultiplicity[i]=NOVAL_F;
-        jetElectronEnergy[i]=NOVAL_F;
-        jetGenJetCharge[i]=NOVAL_F;
-        jetGenJetE[i]=NOVAL_F;
-        jetGenJetEta[i]=NOVAL_F;
-        jetGenJetPhi[i]=NOVAL_F;
-        jetGenJetPt[i]=NOVAL_F;
-        jetGenJetY[i]=NOVAL_F;
-        jetGenPartonCharge[i]=NOVAL_F;
-        jetGenPartonE[i]=NOVAL_F;
-        jetGenPartonEta[i]=NOVAL_F;
-        jetGenPartonPhi[i]=NOVAL_F;
-        jetGenPartonPt[i]=NOVAL_F;
-        jetGenPartonY[i]=NOVAL_F;
-        jetHFEMEnergy[i]=NOVAL_F;
-        jetHFEMMultiplicity[i]=NOVAL_F;
-        jetHFHadronEnergy[i]=NOVAL_F;
-        jetHFHadronMultiplicity[i]=NOVAL_F;
-        jetHLTjetDeltaR[i]=NOVAL_F;
-        jetHLTjetE[i]=NOVAL_F;
-        jetHLTjetEta[i]=NOVAL_F;
-        jetHLTjetPt[i]=NOVAL_F;
-        jetHLTjetPhi[i]=NOVAL_F;
-        jetHadronFlavour[i]=NOVAL_F;
-        jetIsCSVL[i]=NOVAL_F;
-        jetIsCSVM[i]=NOVAL_F;
-        jetIsCSVT[i]=NOVAL_F;
-        jetSmearedE[i]=NOVAL_F;
-        jetSmearedPt[i]=NOVAL_F;
-        jetSmearedPEta[i]=NOVAL_F;
-        jetSmearedPhi[i]=NOVAL_F;
-	jetJERup[i]=NOVAL_F;
-	jetJERdown[i]=NOVAL_F;
-        jetY[i]=NOVAL_F;
-        jetelectronMultiplicity[i]=NOVAL_F;
-        jetmuonMultiplicity[i]=NOVAL_F;
-        jetneutralHadronMultiplicity[i]=NOVAL_F;
-        jetneutralMultiplicity[i]=NOVAL_F;
-        jetphotonMultiplicity[i]=NOVAL_F;
-        jetsCorrPt[i]=NOVAL_F;
-        jetsCorrEta[i]=NOVAL_F;
-        jetsCorrPhi[i]=NOVAL_F;
-        jetsCorrE[i]=NOVAL_F;
-        jetsCorrMass[i]=NOVAL_F;
-        jetsCorrNJets[i]=NOVAL_F;
-        jetsCorrPartonFlavour[i]=NOVAL_F;
-        jettau1[i]=NOVAL_F;
-        jettau2[i]=NOVAL_F;
-        jettau3[i]=NOVAL_F;
-        jettau4[i]=NOVAL_F;
-        jetsjc2j0pt[i]=NOVAL_F;
-        jetsjc2j0mass[i]=NOVAL_F;
-        jetsjc2j0eta[i]=NOVAL_F;
-        jetsjc2j0phi[i]=NOVAL_F;
-        jetsjc2j1pt[i]=NOVAL_F;
-        jetsjc2j1mass[i]=NOVAL_F;
-        jetsjc2j1eta[i]=NOVAL_F;
-        jetsjc2j1phi[i]=NOVAL_F;
-        jetsjc3j0pt[i]=NOVAL_F;
-        jetsjc3j0mass[i]=NOVAL_F;
-        jetsjc3j0eta[i]=NOVAL_F;
-        jetsjc3j0phi[i]=NOVAL_F;
-        jetsjc3j1pt[i]=NOVAL_F;
-        jetsjc3j1mass[i]=NOVAL_F;
-        jetsjc3j1eta[i]=NOVAL_F;
-        jetsjc3j1phi[i]=NOVAL_F;
-        jetsjc3j2pt[i]=NOVAL_F;
-        jetsjc3j2mass[i]=NOVAL_F;
-        jetsjc3j2eta[i]=NOVAL_F;
-        jetsjc3j2phi[i]=NOVAL_F;
-        jetsjc4j0pt[i]=NOVAL_F;
-        jetsjc4j0mass[i]=NOVAL_F;
-        jetsjc4j0eta[i]=NOVAL_F;
-        jetsjc4j0phi[i]=NOVAL_F;
-        jetsjc4j1pt[i]=NOVAL_F;
-        jetsjc4j1mass[i]=NOVAL_F;
-        jetsjc4j1eta[i]=NOVAL_F;
-        jetsjc4j1phi[i]=NOVAL_F;
-        jetsjc4j2pt[i]=NOVAL_F;
-        jetsjc4j2mass[i]=NOVAL_F;
-        jetsjc4j2eta[i]=NOVAL_F;
-        jetsjc4j2phi[i]=NOVAL_F;
-        jetsjc4j3pt[i]=NOVAL_F;
-        jetsjc4j3mass[i]=NOVAL_F;
-        jetsjc4j3eta[i]=NOVAL_F;
-        jetsjc4j3phi[i]=NOVAL_F;
+      for (size_t i=0; i<=NJET; ++i) {
+        Mass[i]=NOVAL_F;
+        Pt[i]=NOVAL_F;
+        Eta[i]=NOVAL_F;
+        Y[i]=NOVAL_F;
+        Phi[i]=NOVAL_F;
+        E[i]=NOVAL_F;
+        Charge[i]=NOVAL_F;
+        IsCSVL[i]=NOVAL_F;
+        IsCSVM[i]=NOVAL_F;
+        IsCSVT[i]=NOVAL_F;
+        CSV[i]=NOVAL_F;
+        CSVV1[i]=NOVAL_F;
+        GenPartonY[i]=NOVAL_F;
+        GenPartonEta[i]=NOVAL_F;
+        GenPartonPhi[i]=NOVAL_F;
+        GenPartonPt[i]=NOVAL_F;
+        GenPartonE[i]=NOVAL_F;
+        GenPartonCharge[i]=NOVAL_F;
+        PartonFlavour[i]=NOVAL_F;
+        HadronFlavour[i]=NOVAL_F;
+        GenJetY[i]=NOVAL_F;
+        GenJetEta[i]=NOVAL_F;
+        GenJetPhi[i]=NOVAL_F;
+        GenJetPt[i]=NOVAL_F;
+        GenJetE[i]=NOVAL_F;
+        GenJetCharge[i]=NOVAL_F;
+        HLTjetEta[i]=NOVAL_F;
+        HLTjetPhi[i]=NOVAL_F;
+        HLTjetPt[i]=NOVAL_F;
+        HLTjetE[i]=NOVAL_F;
+        HLTjetDeltaR[i]=NOVAL_F;
+        muonMultiplicity[i]=NOVAL_F;
+        PhotonEnergy[i]=NOVAL_F;
+        ElectronEnergy[i]=NOVAL_F;
+        MuonEnergy[i]=NOVAL_F;
+        HFHadronEnergy[i]=NOVAL_F;
+        HFEMEnergy[i]=NOVAL_F;
+        ChargedHadronMultiplicity[i]=NOVAL_F;
+        numberOfDaughters[i]=NOVAL_F;
+        chargedMultiplicity[i]=NOVAL_F;
+        neutralHadronMultiplicity[i]=NOVAL_F;
+        neutralHadronEnergyFraction[i]=NOVAL_F;
+        neutralEmEnergyFraction[i]=NOVAL_F;
+        chargedEmEnergyFraction[i]=NOVAL_F;
+        chargedHadronEnergyFraction[i]=NOVAL_F;
+        photonMultiplicity[i]=NOVAL_F;
+        electronMultiplicity[i]=NOVAL_F;
+        HFHadronMultiplicity[i]=NOVAL_F;
+        HFEMMultiplicity[i]=NOVAL_F;
+        ChargeMuEnergy[i]=NOVAL_F;
+        neutralMultiplicity[i]=NOVAL_F;
+	matchedMuIdx[i]=NOVAL_F;
+	matchedElIdx[i]=NOVAL_F;
+	jecFactor0[i]=NOVAL_F;
+        SmearedPt[i]=NOVAL_F;
+        SmearedPEta[i]=NOVAL_F;
+        SmearedPhi[i]=NOVAL_F;
+        SmearedE[i]=NOVAL_F;
+        JERup[i]=NOVAL_F;
+        JERdown[i]=NOVAL_F;
       }
-      E=NOVAL_F;
-      Pt=NOVAL_F;
-      Mass=NOVAL_F;
-      Eta=NOVAL_F;
-      PartonFlavour=NOVAL_F;
-      Phi=NOVAL_F;
-      CSV=NOVAL_F;
-      CSVV1=NOVAL_F;
-      Charge=NOVAL_F;
-      ChargeMuEnergy=NOVAL_F;
-      ChargedHadronMultiplicity=NOVAL_F;
-      ElectronEnergy=NOVAL_F;
-      GenJetCharge=NOVAL_F;
-      GenJetE=NOVAL_F;
-      GenJetEta=NOVAL_F;
-      GenJetPhi=NOVAL_F;
-      GenJetPt=NOVAL_F;
-      GenJetY=NOVAL_F;
-      GenPartonCharge=NOVAL_F;
-      GenPartonE=NOVAL_F;
-      GenPartonEta=NOVAL_F;
-      GenPartonPhi=NOVAL_F;
-      GenPartonPt=NOVAL_F;
-      GenPartonY=NOVAL_F;
-      HFEMEnergy=NOVAL_F;
-      HFEMMultiplicity=NOVAL_F;
-      HFHadronEnergy=NOVAL_F;
-      HFHadronMultiplicity=NOVAL_F;
-      HLTjetDeltaR=NOVAL_F;
-      HLTjetE=NOVAL_F;
-      HLTjetEta=NOVAL_F;
-      HLTjetPt=NOVAL_F;
-      HLTjetPhi=NOVAL_F;
-      HadronFlavour=NOVAL_F;
-      IsCSVL=NOVAL_F;
-      IsCSVM=NOVAL_F;
-      IsCSVT=NOVAL_F;
-      SmearedE=NOVAL_F;
-      SmearedPt=NOVAL_F;
-      SmearedPEta=NOVAL_F;
-      SmearedPhi=NOVAL_F;
-      JERup=NOVAL_F;
-      JERdown=NOVAL_F;
-      Y=NOVAL_F;
-      electronMultiplicity=NOVAL_F;
-      muonMultiplicity=NOVAL_F;
-      neutralHadronMultiplicity=NOVAL_F;
-      neutralMultiplicity=NOVAL_F;
-      photonMultiplicity=NOVAL_F;
-      CorrPt=NOVAL_F;
-      CorrEta=NOVAL_F;
-      CorrPhi=NOVAL_F;
-      CorrE=NOVAL_F;
-      CorrMass=NOVAL_F;
-      CorrNJets=NOVAL_F;
-      CorrPartonFlavour=NOVAL_F;
-      tau1=NOVAL_F;
-      tau2=NOVAL_F;
-      tau3=NOVAL_F;
-      tau4=NOVAL_F;
-      DoubleSubJet0Pt=NOVAL_F;
-      DoubleSubJet0Mass=NOVAL_F;
-      DoubleSubJet0Eta=NOVAL_F;
-      DoubleSubJet0Phi=NOVAL_F;
-      DoubleSubJet1Pt=NOVAL_F;
-      DoubleSubJet1Mass=NOVAL_F;
-      DoubleSubJet1Eta=NOVAL_F;
-      DoubleSubJet1Phi=NOVAL_F;
-      TripleSubJet0Pt=NOVAL_F;
-      TripleSubJet0Mass=NOVAL_F;
-      TripleSubJet0Eta=NOVAL_F;
-      TripleSubJet0Phi=NOVAL_F;
-      TripleSubJet1Pt=NOVAL_F;
-      TripleSubJet1Mass=NOVAL_F;
-      TripleSubJet1Eta=NOVAL_F;
-      TripleSubJet1Phi=NOVAL_F;
-      TripleSubJet2Pt=NOVAL_F;
-      TripleSubJet2Mass=NOVAL_F;
-      TripleSubJet2Eta=NOVAL_F;
-      TripleSubJet2Phi=NOVAL_F;
-      QuadSubJet0Pt=NOVAL_F;
-      QuadSubJet0Mass=NOVAL_F;
-      QuadSubJet0Eta=NOVAL_F;
-      QuadSubJet0Phi=NOVAL_F;
-      QuadSubJet1Pt=NOVAL_F;
-      QuadSubJet1Mass=NOVAL_F;
-      QuadSubJet1Eta=NOVAL_F;
-      QuadSubJet1Phi=NOVAL_F;
-      QuadSubJet2Pt=NOVAL_F;
-      QuadSubJet2Mass=NOVAL_F;
-      QuadSubJet2Eta=NOVAL_F;
-      QuadSubJet2Phi=NOVAL_F;
-      QuadSubJet3Pt=NOVAL_F;
-      QuadSubJet3Mass=NOVAL_F;
-      QuadSubJet3Eta=NOVAL_F;
-      QuadSubJet3Phi=NOVAL_F;
-      
-      MR = NOVAL_F;
-      MTR = NOVAL_F;
-      R = NOVAL_F;
-      R2 = NOVAL_F;
-
-      it=-1;
     }
     
-    bool Loop() {
-      ++it;
-      if (it<(size_t)jets_size) {
-	E                         = jetE[it];			 
-        Pt			  = jetPt[it];			 
-        Mass			  = jetMass[it];			 
-        Eta			  = jetEta[it];			 
-        PartonFlavour		  = jetPhi[it];			 
-        Phi			  = jetPartonFlavour[it];		 
-        CSV			  = jetCSV[it];			 
-        CSVV1			  = jetCSVV1[it];			 
-        Charge			  = jetCharge[it];			 
-        ChargeMuEnergy		  = jetChargeMuEnergy[it];		 
-        ChargedHadronMultiplicity = jetChargedHadronMultiplicity[it]; 
-        ElectronEnergy		  = jetElectronEnergy[it];		 
-        GenJetCharge		  = jetGenJetCharge[it];		 
-        GenJetE			  = jetGenJetE[it];			 
-        GenJetEta		  = jetGenJetEta[it];		 
-        GenJetPhi		  = jetGenJetPhi[it];		 
-        GenJetPt		  = jetGenJetPt[it];			 
-        GenJetY			  = jetGenJetY[it];			 
-        GenPartonCharge		  = jetGenPartonCharge[it];		 
-        GenPartonE		  = jetGenPartonE[it];		 
-        GenPartonEta		  = jetGenPartonEta[it];		 
-        GenPartonPhi		  = jetGenPartonPhi[it];		 
-        GenPartonPt		  = jetGenPartonPt[it];		 
-        GenPartonY		  = jetGenPartonY[it];		 
-        HFEMEnergy		  = jetHFEMEnergy[it];		 
-        HFEMMultiplicity	  = jetHFEMMultiplicity[it];		 
-        HFHadronEnergy		  = jetHFHadronEnergy[it];		 
-        HFHadronMultiplicity	  = jetHFHadronMultiplicity[it];	 
-        HLTjetDeltaR		  = jetHLTjetDeltaR[it];		 
-        HLTjetE			  = jetHLTjetE[it];			 
-        HLTjetEta		  = jetHLTjetEta[it];		 
-        HLTjetPt		  = jetHLTjetPt[it];			 
-        HLTjetPhi		  = jetHLTjetPhi[it];		 
-        HadronFlavour		  = jetHadronFlavour[it];		 
-        IsCSVL			  = jetIsCSVL[it];			 
-        IsCSVM			  = jetIsCSVM[it];			 
-        IsCSVT			  = jetIsCSVT[it];			 
-        SmearedE		  = jetSmearedE[it];			 
-        SmearedPt		  = jetSmearedPt[it];		 
-        SmearedPEta		  = jetSmearedPEta[it];		 
-        SmearedPhi		  = jetSmearedPhi[it];		 
-	JERup                     = jetJERup[it]; 
-	JERdown                   = jetJERdown[it];
-	Y			  = jetY[it];			 
-        electronMultiplicity	  = jetelectronMultiplicity[it];	 
-        muonMultiplicity	  = jetmuonMultiplicity[it];		 
-        neutralHadronMultiplicity = jetneutralHadronMultiplicity[it]; 
-        neutralMultiplicity	  = jetneutralMultiplicity[it];	 
-        photonMultiplicity	  = jetphotonMultiplicity[it];	 
-        CorrPt			  = jetsCorrPt[it];			 
-        CorrEta			  = jetsCorrEta[it];			 
-        CorrPhi			  = jetsCorrPhi[it];			 
-        CorrE			  = jetsCorrE[it];			 
-        CorrMass		  = jetsCorrMass[it];		 
-        CorrNJets		  = jetsCorrNJets[it];		 
-        CorrPartonFlavour	  = jetsCorrPartonFlavour[it];    
-        tau1                      = jettau1[it];		 
-        tau2         		  = jettau2[it];		 
-        tau3         		  = jettau3[it];		 
-        tau4         		  = jettau4[it];		 
-        DoubleSubJet0Pt           = jetsjc2j0pt[it];	 
-        DoubleSubJet0Mass         = jetsjc2j0mass[it]; 
-        DoubleSubJet0Eta          = jetsjc2j0eta[it];	 
-        DoubleSubJet0Phi          = jetsjc2j0phi[it];	 
-        DoubleSubJet1Pt           = jetsjc2j1pt[it];	 
-        DoubleSubJet1Mass         = jetsjc2j1mass[it]; 
-        DoubleSubJet1Eta          = jetsjc2j1eta[it];	 
-        DoubleSubJet1Phi          = jetsjc2j1phi[it];	 
-        TripleSubJet0Pt           = jetsjc3j0pt[it];	 
-        TripleSubJet0Mass         = jetsjc3j0mass[it]; 
-        TripleSubJet0Eta          = jetsjc3j0eta[it];	 
-        TripleSubJet0Phi          = jetsjc3j0phi[it];	 
-        TripleSubJet1Pt           = jetsjc3j1pt[it];	 
-        TripleSubJet1Mass         = jetsjc3j1mass[it]; 
-        TripleSubJet1Eta          = jetsjc3j1eta[it];	 
-        TripleSubJet1Phi          = jetsjc3j1phi[it];	 
-        TripleSubJet2Pt           = jetsjc3j2pt[it];	 
-        TripleSubJet2Mass         = jetsjc3j2mass[it]; 
-        TripleSubJet2Eta          = jetsjc3j2eta[it];	 
-        TripleSubJet2Phi          = jetsjc3j2phi[it];	 
-        QuadSubJet0Pt         	  = jetsjc4j0pt[it];	 
-        QuadSubJet0Mass           = jetsjc4j0mass[it];	 
-        QuadSubJet0Eta         	  = jetsjc4j0eta[it];	 
-        QuadSubJet0Phi         	  = jetsjc4j0phi[it];	 
-        QuadSubJet1Pt         	  = jetsjc4j1pt[it];	 
-        QuadSubJet1Mass           = jetsjc4j1mass[it];	 
-        QuadSubJet1Eta         	  = jetsjc4j1eta[it];	 
-        QuadSubJet1Phi         	  = jetsjc4j1phi[it];	 
-        QuadSubJet2Pt         	  = jetsjc4j2pt[it];	 
-        QuadSubJet2Mass           = jetsjc4j2mass[it];	 
-        QuadSubJet2Eta         	  = jetsjc4j2eta[it];	 
-        QuadSubJet2Phi         	  = jetsjc4j2phi[it];	 
-        QuadSubJet3Pt         	  = jetsjc4j3pt[it];	 
-        QuadSubJet3Mass           = jetsjc4j3mass[it];	 
-        QuadSubJet3Eta         	  = jetsjc4j3eta[it];	 
-        QuadSubJet3Phi            = jetsjc4j3phi[it];    
-	return 1;
-      } else {
-	it=-1;
-	return 0;
-      }
+    void SetCurrent(size_t it) {
+      Mass[NJET]                        = Mass[it];			      
+      Pt[NJET]			        = Pt[it];			      
+      Eta[NJET]			        = Eta[it];			      
+      Y[NJET]			        = Y[it];			      
+      Phi[NJET]			        = Phi[it];			      
+      E[NJET]			        = E[it];			      
+      Charge[NJET]		        = Charge[it];		      
+      IsCSVL[NJET]		        = IsCSVL[it];		      
+      IsCSVM[NJET]		        = IsCSVM[it];		      
+      IsCSVT[NJET]		        = IsCSVT[it];		      
+      CSV[NJET]			        = CSV[it];			      
+      CSVV1[NJET]		        = CSVV1[it];		      
+      GenPartonY[NJET]		        = GenPartonY[it];		      
+      GenPartonEta[NJET]		= GenPartonEta[it];		      
+      GenPartonPhi[NJET]		= GenPartonPhi[it];		      
+      GenPartonPt[NJET]		        = GenPartonPt[it];		      
+      GenPartonE[NJET]		        = GenPartonE[it];		      
+      GenPartonCharge[NJET]	        = GenPartonCharge[it];	      
+      PartonFlavour[NJET]	        = PartonFlavour[it];	      
+      HadronFlavour[NJET]	        = HadronFlavour[it];	      
+      GenJetY[NJET]		        = GenJetY[it];		      
+      GenJetEta[NJET]		        = GenJetEta[it];		      
+      GenJetPhi[NJET]		        = GenJetPhi[it];		      
+      GenJetPt[NJET]		        = GenJetPt[it];		      
+      GenJetE[NJET]		        = GenJetE[it];		      
+      GenJetCharge[NJET]		= GenJetCharge[it];		      
+      HLTjetEta[NJET]		        = HLTjetEta[it];		      
+      HLTjetPhi[NJET]		        = HLTjetPhi[it];		      
+      HLTjetPt[NJET]		        = HLTjetPt[it];		      
+      HLTjetE[NJET]		        = HLTjetE[it];		      
+      HLTjetDeltaR[NJET]		= HLTjetDeltaR[it];		      
+      muonMultiplicity[NJET]	        = muonMultiplicity[it];	      
+      PhotonEnergy[NJET]		= PhotonEnergy[it];		      
+      ElectronEnergy[NJET]	        = ElectronEnergy[it];	      
+      MuonEnergy[NJET]		        = MuonEnergy[it];		      
+      HFHadronEnergy[NJET]	        = HFHadronEnergy[it];	      
+      HFEMEnergy[NJET]		        = HFEMEnergy[it];		      
+      ChargedHadronMultiplicity[NJET]   = ChargedHadronMultiplicity[it];  
+      numberOfDaughters[NJET]	        = numberOfDaughters[it];	      
+      chargedMultiplicity[NJET]	        = chargedMultiplicity[it];	      
+      neutralHadronMultiplicity[NJET]   = neutralHadronMultiplicity[it];  
+      neutralHadronEnergyFraction[NJET] = neutralHadronEnergyFraction[it];
+      neutralEmEnergyFraction[NJET]     = neutralEmEnergyFraction[it];    
+      chargedEmEnergyFraction[NJET]     = chargedEmEnergyFraction[it];    
+      chargedHadronEnergyFraction[NJET] = chargedHadronEnergyFraction[it];
+      photonMultiplicity[NJET]	        = photonMultiplicity[it];	      
+      electronMultiplicity[NJET]	= electronMultiplicity[it];	      
+      HFHadronMultiplicity[NJET]	= HFHadronMultiplicity[it];	      
+      HFEMMultiplicity[NJET]	        = HFEMMultiplicity[it];	      
+      ChargeMuEnergy[NJET]	        = ChargeMuEnergy[it];	      
+      neutralMultiplicity[NJET]	        = neutralMultiplicity[it];	      
+      SmearedPt[NJET]		        = SmearedPt[it];		      
+      SmearedPEta[NJET]		        = SmearedPEta[it];		      
+      SmearedPhi[NJET]		        = SmearedPhi[it];		      
+      SmearedE[NJET]		        = SmearedE[it];		      
+      JERup[NJET]		        = JERup[it];		      
+      JERdown[NJET]                     = JERdown[it];
     }
-  } jetAK4;
+  } jet;
   
-  class JetAK8Data {
+  class AK8Vars {
   public:
-    JetAK8Data() { init(); };
+    float subjetIndex0[NJET+1];
+    float subjetIndex1[NJET+1];
+    float tau1[NJET+1];
+    float tau2[NJET+1];
+    float tau3[NJET+1];
+    float trimmedMass[NJET+1];
+    float prunedMass[NJET+1];
+    float filteredMass[NJET+1];
     
-    int jetsAK8_size;
-    float jetAK8E[20];
-    float jetAK8Pt[20];
-    float jetAK8Mass[20];
-    float jetAK8Eta[20];
-    float jetAK8Phi[20];
-    float jetAK8PartonFlavour[20];
-    float jetAK8CSV[20];
-    float jetAK8CSVV1[20];
-    float jetAK8Charge[20];
-    float jetAK8ChargeMuEnergy[20];
-    float jetAK8ElectronEnergy[20];
-    float jetAK8GenJetCharge[20];
-    float jetAK8GenJetE[20];
-    float jetAK8GenJetEta[20];
-    float jetAK8GenJetPhi[20];
-    float jetAK8GenJetPt[20];
-    float jetAK8GenJetY[20];
-    float jetAK8GenPartonCharge[20];
-    float jetAK8GenPartonE[20];
-    float jetAK8GenPartonEta[20];
-    float jetAK8GenPartonPhi[20];
-    float jetAK8GenPartonPt[20];
-    float jetAK8GenPartonY[20];
-    float jetAK8HFEMEnergy[20];
-    float jetAK8HFEMMultiplicity[20];
-    float jetAK8HFHadronEnergy[20];
-    float jetAK8HFHadronMultiplicity[20];
-    float jetAK8HLTjetDeltaR[20];
-    float jetAK8HLTjetE[20];
-    float jetAK8HLTjetEta[20];
-    float jetAK8HLTjetPt[20];
-    float jetAK8HLTjetPhi[20];
-    float jetAK8HadronFlavour[20];
-    float jetAK8IsCSVL[20];
-    float jetAK8IsCSVM[20];
-    float jetAK8IsCSVT[20];
-    float jetAK8SmearedE[20];
-    float jetAK8SmearedPt[20];
-    float jetAK8SmearedPEta[20];
-    float jetAK8SmearedPhi[20];
-    float jetAK8Y[20];
-    float jetAK8electronMultiplicity[20];
-    float jetAK8muonMultiplicity[20];
-    float jetAK8neutralMultiplicity[20];
-    float jetAK8photonMultiplicity[20];
-    float jetsAK8CorrPt[20];
-    float jetsAK8CorrEta[20];
-    float jetsAK8CorrPhi[20];
-    float jetsAK8CorrE[20];
-    float jetsAK8CorrMass[20];
-    float jetsAK8CorrNJets[20];
-    float jetsAK8CorrPartonFlavour[20];
-    float jetAK8tau1[20];
-    float jetAK8tau2[20];
-    float jetAK8tau3[20];
-    float jetAK8tau4[20];
-    float jetAK8sjc2j0pt[20];
-    float jetAK8sjc2j0mass[20];
-    float jetAK8sjc2j0eta[20];
-    float jetAK8sjc2j0phi[20];
-    float jetAK8sjc2j1pt[20];
-    float jetAK8sjc2j1mass[20];
-    float jetAK8sjc2j1eta[20];
-    float jetAK8sjc2j1phi[20];
-    float jetAK8sjc3j0pt[20];
-    float jetAK8sjc3j0mass[20];
-    float jetAK8sjc3j0eta[20];
-    float jetAK8sjc3j0phi[20];
-    float jetAK8sjc3j1pt[20];
-    float jetAK8sjc3j1mass[20];
-    float jetAK8sjc3j1eta[20];
-    float jetAK8sjc3j1phi[20];
-    float jetAK8sjc3j2pt[20];
-    float jetAK8sjc3j2mass[20];
-    float jetAK8sjc3j2eta[20];
-    float jetAK8sjc3j2phi[20];
-    float jetAK8sjc4j0pt[20];
-    float jetAK8sjc4j0mass[20];
-    float jetAK8sjc4j0eta[20];
-    float jetAK8sjc4j0phi[20];
-    float jetAK8sjc4j1pt[20];
-    float jetAK8sjc4j1mass[20];
-    float jetAK8sjc4j1eta[20];
-    float jetAK8sjc4j1phi[20];
-    float jetAK8sjc4j2pt[20];
-    float jetAK8sjc4j2mass[20];
-    float jetAK8sjc4j2eta[20];
-    float jetAK8sjc4j2phi[20];
-    float jetAK8sjc4j3pt[20];
-    float jetAK8sjc4j3mass[20];
-    float jetAK8sjc4j3eta[20];
-    float jetAK8sjc4j3phi[20];
-    float jetAK8trimmedMass[20];
-    float jetAK8prunedMass[20];
-    float jetAK8filteredMass[20];
+    void init() {
+      for (size_t it=0; it<=NJET; ++it) {
+	subjetIndex0[it]=NOVAL_F;
+	subjetIndex1[it]=NOVAL_F;
+	tau1[it]=NOVAL_F;
+	tau2[it]=NOVAL_F;
+	tau3[it]=NOVAL_F;
+	trimmedMass[it]=NOVAL_F;
+	prunedMass[it]=NOVAL_F;
+	filteredMass[it]=NOVAL_F;
+      }
+    }
     
-    float E;
-    float Pt;
-    float Mass;
-    float Eta;
-    float Phi;
-    float PartonFlavour;
-    float CSV;
-    float CSVV1;
-    float Charge;
-    float ChargeMuEnergy;
-    float ElectronEnergy;
-    float GenJetCharge;
-    float GenJetE;
-    float GenJetEta;
-    float GenJetPhi;
-    float GenJetPt;
-    float GenJetY;
-    float GenPartonCharge;
-    float GenPartonE;
-    float GenPartonEta;
-    float GenPartonPhi;
-    float GenPartonPt;
-    float GenPartonY;
-    float HFEMEnergy;
-    float HFEMMultiplicity;
-    float HFHadronEnergy;
-    float HFHadronMultiplicity;
-    float HLTjetDeltaR;
-    float HLTjetE;
-    float HLTjetEta;
-    float HLTjetPt;
-    float HLTjetPhi;
-    float HadronFlavour;
-    float IsCSVL;
-    float IsCSVM;
-    float IsCSVT;
-    float SmearedE;
-    float SmearedPt;
-    float SmearedPEta;
-    float SmearedPhi;
-    float Y;
-    float electronMultiplicity;
-    float muonMultiplicity;
-    float neutralMultiplicity;
-    float photonMultiplicity;
-    float CorrPt;
-    float CorrEta;
-    float CorrPhi;
-    float CorrE;
-    float CorrMass;
-    float CorrNJets;
-    float CorrPartonFlavour;
-    float tau1;
-    float tau2;
-    float tau3;
-    float tau4;
-    float DoubleSubJet0Pt;
-    float DoubleSubJet0Mass;
-    float DoubleSubJet0Eta;
-    float DoubleSubJet0Phi;
-    float DoubleSubJet1Pt;
-    float DoubleSubJet1Mass;
-    float DoubleSubJet1Eta;
-    float DoubleSubJet1Phi;
-    float TripleSubJet0Pt;
-    float TripleSubJet0Mass;
-    float TripleSubJet0Eta;
-    float TripleSubJet0Phi;
-    float TripleSubJet1Pt;
-    float TripleSubJet1Mass;
-    float TripleSubJet1Eta;
-    float TripleSubJet1Phi;
-    float TripleSubJet2Pt;
-    float TripleSubJet2Mass;
-    float TripleSubJet2Eta;
-    float TripleSubJet2Phi;
-    float QuadSubJet0Pt;
-    float QuadSubJet0Mass;
-    float QuadSubJet0Eta;
-    float QuadSubJet0Phi;
-    float QuadSubJet1Pt;
-    float QuadSubJet1Mass;
-    float QuadSubJet1Eta;
-    float QuadSubJet1Phi;
-    float QuadSubJet2Pt;
-    float QuadSubJet2Mass;
-    float QuadSubJet2Eta;
-    float QuadSubJet2Phi;
-    float QuadSubJet3Pt;
-    float QuadSubJet3Mass;
-    float QuadSubJet3Eta;
-    float QuadSubJet3Phi;
-    float trimmedMass;
-    float prunedMass;
-    float filteredMass;
+    void SetCurrent(size_t it) {
+      subjetIndex0[NJET] = subjetIndex0[it];
+      subjetIndex1[NJET] = subjetIndex1[it];
+      tau1[NJET]	 = tau1[it];
+      tau2[NJET]	 = tau2[it];
+      tau3[NJET]	 = tau3[it];
+      trimmedMass[NJET]	 = trimmedMass[it];
+      prunedMass[NJET]	 = prunedMass[it];
+      filteredMass[NJET] = filteredMass[it];
+    }
+  } AK8;
+  
+  class AK4JetVars : public JetVars {
+  public:
+    AK4JetVars() { init(); }
+    ~AK4JetVars() {}
+    
+    size_t it;
+    int size;
     
     // Razor variables
     float MR;
@@ -1152,402 +524,211 @@ public:
     float R;
     float R2;
     
-    size_t it;
-    
     void init() {
-      jetsAK8_size=0;
-      for (int i=0; i<20; ++i) {
-        jetAK8E[i]=NOVAL_F;
-        jetAK8Pt[i]=NOVAL_F;
-        jetAK8Mass[i]=NOVAL_F;
-        jetAK8Eta[i]=NOVAL_F;
-        jetAK8Phi[i]=NOVAL_F;
-        jetAK8PartonFlavour[i]=NOVAL_F;
-        jetAK8CSV[i]=NOVAL_F;
-        jetAK8CSVV1[i]=NOVAL_F;
-        jetAK8Charge[i]=NOVAL_F;
-        jetAK8ChargeMuEnergy[i]=NOVAL_F;
-        jetAK8ElectronEnergy[i]=NOVAL_F;
-        jetAK8GenJetCharge[i]=NOVAL_F;
-        jetAK8GenJetE[i]=NOVAL_F;
-        jetAK8GenJetEta[i]=NOVAL_F;
-        jetAK8GenJetPhi[i]=NOVAL_F;
-        jetAK8GenJetPt[i]=NOVAL_F;
-        jetAK8GenJetY[i]=NOVAL_F;
-        jetAK8GenPartonCharge[i]=NOVAL_F;
-        jetAK8GenPartonE[i]=NOVAL_F;
-        jetAK8GenPartonEta[i]=NOVAL_F;
-        jetAK8GenPartonPhi[i]=NOVAL_F;
-        jetAK8GenPartonPt[i]=NOVAL_F;
-        jetAK8GenPartonY[i]=NOVAL_F;
-        jetAK8HFEMEnergy[i]=NOVAL_F;
-        jetAK8HFEMMultiplicity[i]=NOVAL_F;
-        jetAK8HFHadronEnergy[i]=NOVAL_F;
-        jetAK8HFHadronMultiplicity[i]=NOVAL_F;
-        jetAK8HLTjetDeltaR[i]=NOVAL_F;
-        jetAK8HLTjetE[i]=NOVAL_F;
-        jetAK8HLTjetEta[i]=NOVAL_F;
-        jetAK8HLTjetPt[i]=NOVAL_F;
-        jetAK8HLTjetPhi[i]=NOVAL_F;
-        jetAK8HadronFlavour[i]=NOVAL_F;
-        jetAK8IsCSVL[i]=NOVAL_F;
-        jetAK8IsCSVM[i]=NOVAL_F;
-        jetAK8IsCSVT[i]=NOVAL_F;
-        jetAK8SmearedE[i]=NOVAL_F;
-        jetAK8SmearedPt[i]=NOVAL_F;
-        jetAK8SmearedPEta[i]=NOVAL_F;
-        jetAK8SmearedPhi[i]=NOVAL_F;
-        jetAK8Y[i]=NOVAL_F;
-        jetAK8electronMultiplicity[i]=NOVAL_F;
-        jetAK8muonMultiplicity[i]=NOVAL_F;
-        jetAK8neutralMultiplicity[i]=NOVAL_F;
-        jetAK8photonMultiplicity[i]=NOVAL_F;
-        jetsAK8CorrPt[i]=NOVAL_F;
-        jetsAK8CorrEta[i]=NOVAL_F;
-        jetsAK8CorrPhi[i]=NOVAL_F;
-        jetsAK8CorrE[i]=NOVAL_F;
-        jetsAK8CorrMass[i]=NOVAL_F;
-        jetsAK8CorrNJets[i]=NOVAL_F;
-        jetsAK8CorrPartonFlavour[i]=NOVAL_F;
-        jetAK8tau1[i]=NOVAL_F;
-        jetAK8tau2[i]=NOVAL_F;
-        jetAK8tau3[i]=NOVAL_F;
-        jetAK8tau4[i]=NOVAL_F;
-        jetAK8sjc2j0pt[i]=NOVAL_F;
-        jetAK8sjc2j0mass[i]=NOVAL_F;
-        jetAK8sjc2j0eta[i]=NOVAL_F;
-        jetAK8sjc2j0phi[i]=NOVAL_F;
-        jetAK8sjc2j1pt[i]=NOVAL_F;
-        jetAK8sjc2j1mass[i]=NOVAL_F;
-        jetAK8sjc2j1eta[i]=NOVAL_F;
-        jetAK8sjc2j1phi[i]=NOVAL_F;
-        jetAK8sjc3j0pt[i]=NOVAL_F;
-        jetAK8sjc3j0mass[i]=NOVAL_F;
-        jetAK8sjc3j0eta[i]=NOVAL_F;
-        jetAK8sjc3j0phi[i]=NOVAL_F;
-        jetAK8sjc3j1pt[i]=NOVAL_F;
-        jetAK8sjc3j1mass[i]=NOVAL_F;
-        jetAK8sjc3j1eta[i]=NOVAL_F;
-        jetAK8sjc3j1phi[i]=NOVAL_F;
-        jetAK8sjc3j2pt[i]=NOVAL_F;
-        jetAK8sjc3j2mass[i]=NOVAL_F;
-        jetAK8sjc3j2eta[i]=NOVAL_F;
-        jetAK8sjc3j2phi[i]=NOVAL_F;
-        jetAK8sjc4j0pt[i]=NOVAL_F;
-        jetAK8sjc4j0mass[i]=NOVAL_F;
-        jetAK8sjc4j0eta[i]=NOVAL_F;
-        jetAK8sjc4j0phi[i]=NOVAL_F;
-        jetAK8sjc4j1pt[i]=NOVAL_F;
-        jetAK8sjc4j1mass[i]=NOVAL_F;
-        jetAK8sjc4j1eta[i]=NOVAL_F;
-        jetAK8sjc4j1phi[i]=NOVAL_F;
-        jetAK8sjc4j2pt[i]=NOVAL_F;
-        jetAK8sjc4j2mass[i]=NOVAL_F;
-        jetAK8sjc4j2eta[i]=NOVAL_F;
-        jetAK8sjc4j2phi[i]=NOVAL_F;
-        jetAK8sjc4j3pt[i]=NOVAL_F;
-        jetAK8sjc4j3mass[i]=NOVAL_F;
-        jetAK8sjc4j3eta[i]=NOVAL_F;
-        jetAK8sjc4j3phi[i]=NOVAL_F;
-	jetAK8trimmedMass[i]=NOVAL_F;
-	jetAK8prunedMass[i]=NOVAL_F;
-	jetAK8filteredMass[i]=NOVAL_F;
-      }
-      E=NOVAL_F;
-      Pt=NOVAL_F;
-      Mass=NOVAL_F;
-      Eta=NOVAL_F;
-      Phi=NOVAL_F;
-      PartonFlavour=NOVAL_F;
-      CSV=NOVAL_F;
-      CSVV1=NOVAL_F;
-      Charge=NOVAL_F;
-      ChargeMuEnergy=NOVAL_F;
-      ElectronEnergy=NOVAL_F;
-      GenJetCharge=NOVAL_F;
-      GenJetE=NOVAL_F;
-      GenJetEta=NOVAL_F;
-      GenJetPhi=NOVAL_F;
-      GenJetPt=NOVAL_F;
-      GenJetY=NOVAL_F;
-      GenPartonCharge=NOVAL_F;
-      GenPartonE=NOVAL_F;
-      GenPartonEta=NOVAL_F;
-      GenPartonPhi=NOVAL_F;
-      GenPartonPt=NOVAL_F;
-      GenPartonY=NOVAL_F;
-      HFEMEnergy=NOVAL_F;
-      HFEMMultiplicity=NOVAL_F;
-      HFHadronEnergy=NOVAL_F;
-      HFHadronMultiplicity=NOVAL_F;
-      HLTjetDeltaR=NOVAL_F;
-      HLTjetE=NOVAL_F;
-      HLTjetEta=NOVAL_F;
-      HLTjetPt=NOVAL_F;
-      HLTjetPhi=NOVAL_F;
-      HadronFlavour=NOVAL_F;
-      IsCSVL=NOVAL_F;
-      IsCSVM=NOVAL_F;
-      IsCSVT=NOVAL_F;
-      SmearedE=NOVAL_F;
-      SmearedPt=NOVAL_F;
-      SmearedPEta=NOVAL_F;
-      SmearedPhi=NOVAL_F;
-      Y=NOVAL_F;
-      electronMultiplicity=NOVAL_F;
-      muonMultiplicity=NOVAL_F;
-      neutralMultiplicity=NOVAL_F;
-      photonMultiplicity=NOVAL_F;
-      CorrPt=NOVAL_F;
-      CorrEta=NOVAL_F;
-      CorrPhi=NOVAL_F;
-      CorrE=NOVAL_F;
-      CorrMass=NOVAL_F;
-      CorrNJets=NOVAL_F;
-      CorrPartonFlavour=NOVAL_F;
-      tau1=NOVAL_F;
-      tau2=NOVAL_F;
-      tau3=NOVAL_F;
-      tau4=NOVAL_F;
-      DoubleSubJet0Pt=NOVAL_F;
-      DoubleSubJet0Mass=NOVAL_F;
-      DoubleSubJet0Eta=NOVAL_F;
-      DoubleSubJet0Phi=NOVAL_F;
-      DoubleSubJet1Pt=NOVAL_F;
-      DoubleSubJet1Mass=NOVAL_F;
-      DoubleSubJet1Eta=NOVAL_F;
-      DoubleSubJet1Phi=NOVAL_F;
-      TripleSubJet0Pt=NOVAL_F;
-      TripleSubJet0Mass=NOVAL_F;
-      TripleSubJet0Eta=NOVAL_F;
-      TripleSubJet0Phi=NOVAL_F;
-      TripleSubJet1Pt=NOVAL_F;
-      TripleSubJet1Mass=NOVAL_F;
-      TripleSubJet1Eta=NOVAL_F;
-      TripleSubJet1Phi=NOVAL_F;
-      TripleSubJet2Pt=NOVAL_F;
-      TripleSubJet2Mass=NOVAL_F;
-      TripleSubJet2Eta=NOVAL_F;
-      TripleSubJet2Phi=NOVAL_F;
-      QuadSubJet0Pt=NOVAL_F;
-      QuadSubJet0Mass=NOVAL_F;
-      QuadSubJet0Eta=NOVAL_F;
-      QuadSubJet0Phi=NOVAL_F;
-      QuadSubJet1Pt=NOVAL_F;
-      QuadSubJet1Mass=NOVAL_F;
-      QuadSubJet1Eta=NOVAL_F;
-      QuadSubJet1Phi=NOVAL_F;
-      QuadSubJet2Pt=NOVAL_F;
-      QuadSubJet2Mass=NOVAL_F;
-      QuadSubJet2Eta=NOVAL_F;
-      QuadSubJet2Phi=NOVAL_F;
-      QuadSubJet3Pt=NOVAL_F;
-      QuadSubJet3Mass=NOVAL_F;
-      QuadSubJet3Eta=NOVAL_F;
-      QuadSubJet3Phi=NOVAL_F;
-      trimmedMass=NOVAL_F;
-      prunedMass=NOVAL_F;
-      filteredMass=NOVAL_F;
+      JetVars::init();
+      
+      it = -1;
+      size = 0;
       
       MR = NOVAL_F;
       MTR = NOVAL_F;
       R = NOVAL_F;
       R2 = NOVAL_F;
-      
-      it=-1;
     }
-
+    
     bool Loop() {
       ++it;
-      if (it<(size_t)jetsAK8_size) {
-	E                    = jetAK8E[it];		       
-        Pt		     = jetAK8Pt[it];		       
-        Mass		     = jetAK8Mass[it];		       
-        Eta		     = jetAK8Eta[it];		       
-        Phi		     = jetAK8Phi[it];		       
-        PartonFlavour	     = jetAK8PartonFlavour[it];	       
-        CSV		     = jetAK8CSV[it];		       
-        CSVV1		     = jetAK8CSVV1[it];		       
-        Charge		     = jetAK8Charge[it];	       
-        ChargeMuEnergy	     = jetAK8ChargeMuEnergy[it];       
-        ElectronEnergy	     = jetAK8ElectronEnergy[it];       
-        GenJetCharge	     = jetAK8GenJetCharge[it];	       
-        GenJetE		     = jetAK8GenJetE[it];	       
-        GenJetEta	     = jetAK8GenJetEta[it];	       
-        GenJetPhi	     = jetAK8GenJetPhi[it];	       
-        GenJetPt	     = jetAK8GenJetPt[it];	       
-        GenJetY		     = jetAK8GenJetY[it];	       
-        GenPartonCharge	     = jetAK8GenPartonCharge[it];      
-        GenPartonE	     = jetAK8GenPartonE[it];	       
-        GenPartonEta	     = jetAK8GenPartonEta[it];	       
-        GenPartonPhi	     = jetAK8GenPartonPhi[it];	       
-        GenPartonPt	     = jetAK8GenPartonPt[it];	       
-        GenPartonY	     = jetAK8GenPartonY[it];	       
-        HFEMEnergy	     = jetAK8HFEMEnergy[it];	       
-        HFEMMultiplicity     = jetAK8HFEMMultiplicity[it];     
-        HFHadronEnergy	     = jetAK8HFHadronEnergy[it];       
-        HFHadronMultiplicity = jetAK8HFHadronMultiplicity[it]; 
-        HLTjetDeltaR	     = jetAK8HLTjetDeltaR[it];	       
-        HLTjetE		     = jetAK8HLTjetE[it];	       
-        HLTjetEta	     = jetAK8HLTjetEta[it];	       
-        HLTjetPt	     = jetAK8HLTjetPt[it];	       
-        HLTjetPhi	     = jetAK8HLTjetPhi[it];	       
-        HadronFlavour	     = jetAK8HadronFlavour[it];	       
-        IsCSVL		     = jetAK8IsCSVL[it];	       
-        IsCSVM		     = jetAK8IsCSVM[it];	       
-        IsCSVT		     = jetAK8IsCSVT[it];	       
-        SmearedE	     = jetAK8SmearedE[it];	       
-        SmearedPt	     = jetAK8SmearedPt[it];	       
-        SmearedPEta	     = jetAK8SmearedPEta[it];	       
-        SmearedPhi	     = jetAK8SmearedPhi[it];	       
-        Y		     = jetAK8Y[it];		       
-        electronMultiplicity = jetAK8electronMultiplicity[it]; 
-        muonMultiplicity     = jetAK8muonMultiplicity[it];     
-        neutralMultiplicity  = jetAK8neutralMultiplicity[it];  
-        photonMultiplicity   = jetAK8photonMultiplicity[it];   
-        CorrPt		     = jetsAK8CorrPt[it];	       
-        CorrEta		     = jetsAK8CorrEta[it];	       
-        CorrPhi		     = jetsAK8CorrPhi[it];	       
-        CorrE		     = jetsAK8CorrE[it];	       
-        CorrMass	     = jetsAK8CorrMass[it];	       
-        CorrNJets	     = jetsAK8CorrNJets[it];	       
-        CorrPartonFlavour    = jetsAK8CorrPartonFlavour[it];   
-        tau1                 = jetAK8tau1[it];		 
-        tau2         	     = jetAK8tau2[it];		 
-        tau3         	     = jetAK8tau3[it];		 
-        tau4         	     = jetAK8tau4[it];		 
-        DoubleSubJet0Pt      = jetAK8sjc2j0pt[it];	 
-        DoubleSubJet0Mass    = jetAK8sjc2j0mass[it]; 
-        DoubleSubJet0Eta     = jetAK8sjc2j0eta[it];	 
-        DoubleSubJet0Phi     = jetAK8sjc2j0phi[it];	 
-        DoubleSubJet1Pt      = jetAK8sjc2j1pt[it];	 
-        DoubleSubJet1Mass    = jetAK8sjc2j1mass[it]; 
-        DoubleSubJet1Eta     = jetAK8sjc2j1eta[it];	 
-        DoubleSubJet1Phi     = jetAK8sjc2j1phi[it];	 
-        TripleSubJet0Pt      = jetAK8sjc3j0pt[it];	 
-        TripleSubJet0Mass    = jetAK8sjc3j0mass[it]; 
-        TripleSubJet0Eta     = jetAK8sjc3j0eta[it];	 
-        TripleSubJet0Phi     = jetAK8sjc3j0phi[it];	 
-        TripleSubJet1Pt      = jetAK8sjc3j1pt[it];	 
-        TripleSubJet1Mass    = jetAK8sjc3j1mass[it]; 
-        TripleSubJet1Eta     = jetAK8sjc3j1eta[it];	 
-        TripleSubJet1Phi     = jetAK8sjc3j1phi[it];	 
-        TripleSubJet2Pt      = jetAK8sjc3j2pt[it];	 
-        TripleSubJet2Mass    = jetAK8sjc3j2mass[it]; 
-        TripleSubJet2Eta     = jetAK8sjc3j2eta[it];	 
-        TripleSubJet2Phi     = jetAK8sjc3j2phi[it];	 
-        QuadSubJet0Pt        = jetAK8sjc4j0pt[it];	 
-        QuadSubJet0Mass      = jetAK8sjc4j0mass[it];	 
-        QuadSubJet0Eta       = jetAK8sjc4j0eta[it];	 
-        QuadSubJet0Phi       = jetAK8sjc4j0phi[it];	 
-        QuadSubJet1Pt        = jetAK8sjc4j1pt[it];	 
-        QuadSubJet1Mass      = jetAK8sjc4j1mass[it];	 
-        QuadSubJet1Eta       = jetAK8sjc4j1eta[it];	 
-        QuadSubJet1Phi       = jetAK8sjc4j1phi[it];	 
-        QuadSubJet2Pt        = jetAK8sjc4j2pt[it];	 
-        QuadSubJet2Mass      = jetAK8sjc4j2mass[it];	 
-        QuadSubJet2Eta       = jetAK8sjc4j2eta[it];	 
-        QuadSubJet2Phi       = jetAK8sjc4j2phi[it];	 
-        QuadSubJet3Pt        = jetAK8sjc4j3pt[it];	 
-        QuadSubJet3Mass      = jetAK8sjc4j3mass[it];	 
-        QuadSubJet3Eta       = jetAK8sjc4j3eta[it];	 
-        QuadSubJet3Phi       = jetAK8sjc4j3phi[it];    
-	trimmedMass 	     = jetAK8trimmedMass[it]; 
-	prunedMass 	     = jetAK8prunedMass[it];  
-	filteredMass 	     = jetAK8filteredMass[it];
+      if (it<(size_t)size) {
+	JetVars::SetCurrent(it);
 	return 1;
       } else {
 	it=-1;
 	return 0;
       }
     }
-  } jetAK8;
+  } jetsAK4;
+  
+  class AK8JetVars : public JetVars, public AK8Vars {
+  public:
+    AK8JetVars() { init(); }
+    ~AK8JetVars() {}
+    
+    size_t it;
+    int size;
+    
+    // Razor variables
+    float MR;
+    float MTR;
+    float R;
+    float R2;
+    
+    void init() {
+      JetVars::init();
+      AK8Vars::init();
+      
+      it = -1;
+      size = 0;
+      
+      MR = NOVAL_F;
+      MTR = NOVAL_F;
+      R = NOVAL_F;
+      R2 = NOVAL_F;
+    }
+    
+    bool Loop() {
+      ++it;
+      if (it<(size_t)size) {
+	JetVars::SetCurrent(it);
+	AK8Vars::SetCurrent(it);
+	return 1;
+      } else {
+	it=-1;
+	return 0;
+      }
+    }
+  } jetsAK8;
+  
+  class AK8SubJetVars : public JetVars {
+  public:
+    AK8SubJetVars() { init(); }
+    ~AK8SubJetVars() {}
+    
+    size_t it;
+    int size;
+    
+    void init() {
+      JetVars::init();
+      
+      it = -1;
+      size = 0;
+    }
+    
+    bool Loop() {
+      ++it;
+      if (it<(size_t)size) {
+	JetVars::SetCurrent(it);
+	return 1;
+      } else {
+	it=-1;
+	return 0;
+      }
+    }
+  } subjetsAK8;
+  
+  class CmsTopTagJetVars : public JetVars, public AK8Vars {
+  public:
+    CmsTopTagJetVars() { init(); }
+    ~CmsTopTagJetVars() {}
+    
+    size_t it;
+    int size;
+    
+    // Razor variables
+    float MR;
+    float MTR;
+    float R;
+    float R2;
+    
+    void init() {
+      JetVars::init();
+      AK8Vars::init();
+      
+      it = -1;
+      size = 0;
+      
+      MR = NOVAL_F;
+      MTR = NOVAL_F;
+      R = NOVAL_F;
+      R2 = NOVAL_F;
+    }
+    
+    bool Loop() {
+      ++it;
+      if (it<(size_t)size) {
+	JetVars::SetCurrent(it);
+	AK8Vars::SetCurrent(it);
+	return 1;
+      } else {
+	it=-1;
+	return 0;
+      }
+    }
+  } jetsCmsTopTag;
+
+  class CmsTopTagSubJetVars : public JetVars {
+  public:
+    CmsTopTagSubJetVars() { init(); }
+    ~CmsTopTagSubJetVars() {}
+    
+    size_t it;
+    int size;
+    
+    void init() {
+      JetVars::init();
+      
+      it = -1;
+      size = 0;
+    }
+    
+    bool Loop() {
+      ++it;
+      if (it<(size_t)size) {
+	JetVars::SetCurrent(it);
+	return 1;
+      } else {
+	it=-1;
+	return 0;
+      }
+    }
+  } subjetsCmsTopTag;
   
   class MetData {
   public:
     MetData() { init(); };
     
-    int met_size;
-    float metPt[20];
-    float metPhi[20];
-    float metPx[20];
-    float metPy[20];
-    float metCorrPt[20];
-    float metCorrPhi[20];
-    
     float Pt;
     float Phi;
     float Px;
     float Py;
-    float CorrPt;
-    float CorrPhi;
-    
-    size_t it;
     
     void init() {
-      met_size=0;
-      for (int i=0; i<20; ++i) {
-        metPt[i]=NOVAL_F;
-        metPhi[i]=NOVAL_F;
-        metPx[i]=NOVAL_F;
-        metPy[i]=NOVAL_F;
-        metCorrPt[i]=NOVAL_F;
-        metCorrPhi[i]=NOVAL_F;
-      }
       Pt=NOVAL_F;
       Phi=NOVAL_F;
       Px=NOVAL_F;
       Py=NOVAL_F;
-      CorrPt=NOVAL_F;
-      CorrPhi=NOVAL_F;
-      
-      it=-1;
     }
-
-    bool Loop() {
-      ++it;
-      if (it<(size_t)met_size) {
-	Pt      = metPt[it];     
-	Phi	= metPhi[it];    
-	Px	= metPx[it];     
-	Py	= metPy[it];     
-	CorrPt	= metCorrPt[it]; 
-	CorrPhi	= metCorrPhi[it];
-	return 1;
-      } else {
-	it=-1;
-	return 0;
-      }
-    }
+    
   } met;
   
   class EventData {
   public:
     EventData() { init(); };
     
-    float Event_nTightMuons;
-    float Event_nLooseMuons;
-    float Event_nTightElectrons;
-    float Event_nLooseElectrons;
-    float Event_nElectronsSF;
-    float Event_nMuonsSF;
-    float Event_nCSVTJets;
-    float Event_nCSVMJets;
-    float Event_nCSVLJets;
-    float Event_nTightJets;
-    float Event_nLooseJets;
-    float Event_bWeight1TCSVT;
-    float Event_bWeight1TCSVM;
-    float Event_bWeight1TCSVL;
-    float Event_bWeight2TCSVT;
-    float Event_bWeight2TCSVM;
-    float Event_bWeight2TCSVL;
-    //float Event_LHEWeightSign;
+    float nTightMuons;
+    float nLooseMuons;
+    float nTightElectrons;
+    float nLooseElectrons;
+    float nElectronsSF;
+    float nMuonsSF;
+    float nCSVTJets;
+    float nCSVMJets;
+    float nCSVLJets;
+    float nTightJets;
+    float nLooseJets;
+    float bWeight1TCSVT;
+    float bWeight1TCSVM;
+    float bWeight1TCSVL;
+    float bWeight2TCSVT;
+    float bWeight2TCSVM;
+    float bWeight2TCSVL;
+    //float LHEWeightSign;
     
     // Top tagging variables
-    int nhadtops;
-    int nleptops;
-    int ntops;
+    float nhadtops;
+    float nleptops;
+    float ntops;
+    float ncmshadtops;
+    float ncmsleptops;
     float tt_dR;
     float tt_dPhi;
     float tt_dEta;
@@ -1561,7 +742,7 @@ public:
     float dphi2;
     float dPhi_met_t1;
     float dPhi_met_t2;
-
+    
     float tt_MR;
     float tt_MTR;
     float tt_R;
@@ -1577,27 +758,30 @@ public:
     float HTexFraction;
     
     void init() {
-      Event_nTightMuons=NOVAL_F;
-      Event_nLooseMuons=NOVAL_F;
-      Event_nTightElectrons=NOVAL_F;
-      Event_nLooseElectrons=NOVAL_F;
-      Event_nElectronsSF=NOVAL_F;
-      Event_nMuonsSF=NOVAL_F;
-      Event_nCSVTJets=NOVAL_F;
-      Event_nCSVMJets=NOVAL_F;
-      Event_nCSVLJets=NOVAL_F;
-      Event_nTightJets=NOVAL_F;
-      Event_nLooseJets=NOVAL_F;
-      Event_bWeight1TCSVT=NOVAL_F;
-      Event_bWeight1TCSVM=NOVAL_F;
-      Event_bWeight1TCSVL=NOVAL_F;
-      Event_bWeight2TCSVT=NOVAL_F;
-      Event_bWeight2TCSVM=NOVAL_F;
-      Event_bWeight2TCSVL=NOVAL_F;
-      //Event_LHEWeightSign=NOVAL_F;
+      nTightMuons=NOVAL_F;
+      nLooseMuons=NOVAL_F;
+      nTightElectrons=NOVAL_F;
+      nLooseElectrons=NOVAL_F;
+      nElectronsSF=NOVAL_F;
+      nMuonsSF=NOVAL_F;
+      nCSVTJets=NOVAL_F;
+      nCSVMJets=NOVAL_F;
+      nCSVLJets=NOVAL_F;
+      nTightJets=NOVAL_F;
+      nLooseJets=NOVAL_F;
+      bWeight1TCSVT=NOVAL_F;
+      bWeight1TCSVM=NOVAL_F;
+      bWeight1TCSVL=NOVAL_F;
+      bWeight2TCSVT=NOVAL_F;
+      bWeight2TCSVM=NOVAL_F;
+      bWeight2TCSVL=NOVAL_F;
+      //LHEWeightSign=NOVAL_F;
       
-      nhadtops=NOVAL_I;
-      nleptops=NOVAL_I;
+      nhadtops=NOVAL_F;
+      nleptops=NOVAL_F;
+      ntops=NOVAL_F;
+      ncmshadtops=NOVAL_F;
+      ncmsleptops=NOVAL_F;
       tt_dR=NOVAL_F;
       tt_dPhi=NOVAL_F;
       tt_dEta=NOVAL_F;
@@ -1625,8 +809,369 @@ public:
       HTttFraction=NOVAL_F;
       HTexFraction=NOVAL_F;
     }
-    
   } evt;
+  
+  void CalculateAllVariables() {
+    calcRazorAK4_();
+    calcRazorAK8_();
+    calcRazorCmsTopTag_();
+    
+    // find good leptons (for letponic tops)
+    int ngoodleptons = 0;
+    std::vector<TLorentzVector> goodleps;
+    evt.HTlep = 0;
+    while(ele.Loop()) if (ele.Pt[NLEP] > 35 && fabs(ele.Eta[NLEP]) < 2.5) {
+    //while(ele.Loop()) if (ele.isLoose[NLEP]>0 && ele.Pt[NLEP] > 35 && fabs(ele.Eta[NLEP]) < 2.5) {
+      ngoodleptons++;
+      TLorentzVector goodele;
+      goodele.SetPtEtaPhiE(ele.Pt[NLEP], ele.Eta[NLEP], ele.Phi[NLEP], ele.E[NLEP]);
+      goodleps.push_back(goodele);
+      evt.HTlep += ele.Pt[NLEP];
+    }
+    while(mu.Loop())  if (mu.IsTightMuon[NLEP]>0 && mu.Pt[NLEP] > 45 && fabs(mu.Eta[NLEP]) < 2.1) {
+    //while(mu.Loop())  if (mu.IsLooseMuon[NLEP]>0 && mu.Pt[NLEP] > 45 && fabs(mu.Eta[NLEP]) < 2.1) {
+      ngoodleptons++;
+      TLorentzVector goodmu;
+      goodmu.SetPtEtaPhiE(mu.Pt[NLEP], mu.Eta[NLEP], mu.Phi[NLEP], mu.E[NLEP]);
+      goodleps.push_back(goodmu);
+      evt.HTlep += mu.Pt[NLEP];
+    }
+    
+    // Tag hadronic tops
+    TLorentzVector hadtop1;
+    TLorentzVector hadtop2;
+    TLorentzVector leptop1;
+    TLorentzVector leptop2;
+    evt.ntops = 0;
+    evt.nhadtops = 0;
+    evt.nleptops = 0;
+    evt.HT = 0;
+    while(jetsAK8.Loop()) {
+      // Find subjets
+      //int nsubjet = 0;
+      //std::cout<<jetsAK8.it<<" "<<jetsAK8.size<<" "<<subjetsAK8.size<<" "<<jetsAK8.subjetIndex0[NJET]<<" "<<jetsAK8.subjetIndex1[NJET]<<std::endl;
+      bool is_top = false;
+      // hadronic tops
+      //if (jetsAK8.tau1[NJET]>0 && jetsAK8.tau2[NJET]>0 ? jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 140 && (jetsAK8.tau2[NJET]/jetsAK8.tau1[NJET]) < 0.75 : 0) {
+      if (jetsAK8.tau2[NJET]>0 && jetsAK8.tau3[NJET]>0 ? jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 140 && (jetsAK8.tau3[NJET]/jetsAK8.tau2[NJET]) < 0.75 : 0) {
+        ++evt.nhadtops;
+        is_top = true;
+        if (evt.nhadtops==1) hadtop1.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
+        if (evt.nhadtops==2) hadtop2.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
+      }
+      // leptonic tops
+      TLorentzVector lep;
+      TLorentzVector jet;
+      jet.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
+      double DeltaR_lep = 9999;
+      for (size_t i=0; i<goodleps.size(); ++i) {
+        if (goodleps[i].DeltaR(jet)< DeltaR_lep) {
+  	DeltaR_lep = goodleps[i].DeltaR(jet);
+  	lep = goodleps[i];
+        }
+      }
+      if (DeltaR_lep<1.0) {
+        evt.nleptops++;
+        is_top = true;
+        TLorentzVector leptop = lep + jet;
+        if (evt.nleptops==1) leptop1 = leptop;
+        if (evt.nleptops==2) leptop2 = leptop;
+      }
+      // Extra - all except above hadronic/leptonic tops
+      evt.HT += jetsAK8.Pt[NJET];
+      if (is_top) evt.HTtt += jetsAK8.Pt[NJET];
+    }
+    evt.HTall = evt.HT + met.Pt + evt.HTlep;
+    //std::cout<<evt.HTall<<" "<<evt.HT<<" "<<met.Pt<<" "<<evt.HTlep<<std::endl;
+    
+    // CMS Tagged tops
+    evt.ncmshadtops = 0;
+    evt.ncmsleptops = 0;
+    while(jetsCmsTopTag.Loop()) {
+      bool is_top = false;
+      // leptonic tops
+      TLorentzVector lep;
+      TLorentzVector cmstopjet;
+      cmstopjet.SetPtEtaPhiE(jetsCmsTopTag.Pt[NJET], jetsCmsTopTag.Eta[NJET], jetsCmsTopTag.Phi[NJET], jetsCmsTopTag.E[NJET]);
+      double DeltaR_lep = 9999;
+      for (size_t i=0; i<goodleps.size(); ++i) if (goodleps[i].DeltaR(cmstopjet)< DeltaR_lep) {
+	DeltaR_lep = goodleps[i].DeltaR(cmstopjet);
+	lep = goodleps[i];
+      }
+      if (DeltaR_lep<1.0) {
+        evt.ncmsleptops++;
+        is_top = true;
+        TLorentzVector leptop = lep + cmstopjet;
+        //if (evt.nleptops==1) leptop1 = leptop;
+        //if (evt.nleptops==2) leptop2 = leptop;
+      }
+      // hadronic tops
+      //if (jetsCmsTopTag.Pt[NJET] > 400 && jetsCmsTopTag.Mass[NJET] > 140 ) {
+      if (!is_top && jetsCmsTopTag.Pt[NJET] > 400) {
+        ++evt.ncmshadtops;
+        is_top = true;
+        //if (evt.nhadtops==1) hadtop1.SetPtEtaPhiE(jetsCmsTopTag.Pt[NJET], jetsCmsTopTag.Eta[NJET], jetsCmsTopTag.Phi[NJET], jetsCmsTopTag.E[NJET]);
+        //if (evt.nhadtops==2) hadtop2.SetPtEtaPhiE(jetsCmsTopTag.Pt[NJET], jetsCmsTopTag.Eta[NJET], jetsCmsTopTag.Phi[NJET], jetsCmsTopTag.E[NJET]);
+      }
+      // Extra - all except above hadronic/leptonic tops
+      //evt.HT += jetsCmsTopTag.Pt[NJET];
+      //if (is_top) evt.HTtt += jetsCmsTopTag.Pt[NJET];
+    }
+    
+    // Select exactly 2 tops (hadronic or leptonic)
+    // We need exactly 2 in order to calculate pair variables, eg. DeltaPhi
+    TLorentzVector top1;
+    TLorentzVector top2;
+    evt.ntops = evt.nhadtops + evt.nleptops;
+    if (evt.ntops == 2) {
+      if (evt.nhadtops == 2) {
+        if (hadtop1.Pt() > hadtop2.Pt()) {
+          top1 = hadtop1;
+          top2 = hadtop2;
+        } else {
+          top1 = hadtop2;
+          top2 = hadtop1;
+        }
+      } else if (evt.nhadtops == 1) {
+        if (hadtop1.Pt() > leptop1.Pt()) {
+          top1 = hadtop1;
+          top2 = leptop1;
+        } else {
+          top1 = leptop1;
+          top2 = hadtop1;
+        }    
+      } else if (evt.nhadtops == 0) {
+        if (leptop1.Pt() > leptop2.Pt()) {
+          top1 = leptop1;
+          top2 = leptop2;
+        } else {
+          top1 = leptop2;
+          top2 = leptop1;
+        }
+      }
+    }
+    
+    // top pair variables
+    evt.tt_dR=NOVAL_F;
+    evt.tt_dPhi=NOVAL_F;
+    evt.tt_dEta=NOVAL_F;
+    evt.tt_Mass=NOVAL_F;
+    evt.tt_MR=NOVAL_F;
+    evt.tt_MTR=NOVAL_F;
+    evt.tt_R=NOVAL_F;
+    evt.tt_R2=NOVAL_F;
+    evt.HTtt=NOVAL_F;
+    evt.HTex=NOVAL_F;
+    evt.HTttFraction=NOVAL_F;
+    evt.HTexFraction=NOVAL_F;
+    //std::cout<<evt.ntops<<std::endl;
+    if (evt.ntops==2) {
+      /* python
+         tt_dR[0] = top1.DeltaR(top2)
+         tt_dPhi[0] = top1.DeltaPhi(top2)
+         tt_dEta[0] = fabs(top1.Eta() - top2.Eta())
+         tt_mtt[0] = (top1 + top2).M()
+         
+         tt_extra = top1 + top2
+         for jet in jets:
+           tt_extra += jet
+         pz_tt_extra[0] = tt_extra.Pz()
+         dHt[0] = math.fabs(top1.Pt() - top2.Pt())
+         dphi1 = delta_phi(metphi[0], top1.Phi())íw
+         dphi2 = delta_phi(metphi[0], top2.Phi())
+         dPhi_met_t1[0] = max(dphi1, dphi2)
+         dPhi_met_t2[0] = min(dphi1, dphi2)
+      */
+      evt.tt_dR = top1.DeltaR(top2);
+      evt.tt_dPhi = top1.DeltaPhi(top2);
+      evt.tt_dEta = fabs(top1.Eta() - top2.Eta());
+      evt.tt_Mass = (top1 + top2).M();
+      evt.tt_Pz = (top1 + top2).Pz();
+      evt.tt_Hz = top1.Pz() + top2.Pz();
+      evt.tt_dPz = fabs(top1.Pz() - top2.Pz());
+      evt.HTtt = top1.Pt() + top2.Pt();
+      evt.HTex = evt.HTall - evt.HTtt;
+      evt.HTttFraction = evt.HTtt / evt.HTall;
+      evt.HTexFraction = evt.HTex / evt.HTall;
+      // Select signal region
+      
+      // Razor for hadronic top pair
+      TVector3 metl;
+      metl.SetPtEtaPhi(met.Pt, 0, met.Phi);
+      evt.tt_MR = CalcMR_(top1, top2);
+      evt.tt_MTR = CalcMTR_(top1, top2, metl);
+      evt.tt_R = evt.tt_MTR / evt.tt_MR;
+      evt.tt_R2 = pow(evt.tt_R, 2);
+    }
+  }
+    
+  private:
+  // Razor recipe taken from the RazorBoost gurus: N. Strobbe, S. Sekmen
+  //   https://github.com/nstrobbe/RazorBoost/blob/master/analyzer/utils.h
+  
+  // Hemispheres:
+  vector<TLorentzVector> CombineJets_(vector<TLorentzVector> myjets) {
+    vector<TLorentzVector> mynewjets;
+    TLorentzVector j1, j2;
+    //bool foundGood = false;
+    int N_comb = 1;
+    for(unsigned int i = 0; i < myjets.size(); i++){
+      N_comb *= 2;
+    }
+    double M_min = 9999999999.0;
+    int j_count;
+    for(int i = 1; i < N_comb-1; i++){
+      TLorentzVector j_temp1, j_temp2;
+      int itemp = i;
+      j_count = N_comb/2;
+      int count = 0;
+      while(j_count > 0){
+        if(itemp/j_count == 1){
+          j_temp1 += myjets[count];
+        } else {
+          j_temp2 += myjets[count];
+        }
+        itemp -= j_count*(itemp/j_count);
+        j_count /= 2;
+        count++;
+      }
+      double M_temp = j_temp1.M2()+j_temp2.M2();
+      // smallest mass
+      if(M_temp < M_min){
+        M_min = M_temp;
+        j1 = j_temp1;
+        j2 = j_temp2;
+      }
+    }
+    if(j2.Pt() > j1.Pt()){
+      TLorentzVector temp = j1;
+      j1 = j2;
+      j2 = temp;
+    }
+    mynewjets.push_back(j1);
+    mynewjets.push_back(j2);
+    return mynewjets;
+  }
+  
+  // MR
+  double CalcMR_(TLorentzVector ja, TLorentzVector jb){
+    double A = ja.P();
+    double B = jb.P();
+    double az = ja.Pz();
+    double bz = jb.Pz();
+    TVector3 jaT, jbT;
+    jaT.SetXYZ(ja.Px(),ja.Py(),0.0);
+    jbT.SetXYZ(jb.Px(),jb.Py(),0.0);
+    double ATBT = (jaT+jbT).Mag2();
+    double temp = sqrt((A+B)*(A+B)-(az+bz)*(az+bz)-
+      		 (jbT.Dot(jbT)-jaT.Dot(jaT))*(jbT.Dot(jbT)-jaT.Dot(jaT))/(jaT+jbT).Mag2());
+    double mybeta = (jbT.Dot(jbT)-jaT.Dot(jaT))/sqrt(ATBT*((A+B)*(A+B)-(az+bz)*(az+bz)));
+    double mygamma = 1./sqrt(1.-mybeta*mybeta);
+    //gamma times MRstar
+    temp *= mygamma;
+    return temp;
+  }
+  
+  // MTR
+  double CalcMTR_(TLorentzVector ja, TLorentzVector jb, TVector3 met){
+    double temp = met.Mag()*(ja.Pt()+jb.Pt()) - met.Dot(ja.Vect()+jb.Vect());
+    temp /= 2.;
+    temp = sqrt(temp);
+    return temp;
+  }
+  
+  // MT
+  double CalcMT_(TLorentzVector lepton, TLorentzVector pfmet){
+    return sqrt( 2 * lepton.Pt() * pfmet.Pt() * ( 1 - cos( pfmet.Phi() - lepton.Phi() ) ) );
+  }
+  
+  // Calculate Razor variables here
+  void calcRazorAK4_() {
+    
+    // Select the best pair of jets (AK4, pt>40, |eta| < 3.0)
+    std::vector<TLorentzVector> sjetl;
+    while(jetsAK4.Loop()) {
+      if (!(jetsAK4.Pt[NJET] > 40) ) continue;
+      if (!(fabs(jetsAK4.Eta[NJET]) < 3) ) continue;
+      TLorentzVector jl;
+      jl.SetPtEtaPhiE(jetsAK4.Pt[NJET], jetsAK4.Eta[NJET],
+      		jetsAK4.Phi[NJET], jetsAK4.E[NJET]);
+      sjetl.push_back(jl);
+    }
+    std::vector<TLorentzVector> hemis = CombineJets_(sjetl);
+    
+    // ---------------------
+    // -- Razor variables --
+    // ---------------------
+    
+    TVector3 metl;
+    metl.SetPtEtaPhi(met.Pt, 0, met.Phi);
+    
+    if (hemis.size() == 2) {
+      jetsAK4.MR = CalcMR_(hemis[0], hemis[1]);
+      jetsAK4.MTR = CalcMTR_(hemis[0], hemis[1], metl);
+      jetsAK4.R = jetsAK4.MTR / jetsAK4.MR;
+      jetsAK4.R2 = pow(jetsAK4.R, 2);
+    }
+  }
+  
+  void calcRazorAK8_() {
+    
+    // Select the best pair of jets (AK8, pt>40, |eta| < 3.0)
+    std::vector<TLorentzVector> sjetl;
+    while(jetsAK8.Loop()) {
+      if (!(jetsAK8.Pt[NJET] > 40) ) continue;
+      if (!(fabs(jetsAK8.Eta[NJET]) < 3) ) continue;
+      TLorentzVector jl;
+      jl.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET],
+      		jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
+      sjetl.push_back(jl);
+    }
+    std::vector<TLorentzVector> hemis = CombineJets_(sjetl);
+    
+    // ---------------------
+    // -- Razor variables --
+    // ---------------------
+    
+    TVector3 metl;
+    metl.SetPtEtaPhi(met.Pt, 0, met.Phi);
+    
+    if (hemis.size() == 2) {
+      jetsAK8.MR = CalcMR_(hemis[0], hemis[1]);
+      jetsAK8.MTR = CalcMTR_(hemis[0], hemis[1], metl);
+      jetsAK8.R = jetsAK8.MTR / jetsAK8.MR;
+      jetsAK8.R2 = pow(jetsAK8.R, 2);
+    }
+  }
+  
+  void calcRazorCmsTopTag_() {
+    
+    // Select the best pair of jets (CmsTopTag, pt>40, |eta| < 3.0)
+    std::vector<TLorentzVector> sjetl;
+    while(jetsCmsTopTag.Loop()) {
+      if (!(jetsCmsTopTag.Pt[NJET] > 40) ) continue;
+      if (!(fabs(jetsCmsTopTag.Eta[NJET]) < 3) ) continue;
+      TLorentzVector jl;
+      jl.SetPtEtaPhiE(jetsCmsTopTag.Pt[NJET], jetsCmsTopTag.Eta[NJET],
+		      jetsCmsTopTag.Phi[NJET], jetsCmsTopTag.E[NJET]);
+      sjetl.push_back(jl);
+    }
+    std::vector<TLorentzVector> hemis = CombineJets_(sjetl);
+    
+    // ---------------------
+    // -- Razor variables --
+    // ---------------------
+    
+    TVector3 metl;
+    metl.SetPtEtaPhi(met.Pt, 0, met.Phi);
+    
+    if (hemis.size() == 2) {
+      jetsCmsTopTag.MR = CalcMR_(hemis[0], hemis[1]);
+      jetsCmsTopTag.MTR = CalcMTR_(hemis[0], hemis[1], metl);
+      jetsCmsTopTag.R = jetsCmsTopTag.MTR / jetsCmsTopTag.MR;
+      jetsCmsTopTag.R2 = pow(jetsCmsTopTag.R, 2);
+    }
+  }
   
 };
 
