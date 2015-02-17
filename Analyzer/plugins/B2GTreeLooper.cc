@@ -12,8 +12,8 @@
 
 class B2GTreeLooper {
 public:
-  B2GTreeLooper(int nthfile = 1, bool show_progress = 0) :
-    nthfile_(nthfile),show_progress_(show_progress) {
+  B2GTreeLooper(int nthstat = 1, bool show_progress = 0) :
+    nthstat_(nthstat),show_progress_(show_progress) {
     init_();
   }
   ~B2GTreeLooper() {
@@ -21,7 +21,7 @@ public:
   }
   
 private:
-  const int nthfile_;
+  const int nthstat_;
   const bool show_progress_;
   
   void init_() {
@@ -71,9 +71,12 @@ private:
   }
   
 public:
+  size_t it_sample;
+  std::vector<Long64_t > nevents;
+  
   //Modifiers
   void AddFile(std::string fileaddress, int new_loop=1) {
-    std::string treename = "/DMTreesDumper/TreeBase";
+    std::string treename = "/B2GTTreeMaker/B2GTree";
     size_t size = samples_.size();
     if (new_loop!=0) {
       std::stringstream ss;
@@ -84,21 +87,18 @@ public:
     if (new_loop!=-1) samples_[size-1]->Add((fileaddress+treename).c_str());
 
     // Calculate total number of entries - For ProgressEstimator
-    total_entries_ += (nthfile_==1) ? samples_[size-1]->GetEntries() : 0;
-    if (show_progress_&&nthfile_!=1) {
-      int nadded = samples_[size-1]->GetListOfFiles()->GetEntries();
-      int nth = std::min(nadded, nthfile_);
-      for (int nf=0; nf<nadded; ++nf) {
-        if (nf%nth==nth/2) {
-          TFile f(samples_[size-1]->GetListOfFiles()->At(nf)->GetTitle());
-          total_entries_ += ((TTree*)f.Get(samples_[size-1]->GetListOfFiles()->At(nf)->GetName()))->GetEntries();
-        }
-      }
-      step_size_ = 50000/total_entries_;
+    Long64_t sample_entries = 0;
+    if (nthstat_==1) {
+      sample_entries = samples_[size-1]->GetEntries();
+    } else  for (int nf=0; nf<samples_[size-1]->GetListOfFiles()->GetEntries(); ++nf) {
+      TFile f(samples_[size-1]->GetListOfFiles()->At(nf)->GetTitle());
+      sample_entries += ((TTree*)f.Get(samples_[size-1]->GetListOfFiles()->At(nf)->GetName()))->GetEntries()/nthstat_;
     }
+    total_entries_+=sample_entries;
+    step_size_ = 50000/total_entries_;
+    nevents.push_back(sample_entries);
   }
   
-  size_t it_sample;
   bool LoopOnSamples() {
     ++it_sample;
     if (it_sample<samples_.size()) {
@@ -115,7 +115,6 @@ public:
       //std::cout<<"--------- Started Looping on Trees ---------"<<std::flush;
       sw_->Start(0);
     }
-    while (fileindex_%nthfile_!=(nthfile_-1)/2) ++fileindex_; // Skip files if specified (/2 instead 0 --> distribute files evenly)
     if (fileindex_<files_->GetEntries()) {
       //std::cout<<"Opening file: "<<files_->At(fileindex_)->GetTitle()<<std::endl;
       file_ = TFile::Open(files_->At(fileindex_)->GetTitle());
@@ -133,7 +132,7 @@ public:
   bool LoopOnEntries() { 
     ++entry_; 
     if (show_progress_) ProgressEstimator_();
-    return entry_<all_entries_;
+    return entry_<all_entries_/nthstat_;
   }
   
   // Accessors

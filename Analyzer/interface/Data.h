@@ -4,8 +4,8 @@
 #define NOVAL_I -9999
 #define NOVAL_F -9999.0
 
-#define NJET 20
-#define NLEP 5
+#define NLEP 10
+#define NJET 40
 
 #include <vector>
 #include "TLorentzVector.h"
@@ -287,9 +287,6 @@ public:
     float E[NJET+1];
     float Charge[NJET+1];
     // B-TAGGING
-    float IsCSVL[NJET+1];
-    float IsCSVM[NJET+1];
-    float IsCSVT[NJET+1];
     float CSV[NJET+1];
     float CSVV1[NJET+1];
     // GEN PARTON
@@ -335,9 +332,6 @@ public:
     float HFEMMultiplicity[NJET+1];
     float ChargeMuEnergy[NJET+1];
     float neutralMultiplicity[NJET+1];
-    // FOR LEPTON MATCHING 
-    float matchedMuIdx[NJET+1];
-    float matchedElIdx[NJET+1];
     //FOR JEC
     float jecFactor0[NJET+1];
     // FOR SYSTEMATICS
@@ -357,9 +351,6 @@ public:
         Phi[i]=NOVAL_F;
         E[i]=NOVAL_F;
         Charge[i]=NOVAL_F;
-        IsCSVL[i]=NOVAL_F;
-        IsCSVM[i]=NOVAL_F;
-        IsCSVT[i]=NOVAL_F;
         CSV[i]=NOVAL_F;
         CSVV1[i]=NOVAL_F;
         GenPartonY[i]=NOVAL_F;
@@ -401,8 +392,6 @@ public:
         HFEMMultiplicity[i]=NOVAL_F;
         ChargeMuEnergy[i]=NOVAL_F;
         neutralMultiplicity[i]=NOVAL_F;
-	matchedMuIdx[i]=NOVAL_F;
-	matchedElIdx[i]=NOVAL_F;
 	jecFactor0[i]=NOVAL_F;
         SmearedPt[i]=NOVAL_F;
         SmearedPEta[i]=NOVAL_F;
@@ -421,9 +410,6 @@ public:
       Phi[NJET]			        = Phi[it];			      
       E[NJET]			        = E[it];			      
       Charge[NJET]		        = Charge[it];		      
-      IsCSVL[NJET]		        = IsCSVL[it];		      
-      IsCSVM[NJET]		        = IsCSVM[it];		      
-      IsCSVT[NJET]		        = IsCSVT[it];		      
       CSV[NJET]			        = CSV[it];			      
       CSVV1[NJET]		        = CSVV1[it];		      
       GenPartonY[NJET]		        = GenPartonY[it];		      
@@ -478,6 +464,8 @@ public:
   public:
     float subjetIndex0[NJET+1];
     float subjetIndex1[NJET+1];
+    float subjetIndex2[NJET+1];
+    float subjetIndex3[NJET+1];
     float tau1[NJET+1];
     float tau2[NJET+1];
     float tau3[NJET+1];
@@ -489,6 +477,8 @@ public:
       for (size_t it=0; it<=NJET; ++it) {
 	subjetIndex0[it]=NOVAL_F;
 	subjetIndex1[it]=NOVAL_F;
+	subjetIndex2[it]=NOVAL_F;
+	subjetIndex3[it]=NOVAL_F;
 	tau1[it]=NOVAL_F;
 	tau2[it]=NOVAL_F;
 	tau3[it]=NOVAL_F;
@@ -501,6 +491,8 @@ public:
     void SetCurrent(size_t it) {
       subjetIndex0[NJET] = subjetIndex0[it];
       subjetIndex1[NJET] = subjetIndex1[it];
+      subjetIndex2[NJET] = subjetIndex2[it];
+      subjetIndex3[NJET] = subjetIndex3[it];
       tau1[NJET]	 = tau1[it];
       tau2[NJET]	 = tau2[it];
       tau3[NJET]	 = tau3[it];
@@ -704,25 +696,6 @@ public:
   public:
     EventData() { init(); };
     
-    float nTightMuons;
-    float nLooseMuons;
-    float nTightElectrons;
-    float nLooseElectrons;
-    float nElectronsSF;
-    float nMuonsSF;
-    float nCSVTJets;
-    float nCSVMJets;
-    float nCSVLJets;
-    float nTightJets;
-    float nLooseJets;
-    float bWeight1TCSVT;
-    float bWeight1TCSVM;
-    float bWeight1TCSVL;
-    float bWeight2TCSVT;
-    float bWeight2TCSVM;
-    float bWeight2TCSVL;
-    //float LHEWeightSign;
-    
     // Top tagging variables
     float nhadtops;
     float nleptops;
@@ -758,25 +731,6 @@ public:
     float HTexFraction;
     
     void init() {
-      nTightMuons=NOVAL_F;
-      nLooseMuons=NOVAL_F;
-      nTightElectrons=NOVAL_F;
-      nLooseElectrons=NOVAL_F;
-      nElectronsSF=NOVAL_F;
-      nMuonsSF=NOVAL_F;
-      nCSVTJets=NOVAL_F;
-      nCSVMJets=NOVAL_F;
-      nCSVLJets=NOVAL_F;
-      nTightJets=NOVAL_F;
-      nLooseJets=NOVAL_F;
-      bWeight1TCSVT=NOVAL_F;
-      bWeight1TCSVM=NOVAL_F;
-      bWeight1TCSVL=NOVAL_F;
-      bWeight2TCSVT=NOVAL_F;
-      bWeight2TCSVM=NOVAL_F;
-      bWeight2TCSVL=NOVAL_F;
-      //LHEWeightSign=NOVAL_F;
-      
       nhadtops=NOVAL_F;
       nleptops=NOVAL_F;
       ntops=NOVAL_F;
@@ -815,7 +769,7 @@ public:
     calcRazorAK4_();
     calcRazorAK8_();
     calcRazorCmsTopTag_();
-    
+
     // find good leptons (for letponic tops)
     int ngoodleptons = 0;
     std::vector<TLorentzVector> goodleps;
@@ -866,8 +820,8 @@ public:
       double DeltaR_lep = 9999;
       for (size_t i=0; i<goodleps.size(); ++i) {
         if (goodleps[i].DeltaR(jet)< DeltaR_lep) {
-  	DeltaR_lep = goodleps[i].DeltaR(jet);
-  	lep = goodleps[i];
+	  DeltaR_lep = goodleps[i].DeltaR(jet);
+	  lep = goodleps[i];
         }
       }
       if (DeltaR_lep<1.0) {
@@ -1087,7 +1041,7 @@ public:
   
   // Calculate Razor variables here
   void calcRazorAK4_() {
-    
+
     // Select the best pair of jets (AK4, pt>40, |eta| < 3.0)
     std::vector<TLorentzVector> sjetl;
     while(jetsAK4.Loop()) {

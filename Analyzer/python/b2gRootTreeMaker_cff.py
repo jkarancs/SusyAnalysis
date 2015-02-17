@@ -135,9 +135,6 @@ DMTreesDumper = cms.EDAnalyzer(
                 cms.InputTag("jetsAK4","jetAK4Charge"),
                 # jetVars
                 ### B-TAGGING
-                cms.InputTag("jetsAK4","jetAK4IsCSVL"),
-                cms.InputTag("jetsAK4","jetAK4IsCSVM"),
-                cms.InputTag("jetsAK4","jetAK4IsCSVT"),
                 cms.InputTag("jetsAK4","jetAK4CSV"),
                 cms.InputTag("jetsAK4","jetAK4CSVV1"),
                 ### GEN PARTON
@@ -184,9 +181,6 @@ DMTreesDumper = cms.EDAnalyzer(
                 cms.InputTag("jetsAK4","jetAK4HFEMMultiplicity"),
                 cms.InputTag("jetsAK4","jetAK4ChargeMuEnergy"),
                 cms.InputTag("jetsAK4","jetAK4neutralMultiplicity"),
-                #### FOR LEPTON MATCHING 
-                cms.InputTag("jetsAK4","jetAK4matchedMuIdx"),
-                cms.InputTag("jetsAK4","jetAK4matchedElIdx"),
                 #### FOR JEC
                 cms.InputTag("jetsAK4","jetAK4jecFactor0"),
                 #### FOR SYSTEMATICS
@@ -216,9 +210,6 @@ DMTreesDumper = cms.EDAnalyzer(
                 cms.InputTag("jetsAK8","jetAK8Charge"),
                 # jetVars
                 ### B-TAGGING
-                cms.InputTag("jetsAK8","jetAK8IsCSVL"),
-                cms.InputTag("jetsAK8","jetAK8IsCSVM"),
-                cms.InputTag("jetsAK8","jetAK8IsCSVT"),
                 cms.InputTag("jetsAK8","jetAK8CSV"),
                 cms.InputTag("jetsAK8","jetAK8CSVV1"),
                 ### GEN PARTON
@@ -265,9 +256,6 @@ DMTreesDumper = cms.EDAnalyzer(
                 cms.InputTag("jetsAK8","jetAK8HFEMMultiplicity"),
                 cms.InputTag("jetsAK8","jetAK8ChargeMuEnergy"),
                 cms.InputTag("jetsAK8","jetAK8neutralMultiplicity"),
-                #### FOR LEPTON MATCHING 
-                cms.InputTag("jetsAK8","jetAK8matchedMuIdx"),
-                cms.InputTag("jetsAK8","jetAK8matchedElIdx"),
                 #### FOR JEC
                 cms.InputTag("jetsAK8","jetAK8jecFactor0"),
                 #### FOR SYSTEMATICS
@@ -280,6 +268,8 @@ DMTreesDumper = cms.EDAnalyzer(
                 # AK8Vars
                 cms.InputTag("jetsAK8","jetAK8subjetIndex0"),
                 cms.InputTag("jetsAK8","jetAK8subjetIndex1"),
+                cms.InputTag("jetsAK8","jetAK8subjetIndex2"),
+                cms.InputTag("jetsAK8","jetAK8subjetIndex4"),
                 cms.InputTag("jetsAK8","jetAK8tau1"),
                 cms.InputTag("jetsAK8","jetAK8tau2"),
                 cms.InputTag("jetsAK8","jetAK8tau3"),
@@ -306,9 +296,6 @@ DMTreesDumper = cms.EDAnalyzer(
                 cms.InputTag("jetsCmsTopTag","jetsCmsTopTagCharge"),
                 # jetVars
                 ### B-TAGGING
-                cms.InputTag("jetsCmsTopTag","jetsCmsTopTagIsCSVL"),
-                cms.InputTag("jetsCmsTopTag","jetsCmsTopTagIsCSVM"),
-                cms.InputTag("jetsCmsTopTag","jetsCmsTopTagIsCSVT"),
                 cms.InputTag("jetsCmsTopTag","jetsCmsTopTagCSV"),
                 cms.InputTag("jetsCmsTopTag","jetsCmsTopTagCSVV1"),
                 ### GEN PARTON
@@ -355,9 +342,6 @@ DMTreesDumper = cms.EDAnalyzer(
                 cms.InputTag("jetsCmsTopTag","jetsCmsTopTagHFEMMultiplicity"),
                 cms.InputTag("jetsCmsTopTag","jetsCmsTopTagChargeMuEnergy"),
                 cms.InputTag("jetsCmsTopTag","jetsCmsTopTagneutralMultiplicity"),
-                #### FOR LEPTON MATCHING 
-                cms.InputTag("jetsCmsTopTag","jetsCmsTopTagmatchedMuIdx"),
-                cms.InputTag("jetsCmsTopTag","jetsCmsTopTagmatchedElIdx"),
                 #### FOR JEC
                 cms.InputTag("jetsCmsTopTag","jetsCmsTopTagjecFactor0"),
                 #### FOR SYSTEMATICS
@@ -370,6 +354,8 @@ DMTreesDumper = cms.EDAnalyzer(
                 # AK8Vars
                 cms.InputTag("jetsCmsTopTag","jetsCmsTopTagsubjetIndex0"),
                 cms.InputTag("jetsCmsTopTag","jetsCmsTopTagsubjetIndex1"),
+                cms.InputTag("jetsCmsTopTag","jetsCmsTopTagsubjetIndex2"),
+                cms.InputTag("jetsCmsTopTag","jetsCmsTopTagsubjetIndex4"),
                 cms.InputTag("jetsCmsTopTag","jetsCmsTopTagtau1"),
                 cms.InputTag("jetsCmsTopTag","jetsCmsTopTagtau2"),
                 cms.InputTag("jetsCmsTopTag","jetsCmsTopTagtau3"),
@@ -396,9 +382,6 @@ DMTreesDumper = cms.EDAnalyzer(
                 cms.InputTag("subjetsAK8","subjetAK8Charge"),
                 # subjetVars
                 ### B-TAGGING
-                cms.InputTag("subjetsAK8","subjetAK8IsCSVL"),
-                cms.InputTag("subjetsAK8","subjetAK8IsCSVM"),
-                cms.InputTag("subjetsAK8","subjetAK8IsCSVT"),
                 cms.InputTag("subjetsAK8","subjetAK8CSV"),
                 cms.InputTag("subjetsAK8","subjetAK8CSVV1"),
                 ### GEN PARTON
@@ -445,9 +428,6 @@ DMTreesDumper = cms.EDAnalyzer(
                 cms.InputTag("subjetsAK8","subjetAK8HFEMMultiplicity"),
                 cms.InputTag("subjetsAK8","subjetAK8ChargeMuEnergy"),
                 cms.InputTag("subjetsAK8","subjetAK8neutralMultiplicity"),
-                #### FOR LEPTON MATCHING 
-                cms.InputTag("subjetsAK8","subjetAK8matchedMuIdx"),
-                cms.InputTag("subjetsAK8","subjetAK8matchedElIdx"),
                 #### FOR JEC
                 cms.InputTag("subjetsAK8","subjetAK8jecFactor0"),
                 #### FOR SYSTEMATICS
@@ -477,9 +457,6 @@ DMTreesDumper = cms.EDAnalyzer(
                 cms.InputTag("subjetsCmsTopTag","subjetsCmsTopTagCharge"),
                 # subjetVars
                 ### B-TAGGING
-                cms.InputTag("subjetsCmsTopTag","subjetsCmsTopTagIsCSVL"),
-                cms.InputTag("subjetsCmsTopTag","subjetsCmsTopTagIsCSVM"),
-                cms.InputTag("subjetsCmsTopTag","subjetsCmsTopTagIsCSVT"),
                 cms.InputTag("subjetsCmsTopTag","subjetsCmsTopTagCSV"),
                 cms.InputTag("subjetsCmsTopTag","subjetsCmsTopTagCSVV1"),
                 ### GEN PARTON
@@ -526,9 +503,6 @@ DMTreesDumper = cms.EDAnalyzer(
                 cms.InputTag("subjetsCmsTopTag","subjetsCmsTopTagHFEMMultiplicity"),
                 cms.InputTag("subjetsCmsTopTag","subjetsCmsTopTagChargeMuEnergy"),
                 cms.InputTag("subjetsCmsTopTag","subjetsCmsTopTagneutralMultiplicity"),
-                #### FOR LEPTON MATCHING 
-                cms.InputTag("subjetsCmsTopTag","subjetsCmsTopTagmatchedMuIdx"),
-                cms.InputTag("subjetsCmsTopTag","subjetsCmsTopTagmatchedElIdx"),
                 #### FOR JEC
                 cms.InputTag("subjetsCmsTopTag","subjetsCmsTopTagjecFactor0"),
                 #### FOR SYSTEMATICS

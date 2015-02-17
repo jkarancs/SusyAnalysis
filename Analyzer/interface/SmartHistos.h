@@ -131,7 +131,7 @@ class SmartHisto {
 public:
   // constructors, destructor
   SmartHisto(std::string name, std::vector<const char*>& pf_names, std::vector<Postfixes::Postfix> pfs,
-	     std::vector<std::function<double()> >& ffs, std::vector<float*>& weights, std::vector<std::function<bool()> >& cuts, 
+	     std::vector<std::function<double()> >& ffs, std::vector<std::function<double()> >& weights, std::vector<std::function<bool()> >& cuts, 
 	     std::string draw, std::string opt, std::vector<double> axis_ranges) { 
     name_=name;
     pf_names_=pf_names;
@@ -179,9 +179,9 @@ private:
   
   // Weights: pointers to floats
   size_t nweight_;
-  float* weight1_;
-  float* weight2_;
-  float* weight3_;
+  std::function<double()> weight1_;
+  std::function<double()> weight2_;
+  std::function<double()> weight3_;
   
   // Cuts: pointers to bools
   size_t ncut_;
@@ -887,9 +887,9 @@ public:
       double weight = 0;
       switch (nweight_) {
       case 0: weight = 1; break;
-      case 1: weight = (*weight1_); break;
-      case 2: weight = (*weight1_)*(*weight2_); break;
-      case 3: weight = (*weight1_)*(*weight2_)*(*weight3_); break;
+      case 1: weight = (weight1_()); break;
+      case 2: weight = (weight1_())*(weight2_()); break;
+      case 3: weight = (weight1_())*(weight2_())*(weight3_()); break;
       default: break;
       }
       switch (npf_) {
@@ -1063,9 +1063,9 @@ public:
     pad->SetTopMargin((Float_t)mar_top/padsize_y);
     pad->SetBottomMargin((Float_t)mar_bottom/padsize_y);
     canvas->SetGrid(gx,gy);
-    if (norm_&&h->GetEntries()>0) h = (TH2D*)h->DrawNormalized(draw_.c_str());
+    if (norm_&&h->Integral()>0) h = (TH2D*)h->DrawNormalized(draw_.c_str());
     else h->Draw(draw_.c_str());
-    if (h->GetEntries()>0&&draw_=="COLZ") {
+    if (h->Integral()>0&&draw_=="COLZ") {
       gPad->Update();
       TPaletteAxis* palette = (TPaletteAxis*)h->GetListOfFunctions()->FindObject("palette");
       if (palette) {
@@ -1154,7 +1154,7 @@ public:
       //  if (norm_) hvec[i_highest]->DrawNormalized(draw_.c_str());
       //  else hvec[i_highest]->Draw(draw_.c_str());	  
       //}
-      if (norm_&&hvec[i]->GetEntries()>0) hvec[i]->DrawNormalized((i==skip) ? draw_.c_str() : same.c_str());
+      if (norm_&&hvec[i]->Integral()>0) hvec[i]->DrawNormalized((i==skip) ? draw_.c_str() : same.c_str());
       else hvec[i]->Draw((i==skip) ? draw_.c_str() : same.c_str());
       if (stat_) set_stat_(hvec[i], (Color_t)col[i-(keep_?skip:0)], i-skip);
       leg->AddEntry(hvec[i], pf[i].c_str(), draw_.find("P")!=std::string::npos ? "P" : "L");
@@ -1175,7 +1175,7 @@ public:
       h->SetLineWidth(2);
     }
     if (stat_) h->SetStats(1);
-    if (norm_&&h->GetEntries()>0) h->DrawNormalized(draw_.c_str());
+    if (norm_&&h->Integral()>0) h->DrawNormalized(draw_.c_str());
     else h->Draw(draw_.c_str());
     if (stat_) set_stat_(h,1,0);
   }
@@ -1308,7 +1308,7 @@ private:
   // FillParams container
   std::map<std::string, FillParams> hp_map_;
   
-  std::vector<float*> weights_;
+  std::vector<std::function<double()> > weights_;
   
   FillParams get_hp_(std::string name) {
     size_t count = hp_map_.count(name);
@@ -1381,7 +1381,7 @@ public:
   
   void AddNewCut(const char* name, std::function<bool()> cut) { cut_->AddNew(name, cut); }
   
-  void SetHistoWeights(std::vector<float*> weights) { weights_ = weights; }
+  void SetHistoWeights(std::vector<std::function<double()> > weights) { weights_ = weights; }
   
   void AddHistoType(std::string type) { sh_[type] = std::vector<SmartHisto*>(); }
 
@@ -1395,7 +1395,7 @@ public:
         std::vector<Postfixes::Postfix> pfs;
         for (size_t i=0; i<hp.pfs.size(); ++i) pfs.push_back(pf_->GetPostfix(hp.pfs[i]));
         std::string axis_titles = "";
-        std::vector<std::function<double()>> fillfuncs;
+        std::vector<std::function<double()> > fillfuncs;
 	if (AddCutsToTitle) for (size_t icut=0; icut<hp.cuts.size(); ++icut) {
 	  if (icut>0) axis_titles += ", ";
 	  axis_titles += hp.cuts[icut];

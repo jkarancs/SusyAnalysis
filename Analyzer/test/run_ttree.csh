@@ -24,21 +24,18 @@ foreach i ( `seq 1 $n` )
     set i=`echo $i | awk '{ printf "%03d\n",$1 }'`
     if ( $is_miniaod == 1 ) then
 	set edmfile="$edmdir/edmTree_$i.root"
-	echo 'cmsRun ../../../B2GAnaFW/B2GAnaFW/test/b2gedmntuples_cfg.py maxEvts=-1 sample="file:'$infile'" outputLabel="file:'$edmfile'" LHE=False' >>! make_edmtrees_$name.csh
-	set ttreefile="$ttreedir/b2gTree_$i.root"
-	echo 'cmsRun b2gTrees_cfg.py maxEvts=-1 sample="file:'$edmfile'" outputLabel="file:'$ttreefile'"' >>! make_ttrees_$name.csh
-    else
-	set ttreefile="$ttreedir/b2gTree_$i.root"
-	echo 'cmsRun b2gTrees_cfg.py maxEvts=-1 sample="file:'$infile'" outputLabel="file:'$ttreefile'"' >>! make_ttrees_$name.csh
+	echo 'cmsRun ../../../Analysis/B2GAnaFW/test/b2gedmntuples_cfg.py maxEvts=-1 sample="file:'$infile'" outputLabel="file:'$edmfile'" LHE=False' >>! make_edmtrees_$name.csh
     endif
+    set ttreefile="$ttreedir/b2gTree_$i.root"
+    echo 'nice cmsRun b2gTrees_cfg.py maxEvts=-1 sample="file:'$edmfile'" outputLabel="file:'$ttreefile'"' >>! make_ttrees_$name.csh
 end
 rm files.txt
 
 if ( $is_miniaod == 1 ) then
     mkdir -p $edmdir
-    #source source_parallel.csh make_edmtrees_$name.csh $Nparallel
-    #rm make_edmtrees_$name.csh
+    source source_parallel.csh make_edmtrees_$name.csh $Nparallel
+    rm make_edmtrees_$name.csh
 endif
 mkdir -p $ttreedir
-#source source_parallel.csh make_ttrees_$name.csh $Nparallel
-#rm make_ttrees_$name.csh
+source source_parallel.csh make_ttrees_$name.csh $Nparallel
+rm make_ttrees_$name.csh

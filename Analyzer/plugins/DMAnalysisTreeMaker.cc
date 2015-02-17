@@ -342,9 +342,6 @@ void DMAnalysisTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetu
     d.jetsAK4.Phi[it] = vfloats_values[makeName(jetsAK4_label,pref,"Phi")][it];
     d.jetsAK4.E[it] = vfloats_values[makeName(jetsAK4_label,pref,"E")][it];
     d.jetsAK4.Charge[it] = vfloats_values[makeName(jetsAK4_label,pref,"Charge")][it];
-    d.jetsAK4.IsCSVL[it] = vfloats_values[makeName(jetsAK4_label,pref,"IsCSVL")][it];
-    d.jetsAK4.IsCSVM[it] = vfloats_values[makeName(jetsAK4_label,pref,"IsCSVM")][it];
-    d.jetsAK4.IsCSVT[it] = vfloats_values[makeName(jetsAK4_label,pref,"IsCSVT")][it];
     d.jetsAK4.CSV[it] = vfloats_values[makeName(jetsAK4_label,pref,"CSV")][it];
     d.jetsAK4.CSVV1[it] = vfloats_values[makeName(jetsAK4_label,pref,"CSVV1")][it];
     d.jetsAK4.GenPartonY[it] = vfloats_values[makeName(jetsAK4_label,pref,"GenPartonY")][it];
@@ -424,9 +421,6 @@ void DMAnalysisTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetu
     d.jetsAK8.Phi[it] = vfloats_values[makeName(jetsAK8_label,pref,"Phi")][it];
     d.jetsAK8.E[it] = vfloats_values[makeName(jetsAK8_label,pref,"E")][it];
     d.jetsAK8.Charge[it] = vfloats_values[makeName(jetsAK8_label,pref,"Charge")][it];
-    d.jetsAK8.IsCSVL[it] = vfloats_values[makeName(jetsAK8_label,pref,"IsCSVL")][it];
-    d.jetsAK8.IsCSVM[it] = vfloats_values[makeName(jetsAK8_label,pref,"IsCSVM")][it];
-    d.jetsAK8.IsCSVT[it] = vfloats_values[makeName(jetsAK8_label,pref,"IsCSVT")][it];
     d.jetsAK8.CSV[it] = vfloats_values[makeName(jetsAK8_label,pref,"CSV")][it];
     d.jetsAK8.CSVV1[it] = vfloats_values[makeName(jetsAK8_label,pref,"CSVV1")][it];
     d.jetsAK8.GenPartonY[it] = vfloats_values[makeName(jetsAK8_label,pref,"GenPartonY")][it];
@@ -476,6 +470,8 @@ void DMAnalysisTreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetu
     d.jetsAK8.JERdown[it] = vfloats_values[makeName(jetsAK8_label,pref,"JERdown")][it];
     d.jetsAK8.subjetIndex0[it] = vfloats_values[makeName(jetsAK8_label,pref,"subjetIndex0")][it];
     d.jetsAK8.subjetIndex1[it] = vfloats_values[makeName(jetsAK8_label,pref,"subjetIndex1")][it];
+    d.jetsAK8.subjetIndex2[it] = vfloats_values[makeName(jetsAK8_label,pref,"subjetIndex2")][it];
+    d.jetsAK8.subjetIndex3[it] = vfloats_values[makeName(jetsAK8_label,pref,"subjetIndex4")][it];
     d.jetsAK8.tau1[it] = vfloats_values[makeName(jetsAK8_label,pref,"tau1")][it];
     d.jetsAK8.tau2[it] = vfloats_values[makeName(jetsAK8_label,pref,"tau2")][it];
     d.jetsAK8.tau3[it] = vfloats_values[makeName(jetsAK8_label,pref,"tau3")][it];
