@@ -47,6 +47,7 @@ public:
     float isLoose[NLEP+1];
     float isTight[NLEP+1];
     float isMedium[NLEP+1];
+    float scEta[NLEP+1];
     
     size_t it;
     int size;
@@ -76,6 +77,7 @@ public:
         isLoose[i]=NOVAL_F;
         isTight[i]=NOVAL_F;
         isMedium[i]=NOVAL_F;
+        scEta[i]=NOVAL_F;
       }
       it = -1;
       size = 0;
@@ -104,6 +106,7 @@ public:
       isLoose[NLEP]	      = isLoose[it];	     
       isTight[NLEP]	      = isTight[it];	     
       isMedium[NLEP]          = isMedium[it];         
+      scEta[NLEP]	      = scEta[it];		     
     }
     
     bool Loop() {
@@ -133,9 +136,11 @@ public:
     float E[NLEP+1];
     float Charge[NLEP+1];
     // MuonVars
-    float Iso03[NLEP+1];
+    float Iso04[NLEP+1];
     float D0[NLEP+1];
     float D0err[NLEP+1];
+    float Dxy[NLEP+1];
+    float Dxyerr[NLEP+1];
     float Dz[NLEP+1];
     float Dzerr[NLEP+1];
     float IsLooseMuon[NLEP+1];
@@ -162,11 +167,6 @@ public:
     float GenMuonPt[NLEP+1];
     float GenMuonE[NLEP+1];
     float GenMuonCharge[NLEP+1];
-    float HLTmuonDeltaR[NLEP+1];
-    float HLTmuonPt[NLEP+1];
-    float HLTmuonEta[NLEP+1];
-    float HLTmuonPhi[NLEP+1];
-    float HLTmuonE[NLEP+1];
     
     size_t it;
     int size;
@@ -180,9 +180,11 @@ public:
         Phi[i]=NOVAL_F;
         E[i]=NOVAL_F;
         Charge[i]=NOVAL_F;
-        Iso03[i]=NOVAL_F;
+        Iso04[i]=NOVAL_F;
         D0[i]=NOVAL_F;
         D0err[i]=NOVAL_F;
+        Dxy[i]=NOVAL_F;
+        Dxyerr[i]=NOVAL_F;
         Dz[i]=NOVAL_F;
         Dzerr[i]=NOVAL_F;
         IsLooseMuon[i]=NOVAL_F;
@@ -209,11 +211,6 @@ public:
         GenMuonPt[i]=NOVAL_F;
         GenMuonE[i]=NOVAL_F;
         GenMuonCharge[i]=NOVAL_F;
-        HLTmuonDeltaR[i]=NOVAL_F;
-        HLTmuonPt[i]=NOVAL_F;
-        HLTmuonEta[i]=NOVAL_F;
-        HLTmuonPhi[i]=NOVAL_F;
-        HLTmuonE[i]=NOVAL_F;
       }
       it = -1;
       size = 0;
@@ -227,9 +224,11 @@ public:
       Phi[NLEP]		      = Phi[it];		     
       E[NLEP]		      = E[it];		     
       Charge[NLEP]	      = Charge[it];
-      Iso03[NLEP]                    = Iso03[it];                   
+      Iso04[NLEP]                    = Iso04[it];                   
       D0[NLEP] 			     = D0[it]; 			    
       D0err[NLEP] 		     = D0err[it]; 		    
+      Dxy[NLEP] 		     = Dxy[it]; 			    
+      Dxyerr[NLEP] 		     = Dxyerr[it]; 		    
       Dz[NLEP] 			     = Dz[it]; 			    
       Dzerr[NLEP] 		     = Dzerr[it]; 		    
       IsLooseMuon[NLEP] 	     = IsLooseMuon[it]; 	    
@@ -256,11 +255,6 @@ public:
       GenMuonPt[NLEP] 		     = GenMuonPt[it]; 		    
       GenMuonE[NLEP] 		     = GenMuonE[it]; 		    
       GenMuonCharge[NLEP] 	     = GenMuonCharge[it]; 	    
-      HLTmuonDeltaR[NLEP] 	     = HLTmuonDeltaR[it]; 	    
-      HLTmuonPt[NLEP] 		     = HLTmuonPt[it]; 		    
-      HLTmuonEta[NLEP] 		     = HLTmuonEta[it]; 		    
-      HLTmuonPhi[NLEP] 		     = HLTmuonPhi[it]; 		    
-      HLTmuonE[NLEP] 	             = HLTmuonE[it]; 	            
     }
     
     bool Loop() {
@@ -305,12 +299,6 @@ public:
     float GenJetPt[NJET+1];
     float GenJetE[NJET+1];
     float GenJetCharge[NJET+1];
-    // TRIGGER MATHING
-    float HLTjetEta[NJET+1];
-    float HLTjetPhi[NJET+1];
-    float HLTjetPt[NJET+1];
-    float HLTjetE[NJET+1];
-    float HLTjetDeltaR[NJET+1];
     // CONSTITUENTS
     float muonMultiplicity[NJET+1];
     float PhotonEnergy[NJET+1];
@@ -322,10 +310,10 @@ public:
     float numberOfDaughters[NJET+1];
     float chargedMultiplicity[NJET+1];
     float neutralHadronMultiplicity[NJET+1];
-    float neutralHadronEnergyFraction[NJET+1];
-    float neutralEmEnergyFraction[NJET+1];
-    float chargedEmEnergyFraction[NJET+1];
-    float chargedHadronEnergyFraction[NJET+1];
+    float neutralHadronEnergy[NJET+1];
+    float neutralEmEnergy[NJET+1];
+    float chargedEmEnergy[NJET+1];
+    float chargedHadronEnergy[NJET+1];
     float photonMultiplicity[NJET+1];
     float electronMultiplicity[NJET+1];
     float HFHadronMultiplicity[NJET+1];
@@ -334,6 +322,7 @@ public:
     float neutralMultiplicity[NJET+1];
     //FOR JEC
     float jecFactor0[NJET+1];
+    float jetArea[NJET+1];
     // FOR SYSTEMATICS
     float SmearedPt[NJET+1];
     float SmearedPEta[NJET+1];
@@ -367,11 +356,6 @@ public:
         GenJetPt[i]=NOVAL_F;
         GenJetE[i]=NOVAL_F;
         GenJetCharge[i]=NOVAL_F;
-        HLTjetEta[i]=NOVAL_F;
-        HLTjetPhi[i]=NOVAL_F;
-        HLTjetPt[i]=NOVAL_F;
-        HLTjetE[i]=NOVAL_F;
-        HLTjetDeltaR[i]=NOVAL_F;
         muonMultiplicity[i]=NOVAL_F;
         PhotonEnergy[i]=NOVAL_F;
         ElectronEnergy[i]=NOVAL_F;
@@ -382,10 +366,10 @@ public:
         numberOfDaughters[i]=NOVAL_F;
         chargedMultiplicity[i]=NOVAL_F;
         neutralHadronMultiplicity[i]=NOVAL_F;
-        neutralHadronEnergyFraction[i]=NOVAL_F;
-        neutralEmEnergyFraction[i]=NOVAL_F;
-        chargedEmEnergyFraction[i]=NOVAL_F;
-        chargedHadronEnergyFraction[i]=NOVAL_F;
+        neutralHadronEnergy[i]=NOVAL_F;
+        neutralEmEnergy[i]=NOVAL_F;
+        chargedEmEnergy[i]=NOVAL_F;
+        chargedHadronEnergy[i]=NOVAL_F;
         photonMultiplicity[i]=NOVAL_F;
         electronMultiplicity[i]=NOVAL_F;
         HFHadronMultiplicity[i]=NOVAL_F;
@@ -393,6 +377,7 @@ public:
         ChargeMuEnergy[i]=NOVAL_F;
         neutralMultiplicity[i]=NOVAL_F;
 	jecFactor0[i]=NOVAL_F;
+	jetArea[i]=NOVAL_F;
         SmearedPt[i]=NOVAL_F;
         SmearedPEta[i]=NOVAL_F;
         SmearedPhi[i]=NOVAL_F;
@@ -426,11 +411,6 @@ public:
       GenJetPt[NJET]		        = GenJetPt[it];		      
       GenJetE[NJET]		        = GenJetE[it];		      
       GenJetCharge[NJET]		= GenJetCharge[it];		      
-      HLTjetEta[NJET]		        = HLTjetEta[it];		      
-      HLTjetPhi[NJET]		        = HLTjetPhi[it];		      
-      HLTjetPt[NJET]		        = HLTjetPt[it];		      
-      HLTjetE[NJET]		        = HLTjetE[it];		      
-      HLTjetDeltaR[NJET]		= HLTjetDeltaR[it];		      
       muonMultiplicity[NJET]	        = muonMultiplicity[it];	      
       PhotonEnergy[NJET]		= PhotonEnergy[it];		      
       ElectronEnergy[NJET]	        = ElectronEnergy[it];	      
@@ -441,16 +421,18 @@ public:
       numberOfDaughters[NJET]	        = numberOfDaughters[it];	      
       chargedMultiplicity[NJET]	        = chargedMultiplicity[it];	      
       neutralHadronMultiplicity[NJET]   = neutralHadronMultiplicity[it];  
-      neutralHadronEnergyFraction[NJET] = neutralHadronEnergyFraction[it];
-      neutralEmEnergyFraction[NJET]     = neutralEmEnergyFraction[it];    
-      chargedEmEnergyFraction[NJET]     = chargedEmEnergyFraction[it];    
-      chargedHadronEnergyFraction[NJET] = chargedHadronEnergyFraction[it];
+      neutralHadronEnergy[NJET]         = neutralHadronEnergy[it];
+      neutralEmEnergy[NJET]             = neutralEmEnergy[it];    
+      chargedEmEnergy[NJET]             = chargedEmEnergy[it];    
+      chargedHadronEnergy[NJET]         = chargedHadronEnergy[it];
       photonMultiplicity[NJET]	        = photonMultiplicity[it];	      
       electronMultiplicity[NJET]	= electronMultiplicity[it];	      
       HFHadronMultiplicity[NJET]	= HFHadronMultiplicity[it];	      
       HFEMMultiplicity[NJET]	        = HFEMMultiplicity[it];	      
       ChargeMuEnergy[NJET]	        = ChargeMuEnergy[it];	      
-      neutralMultiplicity[NJET]	        = neutralMultiplicity[it];	      
+      neutralMultiplicity[NJET]	        = neutralMultiplicity[it];
+      jecFactor0[NJET]                  = jecFactor0[it];
+      jetArea[NJET]                     = jetArea[it];
       SmearedPt[NJET]		        = SmearedPt[it];		      
       SmearedPEta[NJET]		        = SmearedPEta[it];		      
       SmearedPhi[NJET]		        = SmearedPhi[it];		      
@@ -472,6 +454,10 @@ public:
     float trimmedMass[NJET+1];
     float prunedMass[NJET+1];
     float filteredMass[NJET+1];
+    float topMass[NJET+1];
+    float wMass[NJET+1];
+    float nSubJets[NJET+1];
+    float minmass[NJET+1];
     
     void init() {
       for (size_t it=0; it<=NJET; ++it) {
@@ -485,6 +471,10 @@ public:
 	trimmedMass[it]=NOVAL_F;
 	prunedMass[it]=NOVAL_F;
 	filteredMass[it]=NOVAL_F;
+	topMass[it]=NOVAL_F;
+	wMass[it]=NOVAL_F;
+	nSubJets[it]=NOVAL_F;
+	minmass[it]=NOVAL_F;
       }
     }
     
@@ -499,6 +489,10 @@ public:
       trimmedMass[NJET]	 = trimmedMass[it];
       prunedMass[NJET]	 = prunedMass[it];
       filteredMass[NJET] = filteredMass[it];
+      topMass[NJET]	 = topMass[it];
+      wMass[NJET]	 = wMass[it];
+      nSubJets[NJET]	 = nSubJets[it];
+      minmass[NJET]	 = minmass[it];
     }
   } AK8;
   
@@ -585,11 +579,14 @@ public:
     AK8SubJetVars() { init(); }
     ~AK8SubJetVars() {}
     
+    float subjetCSV[NJET+1];
+    
     size_t it;
     int size;
     
     void init() {
       JetVars::init();
+      for (size_t it=0; it<=NJET; ++it) subjetCSV[it]=NOVAL_F;
       
       it = -1;
       size = 0;
@@ -599,6 +596,7 @@ public:
       ++it;
       if (it<(size_t)size) {
 	JetVars::SetCurrent(it);
+	subjetCSV[NJET] = subjetCSV[it];
 	return 1;
       } else {
 	it=-1;

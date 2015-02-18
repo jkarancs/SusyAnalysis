@@ -41,6 +41,7 @@ public:
     tree_->GetBranch("el_isLoose")->SetAddress(&data.ele.isLoose);
     tree_->GetBranch("el_isTight")->SetAddress(&data.ele.isTight);
     tree_->GetBranch("el_isMedium")->SetAddress(&data.ele.isMedium);
+    tree_->GetBranch("el_scEta")->SetAddress(&data.ele.scEta);
     if (debug) std::cout<<"B2GTreeReader: electrons loaded"<<std::endl;
     
     tree_->GetBranch("mu_size")->SetAddress(&data.mu.size);
@@ -51,9 +52,11 @@ public:
     tree_->GetBranch("mu_Phi")->SetAddress(&data.mu.Phi);
     tree_->GetBranch("mu_E")->SetAddress(&data.mu.E);
     tree_->GetBranch("mu_Charge")->SetAddress(&data.mu.Charge);
-    tree_->GetBranch("mu_Iso03")->SetAddress(&data.mu.Iso03);
+    tree_->GetBranch("mu_Iso04")->SetAddress(&data.mu.Iso04);
     tree_->GetBranch("mu_D0")->SetAddress(&data.mu.D0);
     tree_->GetBranch("mu_D0err")->SetAddress(&data.mu.D0err);
+    tree_->GetBranch("mu_Dxy")->SetAddress(&data.mu.Dxy);
+    tree_->GetBranch("mu_Dxyerr")->SetAddress(&data.mu.Dxyerr);
     tree_->GetBranch("mu_Dz")->SetAddress(&data.mu.Dz);
     tree_->GetBranch("mu_Dzerr")->SetAddress(&data.mu.Dzerr);
     tree_->GetBranch("mu_IsLooseMuon")->SetAddress(&data.mu.IsLooseMuon);
@@ -80,11 +83,6 @@ public:
     tree_->GetBranch("mu_GenMuonPt")->SetAddress(&data.mu.GenMuonPt);
     tree_->GetBranch("mu_GenMuonE")->SetAddress(&data.mu.GenMuonE);
     tree_->GetBranch("mu_GenMuonCharge")->SetAddress(&data.mu.GenMuonCharge);
-    tree_->GetBranch("mu_HLTmuonDeltaR")->SetAddress(&data.mu.HLTmuonDeltaR);
-    tree_->GetBranch("mu_HLTmuonPt")->SetAddress(&data.mu.HLTmuonPt);
-    tree_->GetBranch("mu_HLTmuonEta")->SetAddress(&data.mu.HLTmuonEta);
-    tree_->GetBranch("mu_HLTmuonPhi")->SetAddress(&data.mu.HLTmuonPhi);
-    tree_->GetBranch("mu_HLTmuonE")->SetAddress(&data.mu.HLTmuonE);
     if (debug) std::cout<<"B2GTreeReader: muons loaded"<<std::endl;
     
     tree_->GetBranch("met_Pt")->SetAddress(&data.met.Pt);
@@ -117,11 +115,6 @@ public:
     tree_->GetBranch("jetAK4_GenJetPt")->SetAddress(&data.jetsAK4.GenJetPt);
     tree_->GetBranch("jetAK4_GenJetE")->SetAddress(&data.jetsAK4.GenJetE);
     tree_->GetBranch("jetAK4_GenJetCharge")->SetAddress(&data.jetsAK4.GenJetCharge);
-    tree_->GetBranch("jetAK4_HLTjetEta")->SetAddress(&data.jetsAK4.HLTjetEta);
-    tree_->GetBranch("jetAK4_HLTjetPhi")->SetAddress(&data.jetsAK4.HLTjetPhi);
-    tree_->GetBranch("jetAK4_HLTjetPt")->SetAddress(&data.jetsAK4.HLTjetPt);
-    tree_->GetBranch("jetAK4_HLTjetE")->SetAddress(&data.jetsAK4.HLTjetE);
-    tree_->GetBranch("jetAK4_HLTjetDeltaR")->SetAddress(&data.jetsAK4.HLTjetDeltaR);
     tree_->GetBranch("jetAK4_muonMultiplicity")->SetAddress(&data.jetsAK4.muonMultiplicity);
     tree_->GetBranch("jetAK4_PhotonEnergy")->SetAddress(&data.jetsAK4.PhotonEnergy);
     tree_->GetBranch("jetAK4_ElectronEnergy")->SetAddress(&data.jetsAK4.ElectronEnergy);
@@ -132,10 +125,10 @@ public:
     tree_->GetBranch("jetAK4_numberOfDaughters")->SetAddress(&data.jetsAK4.numberOfDaughters);
     tree_->GetBranch("jetAK4_chargedMultiplicity")->SetAddress(&data.jetsAK4.chargedMultiplicity);
     tree_->GetBranch("jetAK4_neutralHadronMultiplicity")->SetAddress(&data.jetsAK4.neutralHadronMultiplicity);
-    tree_->GetBranch("jetAK4_neutralHadronEnergyFraction")->SetAddress(&data.jetsAK4.neutralHadronEnergyFraction);
-    tree_->GetBranch("jetAK4_neutralEmEnergyFraction")->SetAddress(&data.jetsAK4.neutralEmEnergyFraction);
-    tree_->GetBranch("jetAK4_chargedEmEnergyFraction")->SetAddress(&data.jetsAK4.chargedEmEnergyFraction);
-    tree_->GetBranch("jetAK4_chargedHadronEnergyFraction")->SetAddress(&data.jetsAK4.chargedHadronEnergyFraction);
+    tree_->GetBranch("jetAK4_neutralHadronEnergy")->SetAddress(&data.jetsAK4.neutralHadronEnergy);
+    tree_->GetBranch("jetAK4_neutralEmEnergy")->SetAddress(&data.jetsAK4.neutralEmEnergy);
+    tree_->GetBranch("jetAK4_chargedEmEnergy")->SetAddress(&data.jetsAK4.chargedEmEnergy);
+    tree_->GetBranch("jetAK4_chargedHadronEnergy")->SetAddress(&data.jetsAK4.chargedHadronEnergy);
     tree_->GetBranch("jetAK4_photonMultiplicity")->SetAddress(&data.jetsAK4.photonMultiplicity);
     tree_->GetBranch("jetAK4_electronMultiplicity")->SetAddress(&data.jetsAK4.electronMultiplicity);
     tree_->GetBranch("jetAK4_HFHadronMultiplicity")->SetAddress(&data.jetsAK4.HFHadronMultiplicity);
@@ -143,6 +136,7 @@ public:
     tree_->GetBranch("jetAK4_ChargeMuEnergy")->SetAddress(&data.jetsAK4.ChargeMuEnergy);
     tree_->GetBranch("jetAK4_neutralMultiplicity")->SetAddress(&data.jetsAK4.neutralMultiplicity);
     tree_->GetBranch("jetAK4_jecFactor0")->SetAddress(&data.jetsAK4.jecFactor0);
+    tree_->GetBranch("jetAK4_jetArea")->SetAddress(&data.jetsAK4.jetArea);
     tree_->GetBranch("jetAK4_SmearedPt")->SetAddress(&data.jetsAK4.SmearedPt);
     tree_->GetBranch("jetAK4_SmearedPEta")->SetAddress(&data.jetsAK4.SmearedPEta);
     tree_->GetBranch("jetAK4_SmearedPhi")->SetAddress(&data.jetsAK4.SmearedPhi);
@@ -175,11 +169,6 @@ public:
     tree_->GetBranch("jetAK8_GenJetPt")->SetAddress(&data.jetsAK8.GenJetPt);
     tree_->GetBranch("jetAK8_GenJetE")->SetAddress(&data.jetsAK8.GenJetE);
     tree_->GetBranch("jetAK8_GenJetCharge")->SetAddress(&data.jetsAK8.GenJetCharge);
-    tree_->GetBranch("jetAK8_HLTjetEta")->SetAddress(&data.jetsAK8.HLTjetEta);
-    tree_->GetBranch("jetAK8_HLTjetPhi")->SetAddress(&data.jetsAK8.HLTjetPhi);
-    tree_->GetBranch("jetAK8_HLTjetPt")->SetAddress(&data.jetsAK8.HLTjetPt);
-    tree_->GetBranch("jetAK8_HLTjetE")->SetAddress(&data.jetsAK8.HLTjetE);
-    tree_->GetBranch("jetAK8_HLTjetDeltaR")->SetAddress(&data.jetsAK8.HLTjetDeltaR);
     tree_->GetBranch("jetAK8_muonMultiplicity")->SetAddress(&data.jetsAK8.muonMultiplicity);
     tree_->GetBranch("jetAK8_PhotonEnergy")->SetAddress(&data.jetsAK8.PhotonEnergy);
     tree_->GetBranch("jetAK8_ElectronEnergy")->SetAddress(&data.jetsAK8.ElectronEnergy);
@@ -190,10 +179,10 @@ public:
     tree_->GetBranch("jetAK8_numberOfDaughters")->SetAddress(&data.jetsAK8.numberOfDaughters);
     tree_->GetBranch("jetAK8_chargedMultiplicity")->SetAddress(&data.jetsAK8.chargedMultiplicity);
     tree_->GetBranch("jetAK8_neutralHadronMultiplicity")->SetAddress(&data.jetsAK8.neutralHadronMultiplicity);
-    tree_->GetBranch("jetAK8_neutralHadronEnergyFraction")->SetAddress(&data.jetsAK8.neutralHadronEnergyFraction);
-    tree_->GetBranch("jetAK8_neutralEmEnergyFraction")->SetAddress(&data.jetsAK8.neutralEmEnergyFraction);
-    tree_->GetBranch("jetAK8_chargedEmEnergyFraction")->SetAddress(&data.jetsAK8.chargedEmEnergyFraction);
-    tree_->GetBranch("jetAK8_chargedHadronEnergyFraction")->SetAddress(&data.jetsAK8.chargedHadronEnergyFraction);
+    tree_->GetBranch("jetAK8_neutralHadronEnergy")->SetAddress(&data.jetsAK8.neutralHadronEnergy);
+    tree_->GetBranch("jetAK8_neutralEmEnergy")->SetAddress(&data.jetsAK8.neutralEmEnergy);
+    tree_->GetBranch("jetAK8_chargedEmEnergy")->SetAddress(&data.jetsAK8.chargedEmEnergy);
+    tree_->GetBranch("jetAK8_chargedHadronEnergy")->SetAddress(&data.jetsAK8.chargedHadronEnergy);
     tree_->GetBranch("jetAK8_photonMultiplicity")->SetAddress(&data.jetsAK8.photonMultiplicity);
     tree_->GetBranch("jetAK8_electronMultiplicity")->SetAddress(&data.jetsAK8.electronMultiplicity);
     tree_->GetBranch("jetAK8_HFHadronMultiplicity")->SetAddress(&data.jetsAK8.HFHadronMultiplicity);
@@ -201,6 +190,7 @@ public:
     tree_->GetBranch("jetAK8_ChargeMuEnergy")->SetAddress(&data.jetsAK8.ChargeMuEnergy);
     tree_->GetBranch("jetAK8_neutralMultiplicity")->SetAddress(&data.jetsAK8.neutralMultiplicity);
     tree_->GetBranch("jetAK8_jecFactor0")->SetAddress(&data.jetsAK8.jecFactor0);
+    tree_->GetBranch("jetAK8_jetArea")->SetAddress(&data.jetsAK8.jetArea);
     tree_->GetBranch("jetAK8_SmearedPt")->SetAddress(&data.jetsAK8.SmearedPt);
     tree_->GetBranch("jetAK8_SmearedPEta")->SetAddress(&data.jetsAK8.SmearedPEta);
     tree_->GetBranch("jetAK8_SmearedPhi")->SetAddress(&data.jetsAK8.SmearedPhi);
@@ -217,6 +207,10 @@ public:
     tree_->GetBranch("jetAK8_trimmedMass")->SetAddress(&data.jetsAK8.trimmedMass);
     tree_->GetBranch("jetAK8_prunedMass")->SetAddress(&data.jetsAK8.prunedMass);
     tree_->GetBranch("jetAK8_filteredMass")->SetAddress(&data.jetsAK8.filteredMass);
+    tree_->GetBranch("jetAK8_topMass")->SetAddress(&data.jetsAK8.topMass);
+    tree_->GetBranch("jetAK8_wMass")->SetAddress(&data.jetsAK8.wMass);
+    tree_->GetBranch("jetAK8_nSubJets")->SetAddress(&data.jetsAK8.nSubJets);
+    tree_->GetBranch("jetAK8_minmass")->SetAddress(&data.jetsAK8.minmass);
     if (debug) std::cout<<"B2GTreeReader: AK8 jets loaded"<<std::endl;
     
     tree_->GetBranch("jetsCmsTopTag_size")->SetAddress(&data.jetsCmsTopTag.size);
@@ -243,11 +237,6 @@ public:
     tree_->GetBranch("jetsCmsTopTag_GenJetPt")->SetAddress(&data.jetsCmsTopTag.GenJetPt);
     tree_->GetBranch("jetsCmsTopTag_GenJetE")->SetAddress(&data.jetsCmsTopTag.GenJetE);
     tree_->GetBranch("jetsCmsTopTag_GenJetCharge")->SetAddress(&data.jetsCmsTopTag.GenJetCharge);
-    tree_->GetBranch("jetsCmsTopTag_HLTjetEta")->SetAddress(&data.jetsCmsTopTag.HLTjetEta);
-    tree_->GetBranch("jetsCmsTopTag_HLTjetPhi")->SetAddress(&data.jetsCmsTopTag.HLTjetPhi);
-    tree_->GetBranch("jetsCmsTopTag_HLTjetPt")->SetAddress(&data.jetsCmsTopTag.HLTjetPt);
-    tree_->GetBranch("jetsCmsTopTag_HLTjetE")->SetAddress(&data.jetsCmsTopTag.HLTjetE);
-    tree_->GetBranch("jetsCmsTopTag_HLTjetDeltaR")->SetAddress(&data.jetsCmsTopTag.HLTjetDeltaR);
     tree_->GetBranch("jetsCmsTopTag_muonMultiplicity")->SetAddress(&data.jetsCmsTopTag.muonMultiplicity);
     tree_->GetBranch("jetsCmsTopTag_PhotonEnergy")->SetAddress(&data.jetsCmsTopTag.PhotonEnergy);
     tree_->GetBranch("jetsCmsTopTag_ElectronEnergy")->SetAddress(&data.jetsCmsTopTag.ElectronEnergy);
@@ -258,10 +247,10 @@ public:
     tree_->GetBranch("jetsCmsTopTag_numberOfDaughters")->SetAddress(&data.jetsCmsTopTag.numberOfDaughters);
     tree_->GetBranch("jetsCmsTopTag_chargedMultiplicity")->SetAddress(&data.jetsCmsTopTag.chargedMultiplicity);
     tree_->GetBranch("jetsCmsTopTag_neutralHadronMultiplicity")->SetAddress(&data.jetsCmsTopTag.neutralHadronMultiplicity);
-    tree_->GetBranch("jetsCmsTopTag_neutralHadronEnergyFraction")->SetAddress(&data.jetsCmsTopTag.neutralHadronEnergyFraction);
-    tree_->GetBranch("jetsCmsTopTag_neutralEmEnergyFraction")->SetAddress(&data.jetsCmsTopTag.neutralEmEnergyFraction);
-    tree_->GetBranch("jetsCmsTopTag_chargedEmEnergyFraction")->SetAddress(&data.jetsCmsTopTag.chargedEmEnergyFraction);
-    tree_->GetBranch("jetsCmsTopTag_chargedHadronEnergyFraction")->SetAddress(&data.jetsCmsTopTag.chargedHadronEnergyFraction);
+    tree_->GetBranch("jetsCmsTopTag_neutralHadronEnergy")->SetAddress(&data.jetsCmsTopTag.neutralHadronEnergy);
+    tree_->GetBranch("jetsCmsTopTag_neutralEmEnergy")->SetAddress(&data.jetsCmsTopTag.neutralEmEnergy);
+    tree_->GetBranch("jetsCmsTopTag_chargedEmEnergy")->SetAddress(&data.jetsCmsTopTag.chargedEmEnergy);
+    tree_->GetBranch("jetsCmsTopTag_chargedHadronEnergy")->SetAddress(&data.jetsCmsTopTag.chargedHadronEnergy);
     tree_->GetBranch("jetsCmsTopTag_photonMultiplicity")->SetAddress(&data.jetsCmsTopTag.photonMultiplicity);
     tree_->GetBranch("jetsCmsTopTag_electronMultiplicity")->SetAddress(&data.jetsCmsTopTag.electronMultiplicity);
     tree_->GetBranch("jetsCmsTopTag_HFHadronMultiplicity")->SetAddress(&data.jetsCmsTopTag.HFHadronMultiplicity);
@@ -269,6 +258,7 @@ public:
     tree_->GetBranch("jetsCmsTopTag_ChargeMuEnergy")->SetAddress(&data.jetsCmsTopTag.ChargeMuEnergy);
     tree_->GetBranch("jetsCmsTopTag_neutralMultiplicity")->SetAddress(&data.jetsCmsTopTag.neutralMultiplicity);
     tree_->GetBranch("jetsCmsTopTag_jecFactor0")->SetAddress(&data.jetsCmsTopTag.jecFactor0);
+    tree_->GetBranch("jetsCmsTopTag_jetArea")->SetAddress(&data.jetsCmsTopTag.jetArea);
     tree_->GetBranch("jetsCmsTopTag_SmearedPt")->SetAddress(&data.jetsCmsTopTag.SmearedPt);
     tree_->GetBranch("jetsCmsTopTag_SmearedPEta")->SetAddress(&data.jetsCmsTopTag.SmearedPEta);
     tree_->GetBranch("jetsCmsTopTag_SmearedPhi")->SetAddress(&data.jetsCmsTopTag.SmearedPhi);
@@ -285,6 +275,10 @@ public:
     tree_->GetBranch("jetsCmsTopTag_trimmedMass")->SetAddress(&data.jetsCmsTopTag.trimmedMass);
     tree_->GetBranch("jetsCmsTopTag_prunedMass")->SetAddress(&data.jetsCmsTopTag.prunedMass);
     tree_->GetBranch("jetsCmsTopTag_filteredMass")->SetAddress(&data.jetsCmsTopTag.filteredMass);
+    tree_->GetBranch("jetsCmsTopTag_topMass")->SetAddress(&data.jetsCmsTopTag.topMass);
+    tree_->GetBranch("jetsCmsTopTag_wMass")->SetAddress(&data.jetsCmsTopTag.wMass);
+    tree_->GetBranch("jetsCmsTopTag_nSubJets")->SetAddress(&data.jetsCmsTopTag.nSubJets);
+    tree_->GetBranch("jetsCmsTopTag_minmass")->SetAddress(&data.jetsCmsTopTag.minmass);
     if (debug) std::cout<<"B2GTreeReader: CMS top-tag jets loaded"<<std::endl;
     
     tree_->GetBranch("subjetAK8_size")->SetAddress(&data.subjetsAK8.size);
@@ -311,11 +305,6 @@ public:
     tree_->GetBranch("subjetAK8_GenJetPt")->SetAddress(&data.subjetsAK8.GenJetPt);
     tree_->GetBranch("subjetAK8_GenJetE")->SetAddress(&data.subjetsAK8.GenJetE);
     tree_->GetBranch("subjetAK8_GenJetCharge")->SetAddress(&data.subjetsAK8.GenJetCharge);
-    tree_->GetBranch("subjetAK8_HLTjetEta")->SetAddress(&data.subjetsAK8.HLTjetEta);
-    tree_->GetBranch("subjetAK8_HLTjetPhi")->SetAddress(&data.subjetsAK8.HLTjetPhi);
-    tree_->GetBranch("subjetAK8_HLTjetPt")->SetAddress(&data.subjetsAK8.HLTjetPt);
-    tree_->GetBranch("subjetAK8_HLTjetE")->SetAddress(&data.subjetsAK8.HLTjetE);
-    tree_->GetBranch("subjetAK8_HLTjetDeltaR")->SetAddress(&data.subjetsAK8.HLTjetDeltaR);
     tree_->GetBranch("subjetAK8_muonMultiplicity")->SetAddress(&data.subjetsAK8.muonMultiplicity);
     tree_->GetBranch("subjetAK8_PhotonEnergy")->SetAddress(&data.subjetsAK8.PhotonEnergy);
     tree_->GetBranch("subjetAK8_ElectronEnergy")->SetAddress(&data.subjetsAK8.ElectronEnergy);
@@ -326,10 +315,10 @@ public:
     tree_->GetBranch("subjetAK8_numberOfDaughters")->SetAddress(&data.subjetsAK8.numberOfDaughters);
     tree_->GetBranch("subjetAK8_chargedMultiplicity")->SetAddress(&data.subjetsAK8.chargedMultiplicity);
     tree_->GetBranch("subjetAK8_neutralHadronMultiplicity")->SetAddress(&data.subjetsAK8.neutralHadronMultiplicity);
-    tree_->GetBranch("subjetAK8_neutralHadronEnergyFraction")->SetAddress(&data.subjetsAK8.neutralHadronEnergyFraction);
-    tree_->GetBranch("subjetAK8_neutralEmEnergyFraction")->SetAddress(&data.subjetsAK8.neutralEmEnergyFraction);
-    tree_->GetBranch("subjetAK8_chargedEmEnergyFraction")->SetAddress(&data.subjetsAK8.chargedEmEnergyFraction);
-    tree_->GetBranch("subjetAK8_chargedHadronEnergyFraction")->SetAddress(&data.subjetsAK8.chargedHadronEnergyFraction);
+    tree_->GetBranch("subjetAK8_neutralHadronEnergy")->SetAddress(&data.subjetsAK8.neutralHadronEnergy);
+    tree_->GetBranch("subjetAK8_neutralEmEnergy")->SetAddress(&data.subjetsAK8.neutralEmEnergy);
+    tree_->GetBranch("subjetAK8_chargedEmEnergy")->SetAddress(&data.subjetsAK8.chargedEmEnergy);
+    tree_->GetBranch("subjetAK8_chargedHadronEnergy")->SetAddress(&data.subjetsAK8.chargedHadronEnergy);
     tree_->GetBranch("subjetAK8_photonMultiplicity")->SetAddress(&data.subjetsAK8.photonMultiplicity);
     tree_->GetBranch("subjetAK8_electronMultiplicity")->SetAddress(&data.subjetsAK8.electronMultiplicity);
     tree_->GetBranch("subjetAK8_HFHadronMultiplicity")->SetAddress(&data.subjetsAK8.HFHadronMultiplicity);
@@ -337,6 +326,7 @@ public:
     tree_->GetBranch("subjetAK8_ChargeMuEnergy")->SetAddress(&data.subjetsAK8.ChargeMuEnergy);
     tree_->GetBranch("subjetAK8_neutralMultiplicity")->SetAddress(&data.subjetsAK8.neutralMultiplicity);
     tree_->GetBranch("subjetAK8_jecFactor0")->SetAddress(&data.subjetsAK8.jecFactor0);
+    tree_->GetBranch("subjetAK8_jetArea")->SetAddress(&data.subjetsAK8.jetArea);
     tree_->GetBranch("subjetAK8_SmearedPt")->SetAddress(&data.subjetsAK8.SmearedPt);
     tree_->GetBranch("subjetAK8_SmearedPEta")->SetAddress(&data.subjetsAK8.SmearedPEta);
     tree_->GetBranch("subjetAK8_SmearedPhi")->SetAddress(&data.subjetsAK8.SmearedPhi);
@@ -369,11 +359,6 @@ public:
     tree_->GetBranch("subjetsCmsTopTag_GenJetPt")->SetAddress(&data.subjetsCmsTopTag.GenJetPt);
     tree_->GetBranch("subjetsCmsTopTag_GenJetE")->SetAddress(&data.subjetsCmsTopTag.GenJetE);
     tree_->GetBranch("subjetsCmsTopTag_GenJetCharge")->SetAddress(&data.subjetsCmsTopTag.GenJetCharge);
-    tree_->GetBranch("subjetsCmsTopTag_HLTjetEta")->SetAddress(&data.subjetsCmsTopTag.HLTjetEta);
-    tree_->GetBranch("subjetsCmsTopTag_HLTjetPhi")->SetAddress(&data.subjetsCmsTopTag.HLTjetPhi);
-    tree_->GetBranch("subjetsCmsTopTag_HLTjetPt")->SetAddress(&data.subjetsCmsTopTag.HLTjetPt);
-    tree_->GetBranch("subjetsCmsTopTag_HLTjetE")->SetAddress(&data.subjetsCmsTopTag.HLTjetE);
-    tree_->GetBranch("subjetsCmsTopTag_HLTjetDeltaR")->SetAddress(&data.subjetsCmsTopTag.HLTjetDeltaR);
     tree_->GetBranch("subjetsCmsTopTag_muonMultiplicity")->SetAddress(&data.subjetsCmsTopTag.muonMultiplicity);
     tree_->GetBranch("subjetsCmsTopTag_PhotonEnergy")->SetAddress(&data.subjetsCmsTopTag.PhotonEnergy);
     tree_->GetBranch("subjetsCmsTopTag_ElectronEnergy")->SetAddress(&data.subjetsCmsTopTag.ElectronEnergy);
@@ -384,10 +369,10 @@ public:
     tree_->GetBranch("subjetsCmsTopTag_numberOfDaughters")->SetAddress(&data.subjetsCmsTopTag.numberOfDaughters);
     tree_->GetBranch("subjetsCmsTopTag_chargedMultiplicity")->SetAddress(&data.subjetsCmsTopTag.chargedMultiplicity);
     tree_->GetBranch("subjetsCmsTopTag_neutralHadronMultiplicity")->SetAddress(&data.subjetsCmsTopTag.neutralHadronMultiplicity);
-    tree_->GetBranch("subjetsCmsTopTag_neutralHadronEnergyFraction")->SetAddress(&data.subjetsCmsTopTag.neutralHadronEnergyFraction);
-    tree_->GetBranch("subjetsCmsTopTag_neutralEmEnergyFraction")->SetAddress(&data.subjetsCmsTopTag.neutralEmEnergyFraction);
-    tree_->GetBranch("subjetsCmsTopTag_chargedEmEnergyFraction")->SetAddress(&data.subjetsCmsTopTag.chargedEmEnergyFraction);
-    tree_->GetBranch("subjetsCmsTopTag_chargedHadronEnergyFraction")->SetAddress(&data.subjetsCmsTopTag.chargedHadronEnergyFraction);
+    tree_->GetBranch("subjetsCmsTopTag_neutralHadronEnergy")->SetAddress(&data.subjetsCmsTopTag.neutralHadronEnergy);
+    tree_->GetBranch("subjetsCmsTopTag_neutralEmEnergy")->SetAddress(&data.subjetsCmsTopTag.neutralEmEnergy);
+    tree_->GetBranch("subjetsCmsTopTag_chargedEmEnergy")->SetAddress(&data.subjetsCmsTopTag.chargedEmEnergy);
+    tree_->GetBranch("subjetsCmsTopTag_chargedHadronEnergy")->SetAddress(&data.subjetsCmsTopTag.chargedHadronEnergy);
     tree_->GetBranch("subjetsCmsTopTag_photonMultiplicity")->SetAddress(&data.subjetsCmsTopTag.photonMultiplicity);
     tree_->GetBranch("subjetsCmsTopTag_electronMultiplicity")->SetAddress(&data.subjetsCmsTopTag.electronMultiplicity);
     tree_->GetBranch("subjetsCmsTopTag_HFHadronMultiplicity")->SetAddress(&data.subjetsCmsTopTag.HFHadronMultiplicity);
@@ -395,6 +380,7 @@ public:
     tree_->GetBranch("subjetsCmsTopTag_ChargeMuEnergy")->SetAddress(&data.subjetsCmsTopTag.ChargeMuEnergy);
     tree_->GetBranch("subjetsCmsTopTag_neutralMultiplicity")->SetAddress(&data.subjetsCmsTopTag.neutralMultiplicity);
     tree_->GetBranch("subjetsCmsTopTag_jecFactor0")->SetAddress(&data.subjetsCmsTopTag.jecFactor0);
+    tree_->GetBranch("subjetsCmsTopTag_jetArea")->SetAddress(&data.subjetsCmsTopTag.jetArea);
     tree_->GetBranch("subjetsCmsTopTag_SmearedPt")->SetAddress(&data.subjetsCmsTopTag.SmearedPt);
     tree_->GetBranch("subjetsCmsTopTag_SmearedPEta")->SetAddress(&data.subjetsCmsTopTag.SmearedPEta);
     tree_->GetBranch("subjetsCmsTopTag_SmearedPhi")->SetAddress(&data.subjetsCmsTopTag.SmearedPhi);
@@ -410,8 +396,17 @@ public:
   Long64_t GetEntries() {
     return tree_->GetEntries(); 
   }
-  Int_t GetEntry(Long64_t entry, Int_t getall = 0) { 
-    return tree_->GetEntry(entry,getall); 
+  Int_t GetEntry(Long64_t entry, Int_t getall = 0) {
+    Int_t result = tree_->GetEntry(entry,getall);
+    //if (data.gen.size>1) std::cout<<"B2GReader Warning!!: Size of Data object too small for gen."<<std::endl;
+    if (data.ele.size>NLEP) std::cout<<"B2GReader Warning!!: Size of Data object too small for ele. Set NLEP>="<<data.ele.size<<std::endl;
+    if (data.mu.size>NLEP) std::cout<<"B2GReader Warning!!: Size of Data object too small for mu. Set NLEP>="<<data.mu.size<<std::endl;
+    if (data.jetsAK4.size>NJET) std::cout<<"B2GReader Warning!!: Size of Data object too small for jetsAK4. Set NJET>="<<data.jetsAK4.size<<std::endl;
+    if (data.jetsAK8.size>NJET) std::cout<<"B2GReader Warning!!: Size of Data object too small for jetsAk8. Set NJET>="<<data.jetsAK8.size<<std::endl;
+    if (data.jetsCmsTopTag.size>NJET) std::cout<<"B2GReader Warning!!: Size of Data object too small for jetsCmsTopTag. Set NJET>="<<data.jetsCmsTopTag.size<<std::endl;
+    if (data.subjetsAK8.size>NJET) std::cout<<"B2GReader Warning!!: Size of Data object too small for subjetsAK8. Set NJET>="<<data.subjetsAK8.size<<std::endl;
+    if (data.subjetsCmsTopTag.size>NJET) std::cout<<"B2GReader Warning!!: Size of Data object too small for subjetsCmsTopTag. Set NJET>="<<data.subjetsCmsTopTag.size<<std::endl;
+    return result;
   }
   
 private: 
