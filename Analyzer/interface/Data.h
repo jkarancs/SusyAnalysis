@@ -4,8 +4,8 @@
 #define NOVAL_I -9999
 #define NOVAL_F -9999.0
 
-#define NLEP 10
-#define NJET 40
+#define NLEP 15
+#define NJET 50
 
 #include <vector>
 #include "TLorentzVector.h"
@@ -764,10 +764,10 @@ public:
   } evt;
   
   void CalculateAllVariables() {
-    calcRazorAK4_();
-    calcRazorAK8_();
-    calcRazorCmsTopTag_();
-
+    //calcRazorAK4_();
+    //calcRazorAK8_();
+    //calcRazorCmsTopTag_();
+    
     // find good leptons (for letponic tops)
     int ngoodleptons = 0;
     std::vector<TLorentzVector> goodleps;

@@ -2,17 +2,18 @@
 #include <unistd.h>
 #include <vector>
 
+#include "../interface/Samples.h"
 #include "../interface/SmartHistos.h"
 #include "../plugins/B2GTreeReader.cc"
 #include "../plugins/B2GTreeLooper.cc"
 
-#define NTHSTAT 1
+#define NTHSTAT 5
+
+#define IntLumi_invfb 10.0
 
 int main(int argc, char* argv[]) {
-#include "Samples_Feb04.txt"
-  
   // Get arguments from shell
-  std::vector<std::string> filelist;
+  std::vector<std::string> filelist_fromshell;
   std::string outputfile="plots.root";
   // -o <output file> option:
   // Specify the output root filename
@@ -22,19 +23,69 @@ int main(int argc, char* argv[]) {
   // each added file will increase this variable so when using *
   // add ""-s so instead of the shell TChain will parse the argument
   bool is_o = false;
+  Samples samples;
+  
   for(int i=1; i<argc; i++) {
     std::string arg = argv[i];
     if (arg[0]=='-'&&arg.size()==2) { is_o = (arg[1]=='o'); }
     else if (is_o) { outputfile=arg; is_o=0; }
-    else filelist.push_back(arg);
+    else filelist_fromshell.push_back(arg);
   }
+  if (filelist_fromshell.size()) {
+    samples.AddSample("test", "test", { { .dir="", .xsec_pb=1/(IntLumi_invfb*1000) } });
+  } else {
+    bool test = 0;
+    //if (test) samples.AddSample("test", "T5ttttDeg (#tilde{g} #rightarrow t + #tilde{t}_{4-body decay} )", { { .dir="../../../B2GTTreeNtupleExtra_susy.root", .xsec_pb=0.0460525 } });
+    if (test) samples.AddSample("test", "T5ttttDeg (#tilde{g}#rightarrowt(#tilde{t}#rightarrow#tilde{#chi}^{0}_{1}b l#nu/q#bar{q}) )", { { .dir="../../../B2GTTreeNtupleExtra_susy.root", .xsec_pb=0.0460525 } });
+    else {
+      //"T5tttt (#tilde{t} 2/3body decay - M_{#tilde{g}}=1.3TeV, M_{#tilde{t}}=, M_{#tilde{#chi^{#pm}_{1}}}, M_{#tilde{#chi^{0}_{1}}})"
+      //"T5ttttDeg (#tilde{g} #rightarrow t + (#tilde{t} #rightarrow b + #tilde{#chi^{0}_{1}} + l#nu/q#bar{q} ) )"
+      //"T5ttttDeg (#tilde{g} #rightarrow t + (#tilde{t} #rightarrow b + ( #tilde{#chi^{#pm}_{1}} #rightarrow #tilde{#chi^{0}_{1}} + l#nu/q#bar{q} ) ) )"
+      std::string sample_dir = "/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb18_edm_Feb13/";
+      samples.AddSample("TTBar", "t#bar{t}",
+			{ { .dir=sample_dir+"TT/*.root", .xsec_pb=806.1 } });
+      samples.AddSample("QCD_Pt_bcToE", "QCD (Pt bins, b/c#rightarrowe)",
+			{ { .dir=sample_dir+"QCD_Pt_20to30_bcToE/*.root",   .xsec_pb=675900000 },
+			  { .dir=sample_dir+"QCD_Pt_30to80_bcToE/*.root",   .xsec_pb=185900000 },
+            	          { .dir=sample_dir+"QCD_Pt_80to170_bcToE/*.root",  .xsec_pb=3495000 },
+            	          { .dir=sample_dir+"QCD_Pt_170toInf_bcToE/*.root", .xsec_pb=128500 } });
+      //samples.AddSample("QCD_HT", "QCD (HT bins)",
+      //  		{ { .dir=sample_dir+"QCD_HT-100To250/*.root",  .xsec_pb=28730000 },
+      //                    { .dir=sample_dir+"QCD_HT_250To500/*.root",  .xsec_pb=670500 },
+      //      	          { .dir=sample_dir+"QCD_HT-500To1000/*.root", .xsec_pb=26740 },
+      //      	          { .dir=sample_dir+"QCD_HT_1000ToInf/*.root", .xsec_pb=769.7 } });
+      samples.AddSample("T5ttttDeg_4bodydec", "T5tttt (#tilde{g}#rightarrowt(#tilde{t}#rightarrowb#tilde{#chi}^{0}_{1} l#nu/q#bar{q}) )",
+			{ { .dir=sample_dir+"susy4body/*.root", .xsec_pb=0.0460525 } });
+      samples.AddSample("T5ttttDeg_3bodydec", "T5tttt (#tilde{g}#rightarrowt(#tilde{t}#rightarrowb(#tilde{#chi^{#pm}_{1}}#rightarrow#tilde{#chi}^{0}_{1} l#nu/q#bar{q})))",
+			{ { .dir=sample_dir+"susy3body/*.root", .xsec_pb=0.0460525 } });
+      samples.AddSample("SingleTop_tW", "single t/#bar{t} (tW channel)",
+			{ { .dir=sample_dir+"T_tW-channel/*.root", .xsec_pb=35 },
+			  { .dir=sample_dir+"Tbar_tW-channel/*.root", .xsec_pb=35 } });
+      samples.AddSample("DYJets", "DY+Jets #rightarrow l+l",
+			{ { .dir=sample_dir+"DYJetsToLL/*.root", .xsec_pb=4746 } });
+      samples.AddSample("WJets", "W+Jets #rightarrow l+#nu",
+			{ { .dir=sample_dir+"WJetsToLNu/*.root", .xsec_pb=61526.7 } });
+      //samples.AddSample("WJets_HT", "W+Jets #rightarrow l+#nu (HT bins)",
+      //  		{ { .dir=sample_dir+"WJetsToLNu_HT-100to200/*.root", .xsec_pb=2234.9 },
+      //  		  { .dir=sample_dir+"WJetsToLNu_HT-200to400/*.root", .xsec_pb=580.1 }, 
+      //  		  { .dir=sample_dir+"WJetsToLNu_HT-400to600/*.root", .xsec_pb=68.4 },
+      //      	          { .dir=sample_dir+"WJetsToLNu_HT-600toInf/*.root", .xsec_pb=23.14 } });
+      samples.AddSample("GGJets_M", "GG+Jets (M bins)",
+			{ { .dir=sample_dir+"GGJets_M-200To500/*.root",    .xsec_pb=2.43383 },
+			  { .dir=sample_dir+"GGJets_M-500To1000/*.root",   .xsec_pb=0.172872 },
+			  { .dir=sample_dir+"GGJets_M-1000To2000/*.root",  .xsec_pb=0.0104901 },
+            	          { .dir=sample_dir+"GGJets_M-2000To4000/*.root",  .xsec_pb=0.000439813 },
+            	          { .dir=sample_dir+"GGJets_M-4000To8000/*.root",  .xsec_pb=0.00000219697 },
+            	          { .dir=sample_dir+"GGJets_M-8000To13000/*.root", .xsec_pb=7.05314e-11 } });
+    }
+  }
+  std::vector<size_t > dir_to_index = samples.GetDirToIndex();
+  std::vector<double> sample_xsec_pb = samples.GetCrossSections();  
   
   bool Run = 1;
   
   // Initialize TreeReader
-  std::cout<<"ok\n";
   B2GTreeReader reader;
-  std::cout<<"ok\n";
   
   // Class to Loop on files and read the Trees
   B2GTreeLooper looper(NTHSTAT,1);
@@ -56,7 +107,7 @@ int main(int argc, char* argv[]) {
   // Define Postfixes here:
   sh.AddNewPostfix("ttbar,qcd",                 [&looper](){ return looper.it_sample; }, "ttbar;qcd", "t#bar{t};QCD", "2,6");
   sh.AddNewPostfix("ttbar,qcd,Susy3,Susy4",     [&looper](){ return looper.it_sample; }, "ttbar;qcd;susy3body;susy4body", "t#bar{t};QCD;T5tttt - 3body;T5tttt - 4body", "2,6,4,3");
-  sh.AddNewPostfix("AllSamples",                [&looper,&dir_to_index](){ return dir_to_index[looper.it_sample]; }, PF_names, Latex_names, "1-9");
+  sh.AddNewPostfix("AllSamples",                [&looper,&dir_to_index](){ return dir_to_index[looper.it_sample]; }, samples.GetPFNames(), samples.GetLatexNames(), "1-9");
   //const char* Samples = "ttbar,qcd,Susy3,Susy4";
   const char* Samples = "AllSamples";
   
@@ -94,6 +145,11 @@ int main(int argc, char* argv[]) {
   sh.AddNewFillParam("AK8JetMass",        { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.Mass[NJET];                 }, .axis_title="AK8-jet Mass (GeV/c^{2})"});
   sh.AddNewFillParam("AK8JetPrunedMass",  { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.prunedMass[NJET];           }, .axis_title="AK8-jet Pruned Mass (GeV/c^{2})"});
   sh.AddNewFillParam("2dAK8JetPrunedMass",{ .nbin= 200, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.prunedMass[NJET];           }, .axis_title="AK8-jet Pruned Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("AK8JetFilteredMass",{ .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.filteredMass[NJET];         }, .axis_title="AK8-jet Filtered Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("AK8JetTrimmedMass", { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.trimmedMass[NJET];          }, .axis_title="AK8-jet Trimmed Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("AK8JetTopMass",     { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.topMass[NJET];              }, .axis_title="AK8-jet Top Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("AK8JetMinMass",     { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.minmass[NJET];              }, .axis_title="AK8-jet Min. Subjet-pair Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("AK8JetNSubJets",    { .nbin=  11, .low=-0.5,   .high=10.5, .fill=[&d](){ return d.jetsAK8.nSubJets[NJET];             }, .axis_title="AK8-jet N_{subjet}"});
   sh.AddNewFillParam("AK8JetTau1",        { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetsAK8.tau1[NJET];                 }, .axis_title="#tau_{1}"});
   sh.AddNewFillParam("AK8JetTau2",        { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetsAK8.tau2[NJET];                 }, .axis_title="#tau_{2}"});
   sh.AddNewFillParam("AK8JetTau3",        { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetsAK8.tau3[NJET];                 }, .axis_title="#tau_{3}"});
@@ -184,7 +240,7 @@ int main(int argc, char* argv[]) {
   sh.AddNewCut("noqcd",            [&looper](){ return looper.it_sample!=1; });
   
   // Set Histogram weight (empty = 1)
-  sh.SetHistoWeights({[&looper,Sample_xsec_pb](){ return 10 /*IntLumi (fb-1)*/ * 1000 * Sample_xsec_pb[looper.it_sample] / looper.nevents[looper.it_sample]; }});
+  sh.SetHistoWeights({[&looper,sample_xsec_pb](){ return IntLumi_invfb /*IntLumi (fb-1)*/ * 1000 * sample_xsec_pb[looper.it_sample] / looper.nevents[looper.it_sample]; }});
   // --------------------------------------------------------------------------
   //                           Histogram Definitions
   
@@ -308,10 +364,15 @@ int main(int argc, char* argv[]) {
   // Top Tagging (CMS-PAS-JME-13-007)
   // 3 >= subjets, Mmin > 50, tau32 < 0.55, 250 > Mjet > 140
   //  N-1 plots
-  sh.AddHistos("jetsAK8", { .fill="AK8JetTau21",                     .pfs={Samples}, .cuts={"HadTopNoTauCut"},  .draw="", .opt="", .ranges={0,0, 0,0} });
-  sh.AddHistos("jetsAK8", { .fill="AK8JetTau31",                     .pfs={Samples}, .cuts={"HadTopNoTauCut"},  .draw="", .opt="", .ranges={0,0, 0,0} });
-  sh.AddHistos("jetsAK8", { .fill="AK8JetTau32",                     .pfs={Samples}, .cuts={"HadTopNoTauCut"},  .draw="", .opt="", .ranges={0,0, 0,0} });
-  sh.AddHistos("jetsAK8", { .fill="AK8JetPrunedMass",                .pfs={Samples}, .cuts={"HadTopNoMassCut"}, .draw="", .opt="", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetsAK8", { .fill="AK8JetTau21",        .pfs={Samples}, .cuts={"HadTopNoTauCut"},  .draw="", .opt="", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetsAK8", { .fill="AK8JetTau31",        .pfs={Samples}, .cuts={"HadTopNoTauCut"},  .draw="", .opt="", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetsAK8", { .fill="AK8JetTau32",        .pfs={Samples}, .cuts={"HadTopNoTauCut"},  .draw="", .opt="", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetsAK8", { .fill="AK8JetPrunedMass",   .pfs={Samples}, .cuts={"HadTopNoMassCut"}, .draw="", .opt="", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetsAK8", { .fill="AK8JetFilteredMass", .pfs={Samples}, .cuts={"HadTopNoMassCut"}, .draw="", .opt="", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetsAK8", { .fill="AK8JetTrimmedMass ", .pfs={Samples}, .cuts={"HadTopNoMassCut"}, .draw="", .opt="", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetsAK8", { .fill="AK8JetTopMass",      .pfs={Samples}, .cuts={"HadTop"}, .draw="", .opt="", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetsAK8", { .fill="AK8JetMinMass",      .pfs={Samples}, .cuts={"HadTop"}, .draw="", .opt="", .ranges={0,0, 0,0} });
+  sh.AddHistos("jetsAK8", { .fill="AK8JetNSubJets",     .pfs={Samples}, .cuts={"HadTop"}, .draw="", .opt="", .ranges={0,0, 0,0} });
   sh.AddHistos("jetsAK8", { .fill="AK8JetPt",                        .pfs={Samples}, .cuts={"HadTopNoPtCut"},   .draw="", .opt="", .ranges={0,0, 0,0} });
   sh.AddHistos("jetsAK8", { .fill="2dAK8JetPrunedMass_vs_2dAK8JetTau32", .pfs={Samples}, .cuts={"HadTopNoMassNoTauCut"}, .draw="COLZ", .opt="", .ranges={0,0, 0,500} });
   sh.AddHistos("jetsAK8", { .fill="2dAK8JetTau21_vs_2dAK8JetTau32",  .pfs={Samples}, .cuts={"HadTopNoMassNoTauCut"}, .draw="COLZ", .opt="", .ranges={0,0, 0,500} });
@@ -336,48 +397,13 @@ int main(int argc, char* argv[]) {
   
   TFile *file;
   if (Run) {
-    if (filelist.size()) {
-      std::cout<<"Adding "<<filelist.size()<<" files from the shell arguments.\n";
-      for (size_t i=0; i<filelist.size(); ++i) looper.AddFile(filelist[i]);
+    if (filelist_fromshell.size()) {
+      std::cout<<"Adding "<<filelist_fromshell.size()<<" files from the shell arguments.\n";
+      for (size_t i=0; i<filelist_fromshell.size(); ++i) looper.AddFile(filelist_fromshell[i], !i);
     } else {
-      //looper.AddFile("../../../b2gTree_T2tt_2J_mStop-650_mLSP-325.root");
-      //  looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/ttree/ttbar/*.root");
-      //  looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/ttree/qcd/*.root");
-      //  looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/ttree/susy3body/*.root");
-      //  looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/ttree/susy4body/*.root");
-      
-      // test
-      looper.AddFile("../../../B2GTTreeNtupleExtra_susy.root");
-      
-      // Feb04/feb12 background samples
-      //for (std::string dirname : Sample_dirnames) looper.AddFile(std::string("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/")+dirname+"/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/susy4body/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/susy3body/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/TT/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/T_tW-channel/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/Tbar_tW-channel/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/DYJetsToLL/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/WJetsToLNu/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/WJetsToLNu_HT-100to200/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/WJetsToLNu_HT-200to400/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/WJetsToLNu_HT-400to600/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/WJetsToLNu_HT-600toInf/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/QCD_Pt_20to30_bcToE/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/QCD_Pt_30to80_bcToE/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/QCD_Pt_80to170_bcToE/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/QCD_Pt_170toInf_bcToE/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/QCD_HT-100To250/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/QCD_HT_250To500/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/QCD_HT-500To1000/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/QCD_HT_1000ToInf/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/GGJets_M-200To500/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/GGJets_M-500To1000/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/GGJets_M-1000To2000/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/GGJets_M-2000To4000/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/GGJets_M-4000To8000/*.root");
-      // looper.AddFile("/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Feb12_edm_Feb04/GGJets_M-8000To13000/*.root");
+      std::vector<std::string> dirs = samples.GetListOfDirectories();
+      for ( std::string dir : dirs ) looper.AddFile(dir);
     }
-    
     bool debug = 0;
     if (debug) cout<<"Start ok\n";
     while (looper.LoopOnSamples()) {

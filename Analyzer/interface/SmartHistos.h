@@ -1115,7 +1115,7 @@ public:
   }
   
   void multidraw_with_legend_(size_t skip, std::vector<TH1D*>& hvec, std::vector<std::string> pf, std::string colz,
-			      std::string legtitle="", float x1=0.6, float x2=0.8, float y1=0.4, float y2=0.6) {
+			      std::string legtitle="", float x1=0.15, float y2=0.9) {
     // Draw multiple histograms, set their marker/line color/style
     // Then Draw legend for all histo with titles from a postfix
     std::vector<int> col = string_to_vector_(colz);
@@ -1126,7 +1126,6 @@ public:
     //size_t i_highest = -1;
     //double highest = 0;
     for (size_t i=skip; i<hvec.size(); i++) if (hvec[i]->GetEntries()>0) {
-      ++nleg;
       // Determine the highest histo
       // we draw this histo first, so default range is ok for all histo
       // then redraw all histo in predetedmined order
@@ -1143,9 +1142,11 @@ public:
 	hvec[i]->SetLineWidth(2);
       }
       if (stat_) hvec[i]->SetStats(1);
+      ++nleg;
     }
     if (legtitle.size()>0) ++nleg;
-    y1 = 0.6 - nleg * 0.05;
+    float x2 = x1 + 0.2;
+    float y1 = y2 - nleg * 0.05;
     TLegend *leg = new TLegend(x1,y1,x2,y2,legtitle.c_str());
     std::string same = (stat_ ? "SAMES" : "SAME") + draw_;
     for (size_t i=skip; i<hvec.size(); i++) if (hvec[i]->GetEntries()>0) {
@@ -1157,7 +1158,9 @@ public:
       if (norm_&&hvec[i]->Integral()>0) hvec[i]->DrawNormalized((i==skip) ? draw_.c_str() : same.c_str());
       else hvec[i]->Draw((i==skip) ? draw_.c_str() : same.c_str());
       if (stat_) set_stat_(hvec[i], (Color_t)col[i-(keep_?skip:0)], i-skip);
-      leg->AddEntry(hvec[i], pf[i].c_str(), draw_.find("P")!=std::string::npos ? "P" : "L");
+      std::stringstream colored_text;
+      colored_text<<"#color["<<(Color_t)col[i-(keep_?skip:0)]<<"]{"<<pf[i]<<"}";
+      leg->AddEntry(hvec[i], colored_text.str().c_str(), draw_.find("P")!=std::string::npos ? "P" : "L");
     }
     leg->SetFillColor(0);
     leg->SetFillStyle(0);

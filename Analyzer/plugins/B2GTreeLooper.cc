@@ -53,6 +53,7 @@ private:
   
 
   void ProgressEstimator_() {
+    if (processed_entries_==0) sw_->Start(0);
     if (double(processed_entries_)/double(total_entries_)>progress_+step_size_) {
       progress_ += step_size_;
       sw_->Stop();
@@ -111,10 +112,6 @@ public:
   }
   
   bool LoopOnFiles() {
-    if (fileindex_==0&&show_progress_) {
-      //std::cout<<"--------- Started Looping on Trees ---------"<<std::flush;
-      sw_->Start(0);
-    }
     if (fileindex_<files_->GetEntries()) {
       //std::cout<<"Opening file: "<<files_->At(fileindex_)->GetTitle()<<std::endl;
       file_ = TFile::Open(files_->At(fileindex_)->GetTitle());
