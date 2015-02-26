@@ -4,7 +4,7 @@
 #define NOVAL_I -9999
 #define NOVAL_F -9999.0
 
-#define NLEP 15
+#define NLEP 20
 #define NJET 50
 
 #include <vector>
@@ -804,8 +804,13 @@ public:
       //std::cout<<jetsAK8.it<<" "<<jetsAK8.size<<" "<<subjetsAK8.size<<" "<<jetsAK8.subjetIndex0[NJET]<<" "<<jetsAK8.subjetIndex1[NJET]<<std::endl;
       bool is_top = false;
       // hadronic tops
-      //if (jetsAK8.tau1[NJET]>0 && jetsAK8.tau2[NJET]>0 ? jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 140 && (jetsAK8.tau2[NJET]/jetsAK8.tau1[NJET]) < 0.75 : 0) {
-      if (jetsAK8.tau2[NJET]>0 && jetsAK8.tau3[NJET]>0 ? jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 140 && (jetsAK8.tau3[NJET]/jetsAK8.tau2[NJET]) < 0.75 : 0) {
+      //if (jetsAK8.tau1[NJET]>0 && jetsAK8.tau2[NJET]>0 ? jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 140 && (jetsAK8.tau2[NJET]/jetsAK8.tau1[NJET]) < 0.75 : 0) { // orig
+      if (jetsAK8.tau2[NJET]>0 && jetsAK8.tau3[NJET]>0 ? jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 140 && (jetsAK8.tau3[NJET]/jetsAK8.tau2[NJET]) < 0.75 : 0) { // Brandon's
+      //if (jetsAK8.tau2[NJET]>0 && jetsAK8.tau3[NJET]>0 ? (jetsAK8.tau3[NJET]/jetsAK8.tau2[NJET]) < 0.75 &&
+      //    jetsAK8.nSubJets[NJET] > 2 &&
+      //    jetsAK8.minmass[NJET] > 50 &&
+      //    jetsAK8.Pt[NJET] > 400 &&
+      //    jetsAK8.prunedMass[NJET] > 140  : 0) { // New
         ++evt.nhadtops;
         is_top = true;
         if (evt.nhadtops==1) hadtop1.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);

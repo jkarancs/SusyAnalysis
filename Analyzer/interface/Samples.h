@@ -16,6 +16,7 @@ private:
   size_t NSample_;
   std::vector<std::string> PFNames_;
   std::vector<std::string> LatexNames_;
+  std::vector<std::string> Colors_;
   std::vector<std::vector<std::string> > DirNames_;
   std::vector<std::vector<double> > CrossSections_;
   std::vector<size_t > DirToIndex_;
@@ -23,9 +24,10 @@ private:
 public:
   
   typedef struct SubSample { std::string dir; double xsec_pb; } SubSample;
-  void AddSample(std::string name, std::string latex, std::vector<SubSample> sample) {
+  void AddSample(std::string name, std::string latex, std::string col, std::vector<SubSample> sample) {
     PFNames_.push_back(name);
     LatexNames_.push_back(latex);
+    Colors_.push_back(col);
     DirNames_.push_back(std::vector<std::string>());
     CrossSections_.push_back(std::vector<double>());
     for ( SubSample subsample : sample ) {
@@ -60,6 +62,12 @@ public:
     std::string names;
     for ( std::string name : LatexNames_ ) names += name+";";
     return names.substr(0, names.size()-1);
+  }
+  
+  std::string GetColors() {
+    std::string colors;
+    for ( std::string col : Colors_ ) colors += col+",";
+    return colors.substr(0, colors.size()-1);
   }
 };
 

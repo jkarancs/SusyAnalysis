@@ -153,6 +153,7 @@ public:
     if (ncut_>4) cut5_ = cuts[4];
     draw_=draw;
     norm_  = opt.find("Norm")!=std::string::npos;
+    log_  = opt.find("Log")!=std::string::npos;
     keep_  = opt.find("Keep")!=std::string::npos;
     stat_  = opt.find("Stat")!=std::string::npos ? 1110 : 0;
     sumw2_ = opt.find("Sumw2")!=std::string::npos;
@@ -194,9 +195,11 @@ private:
   // Draw arguments and plot options
   // options:
   // NORM - normalize
+  // LOG - log scale
   // STAT - draw stat boxes)
   std::string draw_;
   bool norm_; // Normalize histo
+  bool log_; // Normalize histo
   bool keep_; // Keep colors/markers in order
   Int_t stat_; // Draw Stat boxes
   bool sumw2_;
@@ -1014,6 +1017,7 @@ public:
     pad->SetTopMargin((Float_t)mar_top/padsize_y);
     pad->SetBottomMargin((Float_t)mar_bottom/padsize_y);
     canvas->SetGrid(gx,gy);
+    if (log_) canvas->SetLogy(1);
     return canvas;
   }
   
@@ -1076,6 +1080,7 @@ public:
       }
     }
     gStyle->SetOptTitle(0);
+    if (log_) canvas->SetLogz(1);
     return canvas;
   }
   
