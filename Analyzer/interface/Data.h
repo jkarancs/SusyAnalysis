@@ -605,46 +605,6 @@ public:
     }
   } subjetsAK8;
   
-  class CmsTopTagJetVars : public JetVars, public AK8Vars {
-  public:
-    CmsTopTagJetVars() { init(); }
-    ~CmsTopTagJetVars() {}
-    
-    size_t it;
-    int size;
-    
-    // Razor variables
-    float MR;
-    float MTR;
-    float R;
-    float R2;
-    
-    void init() {
-      JetVars::init();
-      AK8Vars::init();
-      
-      it = -1;
-      size = 0;
-      
-      MR = NOVAL_F;
-      MTR = NOVAL_F;
-      R = NOVAL_F;
-      R2 = NOVAL_F;
-    }
-    
-    bool Loop() {
-      ++it;
-      if (it<(size_t)size) {
-	JetVars::SetCurrent(it);
-	AK8Vars::SetCurrent(it);
-	return 1;
-      } else {
-	it=-1;
-	return 0;
-      }
-    }
-  } jetsCmsTopTag;
-
   class CmsTopTagSubJetVars : public JetVars {
   public:
     CmsTopTagSubJetVars() { init(); }
@@ -694,12 +654,37 @@ public:
   public:
     EventData() { init(); };
     
+    int NLep;
+    int NTopHad;
+    int NTopLep;
+    int NTop;
+    float HtLep;
+    float HtTop;
+    float Ht;
+    float HtAll;
+    float HtEx;
+    float HtExFr;
+    float HtTopFr;
+    float TTHadDR;
+    float TTHadDPhi;
+    float TTHadDEta;
+    float TTHadMass;
+    float TTHadPz;
+    float TTHadHz;
+    float TTHadDPz;
+    float TTHadMR;
+    float TTHadMTR;
+    float TTHadR;
+    float TTHadR2;
+    float MR;
+    float MTR;
+    float R;
+    float R2;
+    
     // Top tagging variables
     float nhadtops;
     float nleptops;
     float ntops;
-    float ncmshadtops;
-    float ncmsleptops;
     float tt_dR;
     float tt_dPhi;
     float tt_dEta;
@@ -728,12 +713,52 @@ public:
     float HTttFraction;
     float HTexFraction;
     
+    // Development 04 March
+    int nmu;
+    int nele;
+    int neletight;
+    int nmuveto;
+    int neleveto;
+    float DRJetLep[NJET+1];
+    float EleDRJet[NLEP+1];
+    float MuDRJet[NLEP+1];
+    float RelPtJetLep[NJET+1];
+    float EleRelPtJet[NLEP+1];
+    float MuRelPtJet[NLEP+1];
+    float EleJetCombMass[NLEP+1];
+    float MuJetCombMass[NLEP+1];
+    
     void init() {
+      NLep=NOVAL_I;
+      NTopHad=NOVAL_I;
+      NTopLep=NOVAL_I;
+      NTop=NOVAL_I;
+      HtLep=NOVAL_F;
+      HtTop=NOVAL_F;
+      Ht=NOVAL_F;
+      HtAll=NOVAL_F;
+      HtEx=NOVAL_F;
+      HtExFr=NOVAL_F;
+      HtTopFr=NOVAL_F;
+      TTHadDR=NOVAL_F;
+      TTHadDPhi=NOVAL_F;
+      TTHadDEta=NOVAL_F;
+      TTHadMass=NOVAL_F;
+      TTHadPz=NOVAL_F;
+      TTHadHz=NOVAL_F;
+      TTHadDPz=NOVAL_F;
+      TTHadMR=NOVAL_F;
+      TTHadMTR=NOVAL_F;
+      TTHadR=NOVAL_F;
+      TTHadR2=NOVAL_F;
+      MR=NOVAL_F;
+      MTR=NOVAL_F;
+      R=NOVAL_F;
+      R2=NOVAL_F;
+      
       nhadtops=NOVAL_F;
       nleptops=NOVAL_F;
       ntops=NOVAL_F;
-      ncmshadtops=NOVAL_F;
-      ncmsleptops=NOVAL_F;
       tt_dR=NOVAL_F;
       tt_dPhi=NOVAL_F;
       tt_dEta=NOVAL_F;
@@ -760,6 +785,25 @@ public:
       HTex=NOVAL_F;
       HTttFraction=NOVAL_F;
       HTexFraction=NOVAL_F;
+
+      // Development 04 March
+      nmu=NOVAL_I;
+      nele=NOVAL_I;
+      neletight=NOVAL_I;
+      nmuveto=NOVAL_I;
+      neleveto=NOVAL_I;
+      for (size_t i=0; i<=NJET; ++i) {
+	DRJetLep[i]=NOVAL_F;
+	RelPtJetLep[i]=NOVAL_F;
+      }
+      for (size_t i=0; i<=NLEP; ++i) {
+	EleDRJet[i]=NOVAL_F;
+	MuDRJet[i]=NOVAL_F;
+	EleRelPtJet[i]=NOVAL_F;
+	MuRelPtJet[i]=NOVAL_F;
+	EleJetCombMass[i]=NOVAL_F;
+	MuJetCombMass[i]=NOVAL_F;
+      }
     }
   } evt;
   
@@ -772,21 +816,59 @@ public:
     int ngoodleptons = 0;
     std::vector<TLorentzVector> goodleps;
     evt.HTlep = 0;
-    while(ele.Loop()) if (ele.Pt[NLEP] > 35 && fabs(ele.Eta[NLEP]) < 2.5) {
-    //while(ele.Loop()) if (ele.isLoose[NLEP]>0 && ele.Pt[NLEP] > 35 && fabs(ele.Eta[NLEP]) < 2.5) {
-      ngoodleptons++;
-      TLorentzVector goodele;
-      goodele.SetPtEtaPhiE(ele.Pt[NLEP], ele.Eta[NLEP], ele.Phi[NLEP], ele.E[NLEP]);
-      goodleps.push_back(goodele);
-      evt.HTlep += ele.Pt[NLEP];
+    evt.nmu = 0;
+    evt.nele = 0;
+    evt.neletight = 0;
+    evt.nmuveto = 0;
+    evt.neleveto = 0;
+    while(ele.Loop()) {
+      TLorentzVector el; el.SetPtEtaPhiE(ele.Pt[NLEP], ele.Eta[NLEP], ele.Phi[NLEP], ele.E[NLEP]);
+      evt.EleDRJet[ele.it] = 9999;
+      evt.EleRelPtJet[ele.it] = 9999;
+      evt.EleJetCombMass[ele.it] = 9999;
+      while(jetsAK8.Loop()) {
+        TLorentzVector jet; jet.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
+        double dR = el.DeltaR(jet);
+	if (dR<evt.EleDRJet[jetsAK8.it]) {
+          evt.EleDRJet[ele.it] = dR;
+          evt.EleRelPtJet[ele.it] = el.Perp(jet.Vect());
+          evt.EleJetCombMass[ele.it] = (jet+el).M();
+        }
+      }
+      if (ele.Pt[NLEP] > 35 && fabs(ele.Eta[NLEP]) < 2.5) {
+	++ngoodleptons;
+	++evt.nele;
+	goodleps.push_back(el);
+	evt.HTlep += ele.Pt[NLEP];
+	if (ele.isVeto[NLEP]>0) ++evt.neleveto;
+	if (ele.isTight[NLEP]>0) { // New 05 March
+	  ++evt.neletight;
+	}
+      }
     }
-    while(mu.Loop())  if (mu.IsTightMuon[NLEP]>0 && mu.Pt[NLEP] > 45 && fabs(mu.Eta[NLEP]) < 2.1) {
-    //while(mu.Loop())  if (mu.IsLooseMuon[NLEP]>0 && mu.Pt[NLEP] > 45 && fabs(mu.Eta[NLEP]) < 2.1) {
-      ngoodleptons++;
-      TLorentzVector goodmu;
-      goodmu.SetPtEtaPhiE(mu.Pt[NLEP], mu.Eta[NLEP], mu.Phi[NLEP], mu.E[NLEP]);
-      goodleps.push_back(goodmu);
-      evt.HTlep += mu.Pt[NLEP];
+    while(mu.Loop()) {
+      TLorentzVector muon; muon.SetPtEtaPhiE(mu.Pt[NLEP], mu.Eta[NLEP], mu.Phi[NLEP], mu.E[NLEP]);
+      evt.MuDRJet[mu.it] = 9999;
+      evt.MuRelPtJet[mu.it] = 9999;
+      evt.MuJetCombMass[mu.it] = 9999;
+      while(jetsAK8.Loop()) {
+        TLorentzVector jet; jet.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
+        double dR = muon.DeltaR(jet);
+        if (dR<evt.MuDRJet[jetsAK8.it]) {
+          evt.MuDRJet[mu.it] = dR;
+          evt.MuRelPtJet[mu.it] = muon.Perp(jet.Vect());
+          evt.MuJetCombMass[mu.it] = (jet+muon).M();
+        }
+      }
+      if (mu.Pt[NLEP] > 45 && fabs(mu.Eta[NLEP]) < 2.1) {
+	if (mu.IsTightMuon[NLEP]>0) {
+	  ++ngoodleptons;
+	  ++evt.nmu;
+	  goodleps.push_back(muon);
+	  evt.HTlep += mu.Pt[NLEP];
+	}
+	if (mu.IsSoftMuon[NLEP]>0) ++evt.nmuveto;
+      }
     }
     
     // Tag hadronic tops
@@ -805,12 +887,11 @@ public:
       bool is_top = false;
       // hadronic tops
       //if (jetsAK8.tau1[NJET]>0 && jetsAK8.tau2[NJET]>0 ? jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 140 && (jetsAK8.tau2[NJET]/jetsAK8.tau1[NJET]) < 0.75 : 0) { // orig
-      if (jetsAK8.tau2[NJET]>0 && jetsAK8.tau3[NJET]>0 ? jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 140 && (jetsAK8.tau3[NJET]/jetsAK8.tau2[NJET]) < 0.75 : 0) { // Brandon's
-      //if (jetsAK8.tau2[NJET]>0 && jetsAK8.tau3[NJET]>0 ? (jetsAK8.tau3[NJET]/jetsAK8.tau2[NJET]) < 0.75 &&
-      //    jetsAK8.nSubJets[NJET] > 2 &&
-      //    jetsAK8.minmass[NJET] > 50 &&
-      //    jetsAK8.Pt[NJET] > 400 &&
-      //    jetsAK8.prunedMass[NJET] > 140  : 0) { // New
+      if ( (jetsAK8.tau2[NJET]>0 && jetsAK8.tau3[NJET]>0 ? jetsAK8.tau3[NJET]/jetsAK8.tau2[NJET] < 0.75 : 0 ) &&
+	   //jetsAK8.nSubJets[NJET] > 2 &&
+	   //jetsAK8.minmass[NJET] > 50 &&
+	   jetsAK8.Pt[NJET] > 400 && 
+	   jetsAK8.prunedMass[NJET] > 140) { // Latest
         ++evt.nhadtops;
         is_top = true;
         if (evt.nhadtops==1) hadtop1.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
@@ -820,14 +901,16 @@ public:
       TLorentzVector lep;
       TLorentzVector jet;
       jet.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
-      double DeltaR_lep = 9999;
+      evt.DRJetLep[jetsAK8.it] = 9999;
+      evt.RelPtJetLep[jetsAK8.it] = 9999;
       for (size_t i=0; i<goodleps.size(); ++i) {
-        if (goodleps[i].DeltaR(jet)< DeltaR_lep) {
-	  DeltaR_lep = goodleps[i].DeltaR(jet);
+        if (goodleps[i].DeltaR(jet)< evt.DRJetLep[jetsAK8.it]) {
+	  evt.DRJetLep[jetsAK8.it] = goodleps[i].DeltaR(jet);
+	  evt.RelPtJetLep[jetsAK8.it] = goodleps[i].Perp(jet.Vect());
 	  lep = goodleps[i];
         }
       }
-      if (DeltaR_lep<1.0) {
+      if (evt.DRJetLep[jetsAK8.it]<1.0) {
         evt.nleptops++;
         is_top = true;
         TLorentzVector leptop = lep + jet;
@@ -840,40 +923,6 @@ public:
     }
     evt.HTall = evt.HT + met.Pt + evt.HTlep;
     //std::cout<<evt.HTall<<" "<<evt.HT<<" "<<met.Pt<<" "<<evt.HTlep<<std::endl;
-    
-    // CMS Tagged tops
-    evt.ncmshadtops = 0;
-    evt.ncmsleptops = 0;
-    while(jetsCmsTopTag.Loop()) {
-      bool is_top = false;
-      // leptonic tops
-      TLorentzVector lep;
-      TLorentzVector cmstopjet;
-      cmstopjet.SetPtEtaPhiE(jetsCmsTopTag.Pt[NJET], jetsCmsTopTag.Eta[NJET], jetsCmsTopTag.Phi[NJET], jetsCmsTopTag.E[NJET]);
-      double DeltaR_lep = 9999;
-      for (size_t i=0; i<goodleps.size(); ++i) if (goodleps[i].DeltaR(cmstopjet)< DeltaR_lep) {
-	DeltaR_lep = goodleps[i].DeltaR(cmstopjet);
-	lep = goodleps[i];
-      }
-      if (DeltaR_lep<1.0) {
-        evt.ncmsleptops++;
-        is_top = true;
-        TLorentzVector leptop = lep + cmstopjet;
-        //if (evt.nleptops==1) leptop1 = leptop;
-        //if (evt.nleptops==2) leptop2 = leptop;
-      }
-      // hadronic tops
-      //if (jetsCmsTopTag.Pt[NJET] > 400 && jetsCmsTopTag.Mass[NJET] > 140 ) {
-      if (!is_top && jetsCmsTopTag.Pt[NJET] > 400) {
-        ++evt.ncmshadtops;
-        is_top = true;
-        //if (evt.nhadtops==1) hadtop1.SetPtEtaPhiE(jetsCmsTopTag.Pt[NJET], jetsCmsTopTag.Eta[NJET], jetsCmsTopTag.Phi[NJET], jetsCmsTopTag.E[NJET]);
-        //if (evt.nhadtops==2) hadtop2.SetPtEtaPhiE(jetsCmsTopTag.Pt[NJET], jetsCmsTopTag.Eta[NJET], jetsCmsTopTag.Phi[NJET], jetsCmsTopTag.E[NJET]);
-      }
-      // Extra - all except above hadronic/leptonic tops
-      //evt.HT += jetsCmsTopTag.Pt[NJET];
-      //if (is_top) evt.HTtt += jetsCmsTopTag.Pt[NJET];
-    }
     
     // Select exactly 2 tops (hadronic or leptonic)
     // We need exactly 2 in order to calculate pair variables, eg. DeltaPhi
@@ -959,6 +1008,39 @@ public:
       evt.tt_MTR = CalcMTR_(top1, top2, metl);
       evt.tt_R = evt.tt_MTR / evt.tt_MR;
       evt.tt_R2 = pow(evt.tt_R, 2);
+      
+      //std::cout<<evt.NTopHad<<" "<<evt.nhadtops<<std::endl;
+      if (evt.NTopHad==2) {
+      //  std::cout<<evt.NLep<<" "<<ngoodleptons<<std::endl;
+      //  std::cout<<evt.NTopHad<<" "<<evt.nhadtops<<std::endl;
+      //  std::cout<<evt.NTopLep<<" "<<evt.nleptops<<std::endl;
+      //  std::cout<<evt.NTop<<" "<<evt.ntops<<std::endl;
+	if (evt.HtLep!=evt.HTlep) 
+	  std::cout<<"evt.HtLep "<<evt.HtLep<<" "<<evt.HTlep<<std::endl;
+	//if (evt.HtAll!=evt.HTall) {
+	//  std::cout<<"evt.HtAll "<<evt.HtAll<<" "<<evt.HTall<<std::endl;
+	//  std::cout<<evt.Ht<<" "<<evt.HT<<std::endl;
+	//  std::cout<<evt.HtLep<<" "<<evt.HTlep<<std::endl;
+	//  std::cout<<met.Pt<<std::endl;
+	//  std::cout<<evt.HtEx<<" "<<evt.HTex<<std::endl;
+	//  std::cout<<evt.HtTop<<" "<<evt.HTtt<<std::endl;
+	//}
+      //  std::cout<<evt.HtExFr<<" "<<evt.HTexFraction<<std::endl;
+      //  std::cout<<evt.HtTopFr<<" "<<evt.HTttFraction<<std::endl;
+      //  std::cout<<evt.TTHadDR<<" "<<evt.tt_dR<<std::endl;
+	if (evt.TTHadDPhi!=evt.tt_dPhi)
+	  std::cout<<"evt.TTHadDPhi "<<evt.TTHadDPhi<<" "<<evt.tt_dPhi<<std::endl;
+      //  std::cout<<evt.TTHadDEta<<" "<<evt.tt_dEta<<std::endl;
+      //  std::cout<<evt.TTHadMass<<" "<<evt.tt_Mass<<std::endl;
+      //  std::cout<<evt.TTHadPz<<" "<<evt.tt_Pz<<std::endl;
+      //  std::cout<<evt.TTHadHz<<" "<<evt.tt_Hz<<std::endl;
+      //  std::cout<<evt.TTHadDPz<<" "<<evt.tt_dPz<<std::endl;
+      //  std::cout<<evt.TTHadMR<<" "<<evt.tt_MR<<std::endl;
+      //  std::cout<<evt.TTHadMTR<<" "<<evt.tt_MTR<<std::endl;
+        if(evt.TTHadR!=evt.tt_R)
+	  std::cout<<"evt.TTHadR "<<evt.TTHadR<<" "<<evt.tt_R<<std::endl;
+      //  std::cout<<evt.TTHadR2<<" "<<evt.tt_R2<<std::endl<<std::endl;
+      }
     }
   }
     
@@ -1098,35 +1180,6 @@ public:
       jetsAK8.MTR = CalcMTR_(hemis[0], hemis[1], metl);
       jetsAK8.R = jetsAK8.MTR / jetsAK8.MR;
       jetsAK8.R2 = pow(jetsAK8.R, 2);
-    }
-  }
-  
-  void calcRazorCmsTopTag_() {
-    
-    // Select the best pair of jets (CmsTopTag, pt>40, |eta| < 3.0)
-    std::vector<TLorentzVector> sjetl;
-    while(jetsCmsTopTag.Loop()) {
-      if (!(jetsCmsTopTag.Pt[NJET] > 40) ) continue;
-      if (!(fabs(jetsCmsTopTag.Eta[NJET]) < 3) ) continue;
-      TLorentzVector jl;
-      jl.SetPtEtaPhiE(jetsCmsTopTag.Pt[NJET], jetsCmsTopTag.Eta[NJET],
-		      jetsCmsTopTag.Phi[NJET], jetsCmsTopTag.E[NJET]);
-      sjetl.push_back(jl);
-    }
-    std::vector<TLorentzVector> hemis = CombineJets_(sjetl);
-    
-    // ---------------------
-    // -- Razor variables --
-    // ---------------------
-    
-    TVector3 metl;
-    metl.SetPtEtaPhi(met.Pt, 0, met.Phi);
-    
-    if (hemis.size() == 2) {
-      jetsCmsTopTag.MR = CalcMR_(hemis[0], hemis[1]);
-      jetsCmsTopTag.MTR = CalcMTR_(hemis[0], hemis[1], metl);
-      jetsCmsTopTag.R = jetsCmsTopTag.MTR / jetsCmsTopTag.MR;
-      jetsCmsTopTag.R2 = pow(jetsCmsTopTag.R, 2);
     }
   }
   

@@ -86,12 +86,12 @@ public:
       size = samples_.size();
     }
     if (new_loop!=-1) samples_[size-1]->Add((fileaddress+treename).c_str());
-
+    
     // Calculate total number of entries - For ProgressEstimator
     Long64_t sample_entries = 0;
     if (nthstat_==1) {
       sample_entries = samples_[size-1]->GetEntries();
-    } else  for (int nf=0; nf<samples_[size-1]->GetListOfFiles()->GetEntries(); ++nf) {
+    } else for (int nf=0; nf<samples_[size-1]->GetListOfFiles()->GetEntries(); ++nf) {
       TFile f(samples_[size-1]->GetListOfFiles()->At(nf)->GetTitle());
       sample_entries += ((TTree*)f.Get(samples_[size-1]->GetListOfFiles()->At(nf)->GetName()))->GetEntries()/nthstat_;
     }
@@ -116,7 +116,7 @@ public:
       //std::cout<<"Opening file: "<<files_->At(fileindex_)->GetTitle()<<std::endl;
       file_ = TFile::Open(files_->At(fileindex_)->GetTitle());
       treename_ = files_->At(fileindex_)->GetName();
-      all_entries_ = ((TTree*)file_->Get(treename_))->GetEntries();
+      all_entries_ = ((TTree*)file_->Get(treename_))->GetEntries()/nthstat_;
       if (!show_progress_) std::cout<<"Opened file: "<<files_->At(fileindex_)->GetTitle()<<std::endl;
       ++fileindex_;
       entry_=-1;
@@ -129,7 +129,7 @@ public:
   bool LoopOnEntries() { 
     ++entry_; 
     if (show_progress_) ProgressEstimator_();
-    return entry_<all_entries_/nthstat_;
+    return entry_<all_entries_;
   }
   
   // Accessors

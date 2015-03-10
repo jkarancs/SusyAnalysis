@@ -1,22 +1,20 @@
 include Makefile.arch
 
 
-##------------------------------------------------------------------------------
-#PLOTTER_OLDO      = Plotter_old.$(ObjSuf)
-#PLOTTER_OLDS      = Plotter_old.$(SrcSuf)
-#PLOTTER_OLD       = Plotter_old$(ExeSuf)
-#
-#OBJS          = $(PLOTTER_OLDO)
-#PROGRAMS      = $(PLOTTER_OLD)
-
 #------------------------------------------------------------------------------
 B2GPLOTTERO      = B2GPlotter.$(ObjSuf)
 B2GPLOTTERS      = B2GPlotter.$(SrcSuf)
 B2GPLOTTER       = B2GPlotter$(ExeSuf)
 
-OBJS          += $(B2GPLOTTERO)
-PROGRAMS      += $(B2GPLOTTER)
+OBJS          = $(B2GPLOTTERO)
+PROGRAMS      = $(B2GPLOTTER)
+#------------------------------------------------------------------------------
+B2GANALYZERO      = B2GAnalyzer.$(ObjSuf)
+B2GANALYZERS      = B2GAnalyzer.$(SrcSuf)
+B2GANALYZER       = B2GAnalyzer$(ExeSuf)
 
+OBJS          += $(B2GANALYZERO)
+PROGRAMS      += $(B2GANALYZER)
 #------------------------------------------------------------------------------
 
 
@@ -24,12 +22,11 @@ PROGRAMS      += $(B2GPLOTTER)
 
 all:            $(PROGRAMS)
 
-#$(PLOTTER_OLD):     $(PLOTTER_OLDO)
-#		$(LD) $(LDFLAGS) $^ $(LIBS) $(OutPutOpt)$@
-#		$(MT_EXE)
-#		@echo "$@ done"
-
 $(B2GPLOTTER):     $(B2GPLOTTERO)
+		$(LD) $(LDFLAGS) $^ $(LIBS) $(OutPutOpt)$@
+		$(MT_EXE)
+		@echo "$@ done"
+$(B2GANALYZER):     $(B2GANALYZERO)
 		$(LD) $(LDFLAGS) $^ $(LIBS) $(OutPutOpt)$@
 		$(MT_EXE)
 		@echo "$@ done"
