@@ -8,9 +8,9 @@
 #include "../interface/Data.h"
 #include "../interface/SmartHistos.h"
 
-void get_yields(std::string fname, std::vector<std::string>& samples, size_t nsig, std::string name,
+void get_yields(std::string fname, std::vector<std::string>& samples, size_t nsig, std::string name, 
 		std::string cut1, std::string cut2, std::string cut3, 
-		std::string Cut1, std::string Cut2, std::string Cut3) {
+		std::string Cut1, std::string Cut2, std::string Cut3, std::string pf = "") {
   std::vector<std::string> cuts;
   cuts.push_back("");
   cuts.push_back(std::string("_")+cut3);
@@ -41,7 +41,7 @@ void get_yields(std::string fname, std::vector<std::string>& samples, size_t nsi
     double min_sig_eff = 9999;
     double tot_bg = 0;
     for (size_t j=0; j<samples.size(); ++j) {
-      TH1D* h = ((TH1D*)f->Get((name+samples[j]+cuts[i]).c_str()));
+      TH1D* h = ((TH1D*)f->Get((name+samples[j]+pf+cuts[i]).c_str()));
       nevt[j] = h->Integral();
       if (j<nsig) {
 	if (i==0) nevt_sig[j]=nevt[j];
@@ -247,16 +247,16 @@ int main() {
   //newsamples.push_back("T5ttttDeg_4bodydec_mGo1000");
   //newsamples.push_back("T5ttttDeg_3bodydec_mGo1000");
   newsamples.push_back("QCD_HT");
-  //newsamples.push_back("QCD_Pt_bcToE");
+  newsamples.push_back("QCD_Pt_bcToE");
   newsamples.push_back("TTBar");
   newsamples.push_back("GJets_HT");
   //newsamples.push_back("WJets");
   newsamples.push_back("WJets_HT");
   newsamples.push_back("T_tW");
-  //newsamples.push_back("TToLep_s_t");
+  newsamples.push_back("TToLep_s_t");
   newsamples.push_back("ZJets_HT");
   //newsamples.push_back("DYJets");
-  //newsamples.push_back("DYJets_HT");
+  newsamples.push_back("DYJets_HT");
   //newsamples.push_back("GGJets_M");
   
   std::vector<std::string> newsamples2;
@@ -287,19 +287,20 @@ int main() {
   //latexnames +="T5tttt (#tilde{g}#rightarrowt#tilde{t}_{4body}, M_{#tilde{g}}=1.0TeV);";
   //latexnames +="T5tttt (#tilde{g}#rightarrowt#tilde{t}_{2,3body}, M_{#tilde{g}}=1.0TeV);";
   latexnames +="QCD (HT bins);";
-  //latexnames +="QCD (Pt bins, b/c#rightarrowe);";
+  latexnames +="QCD (Pt bins, b/c#rightarrowe);";
   latexnames +="t#bar{t};";
   latexnames +="G+Jets (HT bins);";
   //latexnames +="W+Jets #rightarrow l+#nu;";
   latexnames +="W+Jets #rightarrow l+#nu (HT bins);";
   latexnames +="single t/#bar{t} (tW channel);";
-  //latexnames +="single t/#bar{t}#rightarrowl (s,t channel);";
+  latexnames +="single t/#bar{t}#rightarrowl (s,t channel);";
   latexnames +="Z+Jets #rightarrow #nu#nu (HT bins);";
-  //latexnames +="DY+Jets #rightarrow l+l";
-  //latexnames +="DY+Jets #rightarrow l+l (HT bins)";
-  //latexnames +="GG+Jets (M bins)";
+  //latexnames +="DY+Jets #rightarrow l+l;";
+  latexnames +="DY+Jets #rightarrow l+l (HT bins);";
+  //latexnames +="GG+Jets (M bins);";
   latexnames = latexnames.substr(0, latexnames.size()-1);
-  std::string colors = "14,16,4,2,804,3,617,401";
+  //std::string colors = "1,14,4,2,804,3,617,401";
+  std::string colors = "1,14,4,38,2,804,3,617,882,401,797";
   
   // Remake Cut dependant distributions
 #define CUTR 0.4
@@ -325,49 +326,70 @@ int main() {
   sh.AddNewPostfix("CutR",           [&d](){ return d.evt.R > CUTR;                  },  pf1, lat1, "4,2");
   sh.AddNewPostfix("CutDPhi",        [&d](){ return fabs(d.evt.TTHadDPhi) > CUTDPHI; },  pf2, lat2, "4,2");
   sh.AddNewPostfix("CutHtAll",       [&d](){ return d.evt.HTall > CUTHTALL;          },  pf3, lat3, "4,2");
+  sh.AddNewPostfix("NTopHad",        [&d](){ return (d.evt.NTopHad>1); }, "0To1HadTop;2HadTop", "N_{top,hadronic}<2;N_{top,hadronic}=2", "4,2");
   
-  sh.AddNewFillParam("R",           { .nbin=  20, .low=   0,   .high=    1, .fill=[&d](){ return d.evt.R;                }, .axis_title="R"});
+  sh.AddNewFillParam("R",           { .nbin= 100, .low=   0,   .high=    1, .fill=[&d](){ return d.evt.R;                }, .axis_title="R"});
   sh.AddNewFillParam("DPhi",        { .nbin=  16, .low=   0,   .high=  3.2, .fill=[&d](){ return fabs(d.evt.TTHadDPhi);  }, .axis_title="|#Delta#phi_{t#bar{t}}|"});
   sh.AddNewFillParam("HtAll",       { .nbin=  50, .low=   0,   .high=10000, .fill=[&d](){ return d.evt.HTall;            }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
   sh.AddNewFillParam("HtAllCoarse", { .nbin=  20, .low=   0,   .high= 6000, .fill=[&d](){ return d.evt.HTall;            }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
   
   // N-(1,2,3) plots
-  sh.AddHistos("post",   { .fill="R",               .pfs={"AllSamples"},                .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="R",               .pfs={"AllSamples","CutDPhi"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="R",               .pfs={"AllSamples","CutHtAll"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="R",               .pfs={"AllSamples","CutDPhi","CutHtAll"},      .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples"},                .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples","CutR"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples","CutDPhi"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples","CutHtAll"},                .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples","CutR","CutDPhi"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples","CutR","CutHtAll"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples","CutDPhi","CutHtAll"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples","CutR","CutDPhi","CutHtAll"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="TTHadDPhi",       .pfs={"AllSamples"},                .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="TTHadDPhi",       .pfs={"AllSamples","CutR"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="TTHadDPhi",       .pfs={"AllSamples","CutHtAll"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="TTHadDPhi",       .pfs={"AllSamples","CutR","CutHtAll"},      .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",               .pfs={"AllSamples","NTopHad"},                .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",               .pfs={"AllSamples","NTopHad","CutR"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",               .pfs={"AllSamples","NTopHad","CutDPhi"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",               .pfs={"AllSamples","NTopHad","CutHtAll"},                .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",               .pfs={"AllSamples","NTopHad","CutR","CutDPhi"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",               .pfs={"AllSamples","NTopHad","CutR","CutHtAll"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",               .pfs={"AllSamples","NTopHad","CutDPhi","CutHtAll"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",               .pfs={"AllSamples","NTopHad","CutR","CutDPhi","CutHtAll"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples","NTopHad"},                .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples","NTopHad","CutR"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples","NTopHad","CutDPhi"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples","NTopHad","CutHtAll"},                .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples","NTopHad","CutR","CutDPhi"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples","NTopHad","CutR","CutHtAll"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples","NTopHad","CutDPhi","CutHtAll"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",           .pfs={"AllSamples","NTopHad","CutR","CutDPhi","CutHtAll"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi",       .pfs={"AllSamples","NTopHad"},                .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi",       .pfs={"AllSamples","NTopHad","CutR"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi",       .pfs={"AllSamples","NTopHad","CutDPhi"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi",       .pfs={"AllSamples","NTopHad","CutHtAll"},                .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi",       .pfs={"AllSamples","NTopHad","CutR","CutDPhi"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi",       .pfs={"AllSamples","NTopHad","CutR","CutHtAll"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi",       .pfs={"AllSamples","NTopHad","CutDPhi","CutHtAll"},           .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi",       .pfs={"AllSamples","NTopHad","CutR","CutDPhi","CutHtAll"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
   // 2D Correlation plots
-  sh.AddHistos("post",   { .fill="HtAllCoarse_vs_TTHadDPhi",   .pfs={"AllSamples"},      .cuts={}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("post",   { .fill="HtAllCoarse_vs_R",           .pfs={"AllSamples"},      .cuts={}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("post",   { .fill="R_vs_TTHadDPhi",             .pfs={"AllSamples"},      .cuts={}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("post",   { .fill="HtAllCoarse_vs_TTHadDPhi",   .pfs={"AllSamples","CutR"}, .cuts={}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("post",   { .fill="HtAllCoarse_vs_R",           .pfs={"AllSamples","CutDPhi"}, .cuts={}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("post",   { .fill="R_vs_TTHadDPhi",             .pfs={"AllSamples","CutHtAll"}, .cuts={}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("post",   { .fill="HtAllCoarse_vs_TTHadDPhi",   .pfs={"AllSamples","NTopHad"},      .cuts={}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("post",   { .fill="HtAllCoarse_vs_R",           .pfs={"AllSamples","NTopHad"},      .cuts={}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("post",   { .fill="R_vs_TTHadDPhi",             .pfs={"AllSamples","NTopHad"},      .cuts={}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("post",   { .fill="HtAllCoarse_vs_TTHadDPhi",   .pfs={"AllSamples","NTopHad","CutR"}, .cuts={}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("post",   { .fill="HtAllCoarse_vs_R",           .pfs={"AllSamples","NTopHad","CutDPhi"}, .cuts={}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("post",   { .fill="R_vs_TTHadDPhi",             .pfs={"AllSamples","NTopHad","CutHtAll"}, .cuts={}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
   // Plots for Background estimation
-  sh.AddHistos("post",   { .fill="R",         .pfs={"CutDPhi","AllSamples"},      .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="R",         .pfs={"CutHtAll","AllSamples"},      .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="R",         .pfs={"CutDPhi","CutHtAll","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="R",         .pfs={"CutHtAll","CutDPhi","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="TTHadDPhi", .pfs={"CutR","AllSamples"},      .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="TTHadDPhi", .pfs={"CutHtAll","AllSamples"},      .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="TTHadDPhi", .pfs={"CutR","CutHtAll","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="TTHadDPhi", .pfs={"CutHtAll","CutR","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="HtAll",     .pfs={"CutR","AllSamples"},      .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="HtAll",     .pfs={"CutDPhi","AllSamples"},      .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="HtAll",     .pfs={"CutR","CutDPhi","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("post",   { .fill="HtAll",     .pfs={"CutDPhi","CutR","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",         .pfs={"CutDPhi",           "NTopHad","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",         .pfs={"CutHtAll",          "NTopHad","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",         .pfs={"CutDPhi","CutHtAll","NTopHad","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",         .pfs={"CutHtAll","CutDPhi","NTopHad","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi", .pfs={"CutR",              "NTopHad","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi", .pfs={"CutHtAll",          "NTopHad","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi", .pfs={"CutR","CutHtAll",   "NTopHad","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi", .pfs={"CutHtAll","CutR",   "NTopHad","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",     .pfs={"CutR",              "NTopHad","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",     .pfs={"CutDPhi",           "NTopHad","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",     .pfs={"CutR","CutDPhi",    "NTopHad","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",     .pfs={"CutDPhi","CutR",    "NTopHad","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",         .pfs={"NTopHad","CutDPhi",           "AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",         .pfs={"NTopHad","CutHtAll",          "AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",         .pfs={"NTopHad","CutDPhi","CutHtAll","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="R",         .pfs={"NTopHad","CutHtAll","CutDPhi","AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi", .pfs={"NTopHad","CutR",              "AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi", .pfs={"NTopHad","CutHtAll",          "AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi", .pfs={"NTopHad","CutR","CutHtAll",   "AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="TTHadDPhi", .pfs={"NTopHad","CutHtAll","CutR",   "AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",     .pfs={"NTopHad","CutR",              "AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",     .pfs={"NTopHad","CutDPhi",           "AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",     .pfs={"NTopHad","CutR","CutDPhi",    "AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("post",   { .fill="HtAll",     .pfs={"NTopHad","CutDPhi","CutR",    "AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
   
   std::string R = "RFine";
 
@@ -386,35 +408,48 @@ int main() {
   //get_best_cuts_("ROOT_output/BestCuts_fullstat.root",                    samples,     2, "AK8JetRFine", "TT_AbsDeltaPhiFine", "H_TallFine", "R", "DPhi", "HTall", 1, 0, 1);
   //get_best_cuts_("ROOT_output/CutTest_NewSamples_NoLepTop_fullstat.root", newsamples2, 2, "RFine",       "TTHadDPhiFine",      "HtAllFine",  "R", "DPhi", "HTall", 1, 0, 1); // Mgluino = 1000
   //get_best_cuts_("ROOT_output/CutTest_NewSamples_fullstat.root",          newsamples2, 2, "RFine",       "TTHadDPhiFine",      "HtAllFine",  "R", "DPhi", "HTall", 1, 0, 1);
-  get_best_cuts_("ROOT_output/CutTest_NewSamples_NoLepTop_fullstat.root", newsamples,  2, R,       "TTHadDPhiFine",      "HtAllFine",  "R", "DPhi", "HTall", 1, 0, 1); // Mgluino = 1300
-  get_best_cuts_("ROOT_output/CutTest_NewSamples_fullstat.root",          newsamples,  2, R,       "TTHadDPhiFine",      "HtAllFine",  "R", "DPhi", "HTall", 1, 0, 1);
-  get_best_cuts_("ROOT_output/LeptonicTops_fullstat.root",                newsamples,  2, R,       "TTHadDPhiFine",      "HtAllFine",  "R", "DPhi", "HTall", 1, 0, 1);
-  get_best_cuts_("ROOT_output/LeptonicTops_LeptonVeto_fullstat.root",     newsamples,  2, R,       "TTHadDPhiFine",      "HtAllFine",  "R", "DPhi", "HTall", 1, 0, 1);
+  get_best_cuts_("ROOT_output/CutTest_NewSamples_NoLepTop_fullstat.root",                        newsamples,  2, R, "TTHadDPhiFine", "HtAllFine", "R", "DPhi", "HTall", 1, 0, 1); // Mgluino = 1300
+  get_best_cuts_("ROOT_output/CutTest_NewSamples_fullstat.root",                                 newsamples,  2, R, "TTHadDPhiFine", "HtAllFine", "R", "DPhi", "HTall", 1, 0, 1);
+  get_best_cuts_("ROOT_output/BackGroundEstimate_NTopHadSideBand_TightLeptonVeto_fullstat.root", newsamples,  2, R, "TTHadDPhiFine", "HtAllFine", "R", "DPhi", "HTall", 1, 0, 1);
+  get_best_cuts_("ROOT_output/BackGroundEstimate_NTopHadSideBand_LeptonVeto_fullstat.root",      newsamples,  2, R, "TTHadDPhiFine", "HtAllFine", "R", "DPhi", "HTall", 1, 0, 1);
   
+  //TFile* f = TFile::Open("ROOT_output/CutTest_NewSamples_fullstat.root");
   //TFile* f = TFile::Open("ROOT_output/CutTest_NewSamples_NoLepTop_fullstat.root");
-  TFile* f = TFile::Open("ROOT_output/LeptonicTops_LeptonVeto_fullstat.root");
+  //TFile* f = TFile::Open("ROOT_output/BackGroundEstimate_NTopHadSideBand_TightLeptonVeto_fullstat.root");
+  TFile* f = TFile::Open("ROOT_output/BackGroundEstimate_NTopHadSideBand_LeptonVeto_fullstat.root");
   int xlowcut = 1, ylowcut = 0, zlowcut=1;
   for (iSample=0; iSample<newsamples.size(); ++iSample) {
-    TH3D* h = (TH3D*)f->Get((std::string("HtAllFine_vs_TTHadDPhiFine_vs_")+R+"/"+newsamples[iSample]).c_str());
-    int nx = h->GetNbinsX(), ny = h->GetNbinsY(), nz = h->GetNbinsZ();
+    std::cout<<"Start filling plots for "<<newsamples[iSample]<<"\n";
+    TH3D* h1 = (TH3D*)f->Get((std::string("HtAllFine_vs_TTHadDPhiFine_vs_")+R+"/"+newsamples[iSample]+"_0HadTop").c_str());
+    TH3D* h2 = (TH3D*)f->Get((std::string("HtAllFine_vs_TTHadDPhiFine_vs_")+R+"/"+newsamples[iSample]+"_1HadTop").c_str());
+    TH3D* h3 = (TH3D*)f->Get((std::string("HtAllFine_vs_TTHadDPhiFine_vs_")+R+"/"+newsamples[iSample]+"_2HadTop").c_str());
+    int nx = h1->GetNbinsX(), ny = h1->GetNbinsY(), nz = h1->GetNbinsZ();
     for (int binx=(xlowcut ? nx : 1); xlowcut ? (binx>=1) : (binx<=nx); xlowcut ? --binx : ++binx) {
       for (int biny=(ylowcut ? ny : 1); ylowcut ? (biny>=1) : (biny<=ny); ylowcut ? --biny : ++biny) {
         for (int binz=(zlowcut ? nz : 1); zlowcut ? (binz>=1) : (binz<=nz); zlowcut ? --binz : ++binz) {
-          weight = h->GetBinContent(binx,biny,binz);
-          //double binx_edge = xlowcut ? h->GetXaxis()->GetBinLowEdge(binx) : h->GetXaxis()->GetBinUpEdge(binx);
-          //double biny_edge = ylowcut ? h->GetYaxis()->GetBinLowEdge(biny) : h->GetYaxis()->GetBinUpEdge(biny);
-          //double binz_edge = zlowcut ? h->GetZaxis()->GetBinLowEdge(binz) : h->GetZaxis()->GetBinUpEdge(binz);
-          double binx_cent = h->GetXaxis()->GetBinCenter(binx);
-          double biny_cent = h->GetYaxis()->GetBinCenter(biny);
-          double binz_cent = h->GetZaxis()->GetBinCenter(binz);
-          d.evt.R = binx_cent;
-          d.evt.TTHadDPhi = biny_cent;
-          d.evt.HTall = binz_cent;
+          weight = h1->GetBinContent(binx,biny,binz);
+          d.evt.R = h1->GetXaxis()->GetBinCenter(binx);
+          d.evt.TTHadDPhi = h1->GetYaxis()->GetBinCenter(biny);
+          d.evt.HTall = h1->GetZaxis()->GetBinCenter(binz);
+          d.evt.NTopHad = 0;
+          sh.Fill("post");
+          weight = h2->GetBinContent(binx,biny,binz);
+          d.evt.R = h2->GetXaxis()->GetBinCenter(binx);
+          d.evt.TTHadDPhi = h2->GetYaxis()->GetBinCenter(biny);
+          d.evt.HTall = h2->GetZaxis()->GetBinCenter(binz);
+          d.evt.NTopHad = 1;
+          sh.Fill("post");
+          weight = h3->GetBinContent(binx,biny,binz);
+          d.evt.R = h3->GetXaxis()->GetBinCenter(binx);
+          d.evt.TTHadDPhi = h3->GetYaxis()->GetBinCenter(biny);
+          d.evt.HTall = h3->GetZaxis()->GetBinCenter(binz);
+          d.evt.NTopHad = 2;
           sh.Fill("post");
         }
       }
     }
   }
+  std::cout<<"Plots filled.\n\n";
   
   std::string cutx = pf1.substr((xlowcut ? pf1.find(";")+1 : 0), (xlowcut ? pf1.size()-pf1.find(";")-1 : pf1.find(";")));
   std::string cuty = pf2.substr((ylowcut ? pf2.find(";")+1 : 0), (ylowcut ? pf2.size()-pf2.find(";")-1 : pf2.find(";")));
@@ -429,7 +464,8 @@ int main() {
   file->Close();
   
   std::cout<<"Manual cuts are ( "<<cut1<<" && "<<cut2<<" && "<<cut3<<" )"<<std::endl;
-  get_yields(std::string("ROOT_output/SignalCutPlots_"+cutx+"_"+cuty+"_"+cutz+".root"), newsamples, 2, "HtAll/",  cutx, cuty, cutz, cut1, cut2, cut3);
+  //get_yields(std::string("ROOT_output/SignalCutPlots_"+cutx+"_"+cuty+"_"+cutz+".root"), newsamples, 2, "HtAll/", cutx, cuty, cutz, cut1, cut2, cut3, "");
+  get_yields(std::string("ROOT_output/SignalCutPlots_"+cutx+"_"+cuty+"_"+cutz+".root"), newsamples, 2, "HtAll/", cutx, cuty, cutz, cut1, cut2, cut3, "_2HadTop");
   
   return 1;
 }

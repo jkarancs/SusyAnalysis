@@ -727,6 +727,7 @@ public:
     float MuRelPtJet[NLEP+1];
     float EleJetCombMass[NLEP+1];
     float MuJetCombMass[NLEP+1];
+    int nhadtoplike;
     
     void init() {
       NLep=NOVAL_I;
@@ -804,6 +805,7 @@ public:
 	EleJetCombMass[i]=NOVAL_F;
 	MuJetCombMass[i]=NOVAL_F;
       }
+      nhadtoplike=NOVAL_I;
     }
   } evt;
   
@@ -872,30 +874,35 @@ public:
     }
     
     // Tag hadronic tops
-    TLorentzVector hadtop1;
-    TLorentzVector hadtop2;
-    TLorentzVector leptop1;
-    TLorentzVector leptop2;
+    std::vector<TLorentzVector> hadtop;
+    std::vector<TLorentzVector> hadtoplike;
+    std::vector<TLorentzVector> leptop;
     evt.ntops = 0;
     evt.nhadtops = 0;
     evt.nleptops = 0;
     evt.HT = 0;
+    evt.nhadtoplike = 0;
     while(jetsAK8.Loop()) {
       // Find subjets
       //int nsubjet = 0;
       //std::cout<<jetsAK8.it<<" "<<jetsAK8.size<<" "<<subjetsAK8.size<<" "<<jetsAK8.subjetIndex0[NJET]<<" "<<jetsAK8.subjetIndex1[NJET]<<std::endl;
       bool is_top = false;
+      TLorentzVector topcand; topcand.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
       // hadronic tops
       //if (jetsAK8.tau1[NJET]>0 && jetsAK8.tau2[NJET]>0 ? jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 140 && (jetsAK8.tau2[NJET]/jetsAK8.tau1[NJET]) < 0.75 : 0) { // orig
       if ( (jetsAK8.tau2[NJET]>0 && jetsAK8.tau3[NJET]>0 ? jetsAK8.tau3[NJET]/jetsAK8.tau2[NJET] < 0.75 : 0 ) &&
-	   //jetsAK8.nSubJets[NJET] > 2 &&
-	   //jetsAK8.minmass[NJET] > 50 &&
-	   jetsAK8.Pt[NJET] > 400 && 
-	   jetsAK8.prunedMass[NJET] > 140) { // Latest
+           //jetsAK8.nSubJets[NJET] > 2 &&
+           //jetsAK8.minmass[NJET] > 50 &&
+           jetsAK8.Pt[NJET] > 400 && 
+           jetsAK8.prunedMass[NJET] > 140) { // Latest
         ++evt.nhadtops;
+        ++evt.nhadtoplike;
         is_top = true;
-        if (evt.nhadtops==1) hadtop1.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
-        if (evt.nhadtops==2) hadtop2.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
+        hadtop.push_back(topcand);
+      } else if (jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 50) { // Top like jets for sideband fitting
+      //} else if (jetsAK8.Pt[NJET] > 400) { // High pT jets for sideband fitting
+        ++evt.nhadtoplike;
+        hadtoplike.push_back(topcand);
       }
       // leptonic tops
       TLorentzVector lep;
@@ -905,17 +912,16 @@ public:
       evt.RelPtJetLep[jetsAK8.it] = 9999;
       for (size_t i=0; i<goodleps.size(); ++i) {
         if (goodleps[i].DeltaR(jet)< evt.DRJetLep[jetsAK8.it]) {
-	  evt.DRJetLep[jetsAK8.it] = goodleps[i].DeltaR(jet);
-	  evt.RelPtJetLep[jetsAK8.it] = goodleps[i].Perp(jet.Vect());
-	  lep = goodleps[i];
+          evt.DRJetLep[jetsAK8.it] = goodleps[i].DeltaR(jet);
+          evt.RelPtJetLep[jetsAK8.it] = goodleps[i].Perp(jet.Vect());
+          lep = goodleps[i];
         }
       }
       if (evt.DRJetLep[jetsAK8.it]<1.0) {
         evt.nleptops++;
         is_top = true;
-        TLorentzVector leptop = lep + jet;
-        if (evt.nleptops==1) leptop1 = leptop;
-        if (evt.nleptops==2) leptop2 = leptop;
+        TLorentzVector lepjet = lep + jet;
+        leptop.push_back(lepjet);
       }
       // Extra - all except above hadronic/leptonic tops
       evt.HT += jetsAK8.Pt[NJET];
@@ -924,36 +930,25 @@ public:
     evt.HTall = evt.HT + met.Pt + evt.HTlep;
     //std::cout<<evt.HTall<<" "<<evt.HT<<" "<<met.Pt<<" "<<evt.HTlep<<std::endl;
     
-    // Select exactly 2 tops (hadronic or leptonic)
-    // We need exactly 2 in order to calculate pair variables, eg. DeltaPhi
+    evt.ntops = evt.nhadtops + evt.nleptops;
+    // Select 2 tops (hadronic or hadronic like)
     TLorentzVector top1;
     TLorentzVector top2;
-    evt.ntops = evt.nhadtops + evt.nleptops;
-    if (evt.ntops == 2) {
+    if (evt.nhadtoplike >= 2) {
       if (evt.nhadtops == 2) {
-        if (hadtop1.Pt() > hadtop2.Pt()) {
-          top1 = hadtop1;
-          top2 = hadtop2;
-        } else {
-          top1 = hadtop2;
-          top2 = hadtop1;
-        }
+	top1 = hadtop[0];
+	top2 = hadtop[1];
       } else if (evt.nhadtops == 1) {
-        if (hadtop1.Pt() > leptop1.Pt()) {
-          top1 = hadtop1;
-          top2 = leptop1;
+        if (hadtop[0].Pt() > hadtoplike[0].Pt()) {
+          top1 = hadtop[0];
+          top2 = hadtoplike[0];
         } else {
-          top1 = leptop1;
-          top2 = hadtop1;
+          top1 = hadtoplike[0];
+          top2 = hadtop[0];
         }    
       } else if (evt.nhadtops == 0) {
-        if (leptop1.Pt() > leptop2.Pt()) {
-          top1 = leptop1;
-          top2 = leptop2;
-        } else {
-          top1 = leptop2;
-          top2 = leptop1;
-        }
+	top1 = hadtoplike[0];
+	top2 = hadtoplike[1];
       }
     }
     
@@ -971,7 +966,7 @@ public:
     evt.HTttFraction=NOVAL_F;
     evt.HTexFraction=NOVAL_F;
     //std::cout<<evt.ntops<<std::endl;
-    if (evt.ntops==2) {
+    if (evt.nhadtoplike>=2) {
       /* python
          tt_dR[0] = top1.DeltaR(top2)
          tt_dPhi[0] = top1.DeltaPhi(top2)
@@ -1008,7 +1003,9 @@ public:
       evt.tt_MTR = CalcMTR_(top1, top2, metl);
       evt.tt_R = evt.tt_MTR / evt.tt_MR;
       evt.tt_R2 = pow(evt.tt_R, 2);
-      
+      //if (evt.nhadtops == 2)
+      //  std::cout<<"TT : pt1="<<top1.Pt()<<" pt2="<<top2.Pt()<<" MET="<<met.Pt<<" MR="<<evt.tt_MR<<" MTR="<<evt.tt_MTR<<" R="<<evt.tt_R<<std::endl;
+	
       //std::cout<<evt.NTopHad<<" "<<evt.nhadtops<<std::endl;
       if (evt.NTopHad==2) {
       //  std::cout<<evt.NLep<<" "<<ngoodleptons<<std::endl;
@@ -1050,6 +1047,7 @@ public:
   
   // Hemispheres:
   vector<TLorentzVector> CombineJets_(vector<TLorentzVector> myjets) {
+    //std::cout<<"Start CombineJets with "<<myjets.size()<<" jets\n";
     vector<TLorentzVector> mynewjets;
     TLorentzVector j1, j2;
     //bool foundGood = false;
@@ -1057,6 +1055,7 @@ public:
     for(unsigned int i = 0; i < myjets.size(); i++){
       N_comb *= 2;
     }
+    //std::cout<<"N_comb = "<<N_comb<<std::endl;
     double M_min = 9999999999.0;
     int j_count;
     for(int i = 1; i < N_comb-1; i++){
@@ -1067,26 +1066,31 @@ public:
       while(j_count > 0){
         if(itemp/j_count == 1){
           j_temp1 += myjets[count];
+	  //std::cout<<"  1 <- "<<count<<" M2="<<myjets[count].M2()<<std::endl;
         } else {
           j_temp2 += myjets[count];
+	  //std::cout<<"  2 <- "<<count<<" M2="<<myjets[count].M2()<<std::endl;
         }
         itemp -= j_count*(itemp/j_count);
         j_count /= 2;
         count++;
       }
       double M_temp = j_temp1.M2()+j_temp2.M2();
+      //std::cout<<"  --> M_temp "<<j_temp1.M2()<<" + "<<j_temp2.M2()<<" = "<<M_temp<<std::endl;
       // smallest mass
       if(M_temp < M_min){
         M_min = M_temp;
         j1 = j_temp1;
         j2 = j_temp2;
       }
+      //std::cout<<" M_min = "<<M_min<<std::endl;
     }
     if(j2.Pt() > j1.Pt()){
       TLorentzVector temp = j1;
       j1 = j2;
       j2 = temp;
     }
+    //std::cout<<"Result: Jet1 pT = "<<j1.Pt()<<" Jet2 pT = "<<j2.Pt()<<"\n\n";
     mynewjets.push_back(j1);
     mynewjets.push_back(j2);
     return mynewjets;
@@ -1181,6 +1185,8 @@ public:
       jetsAK8.R = jetsAK8.MTR / jetsAK8.MR;
       jetsAK8.R2 = pow(jetsAK8.R, 2);
     }
+    //if (evt.NTopHad==2)
+    //  std::cout<<"AK8: pt1="<<hemis[0].Pt()<<" pt2="<<hemis[1].Pt()<<" MET="<<met.Pt<<" MR="<<jetsAK8.MR<<" MTR="<<jetsAK8.MTR<<" R="<<jetsAK8.R<<std::endl;
   }
   
 };

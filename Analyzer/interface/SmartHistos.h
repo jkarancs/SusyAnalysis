@@ -158,7 +158,7 @@ public:
     stat_  = opt.find("Stat")!=std::string::npos ? 1110 : 0;
     sumw2_ = opt.find("Sumw2")!=std::string::npos;
     axis_ranges_=axis_ranges;
-    if (npf_>4) std::cout<<"!!! ERROR: SmartHisto::constructor: Fixme! - More than 4 postfixes, only use max 4, or redefine functions!\n";
+    if (npf_>5) std::cout<<"!!! ERROR: SmartHisto::constructor: Fixme! - More than 4 postfixes, only use max 4, or redefine functions!\n";
     if (ndim_>3) std::cout<<"!!! ERROR: SmartHisto::constructor: More than 4 dimension, define a maximum of 3!\n";
     if (ncut_>5) std::cout<<"!!! ERROR: SmartHisto::constructor: Fixme! - More than 5 cuts specified, please add new variables to store them!\n";
     if (nweight_>3) std::cout<<"!!! ERROR: SmartHisto::constructor: Fixme! - More than 3 weights specified, please add new variables to store them!\n";
@@ -224,6 +224,9 @@ private:
   std::vector<std::vector<std::vector<std::vector<TH1D*> > > > h1d_4p_;
   std::vector<std::vector<std::vector<std::vector<TH2D*> > > > h2d_4p_;
   std::vector<std::vector<std::vector<std::vector<TH3D*> > > > h3d_4p_;
+  std::vector<std::vector<std::vector<std::vector<std::vector<TH1D*> > > > > h1d_5p_;
+  std::vector<std::vector<std::vector<std::vector<std::vector<TH2D*> > > > > h2d_5p_;
+  std::vector<std::vector<std::vector<std::vector<std::vector<TH3D*> > > > > h3d_5p_;
   
   // --------------------------------------------------------------------------
   //                      Special Histogram Calculations:
@@ -474,6 +477,17 @@ private:
 	  for (size_t i=0; i<h3d_4p_.size(); ++i) for (size_t j=0; j<h3d_4p_[i].size(); ++j) for (size_t k=0; k<h3d_4p_[i][j].size(); ++k)
 	    for (size_t l=0; l<h3d_4p_[i][j][k].size(); ++l) calc_spec_2d_(h2d_4p_[i][j][k][l], h3d_4p_[i][j][k][l]); break;
 	} break;
+      case 5:
+	switch (ndim_) {
+	case 2:
+	  for (size_t i=0; i<h2d_5p_.size(); ++i) for (size_t j=0; j<h2d_5p_[i].size(); ++j) for (size_t k=0; k<h2d_5p_[i][j].size(); ++k)
+	    for (size_t l=0; l<h2d_5p_[i][j][k].size(); ++l) for (size_t m=0; m<h2d_5p_[i][j][k][l].size(); ++m)
+	      calc_spec_1d_(h1d_5p_[i][j][k][l][m], h2d_5p_[i][j][k][l][m]); break;
+	case 3:
+	  for (size_t i=0; i<h3d_5p_.size(); ++i) for (size_t j=0; j<h3d_5p_[i].size(); ++j) for (size_t k=0; k<h3d_5p_[i][j].size(); ++k)
+	    for (size_t l=0; l<h3d_5p_[i][j][k].size(); ++l) for (size_t m=0; m<h3d_5p_[i][j][k][l].size(); ++m)
+	      calc_spec_2d_(h2d_5p_[i][j][k][l][m], h3d_5p_[i][j][k][l][m]); break;
+	} break;
       }
     }
   }
@@ -580,6 +594,16 @@ private:
         for (size_t k=0; k<h2d_4p_[i][j].size(); ++k) for (size_t l=0; l<h2d_4p_[i][j][k].size(); ++l) load_(f,h2d_4p_[i][j][k][l],add);
       for (size_t i=0; i<h3d_4p_.size(); ++i) for (size_t j=0; j<h3d_4p_[i].size(); ++j) 
         for (size_t k=0; k<h3d_4p_[i][j].size(); ++k) for (size_t l=0; l<h3d_4p_[i][j][k].size(); ++l) load_(f,h3d_4p_[i][j][k][l],add);
+    } else if (npf_==4) {
+      for (size_t i=0; i<h1d_5p_.size(); ++i) for (size_t j=0; j<h1d_5p_[i].size(); ++j) 
+        for (size_t k=0; k<h1d_5p_[i][j].size(); ++k) for (size_t l=0; l<h1d_5p_[i][j][k].size(); ++l) 
+	  for (size_t m=0; m<h1d_5p_[i][j][k][l].size(); ++m) load_(f,h1d_5p_[i][j][k][l][m],add);
+      for (size_t i=0; i<h2d_5p_.size(); ++i) for (size_t j=0; j<h2d_5p_[i].size(); ++j) 
+        for (size_t k=0; k<h2d_5p_[i][j].size(); ++k) for (size_t l=0; l<h2d_5p_[i][j][k].size(); ++l)
+	  for (size_t m=0; m<h2d_5p_[i][j][k][l].size(); ++m) load_(f,h2d_5p_[i][j][k][l][m],add);
+      for (size_t i=0; i<h3d_5p_.size(); ++i) for (size_t j=0; j<h3d_5p_[i].size(); ++j) 
+        for (size_t k=0; k<h3d_5p_[i][j].size(); ++k) for (size_t l=0; l<h3d_5p_[i][j][k].size(); ++l)
+	  for (size_t m=0; m<h3d_5p_[i][j][k][l].size(); ++m) load_(f,h3d_5p_[i][j][k][l][m],add);
     }
   }
   
@@ -649,6 +673,24 @@ public:
 	      h1d_4p_[i][j][k].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(),
 						  title.c_str(), nbin1, low1, high1));
 	      if (sumw2_) h1d_4p_[i][j][k][l]->Sumw2();
+	    }
+	  }
+	}
+      }
+    } else if (npf_==5) {
+      for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
+	h1d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH1D*> > > >());
+	for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
+	  h1d_5p_[i].push_back(std::vector<std::vector<std::vector<TH1D*> > >());
+	  for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
+	    h1d_5p_[i][j].push_back(std::vector<std::vector<TH1D*> >());
+	    for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
+	      h1d_5p_[i][j][k].push_back(std::vector<TH1D*>());
+	      for (size_t m=0; m<pfs_[4].vec.size(); ++m) {
+		h1d_5p_[i][j][k][l].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+						       title.c_str(), nbin1, low1, high1));
+		if (sumw2_) h1d_5p_[i][j][k][l][m]->Sumw2();
+	      }
 	    }
 	  }
 	}
@@ -783,6 +825,58 @@ public:
 	  }
 	}
       }
+    } else if (npf_==5) {
+      if (s!=(size_t)-1) {
+	for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
+	  h1d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH1D*> > > >());
+	  for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
+	    h1d_5p_[i].push_back(std::vector<std::vector<std::vector<TH1D*> > >());
+	    for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
+	      h1d_5p_[i][j].push_back(std::vector<std::vector<TH1D*> >());
+	      for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
+		h1d_5p_[i][j][k].push_back(std::vector<TH1D*>());
+		for (size_t m=0; m<pfs_[4].vec.size(); ++m)
+		  h1d_5p_[i][j][k][l].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+							 title.c_str(), nbin1, low1, high1));
+	      }
+	    }
+	  }
+	}
+	name.replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]);
+	title.replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]);
+      } else if (s2!=(size_t)-1) {
+	for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
+	  h1d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH1D*> > > >());
+	  for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
+	    h1d_5p_[i].push_back(std::vector<std::vector<std::vector<TH1D*> > >());
+	    for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
+	      h1d_5p_[i][j].push_back(std::vector<std::vector<TH1D*> >());
+	      for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
+		h1d_5p_[i][j][k].push_back(std::vector<TH1D*>());
+		for (size_t m=0; m<pfs_[4].vec.size(); ++m)
+		  h1d_5p_[i][j][k][l].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+							 title.c_str(), nbin1, low1, high1));
+	      }
+	    }
+	  }
+	}
+	name.erase(0,spec2_[s2][0].size());
+      }
+      for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
+	h2d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH2D*> > > >());
+	for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
+	  h2d_5p_[i].push_back(std::vector<std::vector<std::vector<TH2D*> > >());
+	  for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
+	    h2d_5p_[i][j].push_back(std::vector<std::vector<TH2D*> >());
+	    for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
+	      h2d_5p_[i][j][k].push_back(std::vector<TH2D*>());
+	      for (size_t m=0; m<pfs_[4].vec.size(); ++m)
+		h2d_5p_[i][j][k][l].push_back(new TH2D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+						       title.c_str(), nbin1, low1, high1, nbin2, low2, high2));
+	    }
+	  }
+	}
+      }
     }
   }
   // 3D
@@ -878,6 +972,41 @@ public:
 	  }
 	}
       }
+    } else if (npf_==5) {
+      if (s!=(size_t)-1) {
+	for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
+	  h2d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH2D*> > > >());
+	  for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
+	    h2d_5p_[i].push_back(std::vector<std::vector<std::vector<TH2D*> > >());
+	    for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
+	      h2d_5p_[i][j].push_back(std::vector<std::vector<TH2D*> >());
+	      for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
+		h2d_5p_[i][j][k].push_back(std::vector<TH2D*>());
+		for (size_t m=0; m<pfs_[4].vec.size(); ++m)
+		  h2d_5p_[i][j][k][l].push_back(new TH2D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+							 title.c_str(), nbin1, low1, high1, nbin2, low2, high2));
+	      }
+	    }
+	  }
+	}
+	name.replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]);
+	title.replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]);
+      }
+      for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
+	h3d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH3D*> > > >());
+	for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
+	  h3d_5p_[i].push_back(std::vector<std::vector<std::vector<TH3D*> > >());
+	  for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
+	    h3d_5p_[i][j].push_back(std::vector<std::vector<TH3D*> >());
+	    for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
+	      h3d_5p_[i][j][k].push_back(std::vector<TH3D*>());
+	      for (size_t m=0; m<pfs_[4].vec.size(); ++m)
+		h3d_5p_[i][j][k][l].push_back(new TH3D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+						       title.c_str(), nbin1, low1, high1, nbin2, low2, high2, nbin3, low3, high3));
+	    }
+	  }
+	}
+      }
     }
   }
   
@@ -930,6 +1059,13 @@ public:
           case 3: h3d_4p_[pfs_[0].sel()][pfs_[1].sel()][pfs_[2].sel()][pfs_[3].sel()]->Fill(fill_1d_(),fill_2d_(),fill_3d_(),weight); break;
           }
         } break;
+      case 5:
+        if (pfs_[0].sel()!=(size_t)-1&&pfs_[1].sel()!=(size_t)-1&&pfs_[2].sel()!=(size_t)-1&&pfs_[3].sel()!=(size_t)-1&&pfs_[4].sel()!=(size_t)-1) { switch (ndim_) {
+          case 1: h1d_5p_[pfs_[0].sel()][pfs_[1].sel()][pfs_[2].sel()][pfs_[3].sel()][pfs_[4].sel()]->Fill(fill_1d_(),weight); break;
+          case 2: h2d_5p_[pfs_[0].sel()][pfs_[1].sel()][pfs_[2].sel()][pfs_[3].sel()][pfs_[4].sel()]->Fill(fill_1d_(),fill_2d_(),weight); break;
+          case 3: h3d_5p_[pfs_[0].sel()][pfs_[1].sel()][pfs_[2].sel()][pfs_[3].sel()][pfs_[4].sel()]->Fill(fill_1d_(),fill_2d_(),fill_3d_(),weight); break;
+          }
+        } break;
       }
     }
   }
@@ -940,9 +1076,8 @@ public:
   
   void CalcSpecials() { calc_specials_(); }
 
-  // Calculate special histos and write them in a file
+  // Write histos in a file
   void Write() {
-    //calc_specials_();
     if (npf_==0) {
       write_(h1d_0p_);
       write_(h2d_0p_);
@@ -969,6 +1104,16 @@ public:
         for (size_t k=0; k<h2d_4p_[i][j].size(); ++k) for (size_t l=0; l<h2d_4p_[i][j][k].size(); ++l) write_(h2d_4p_[i][j][k][l]);
       for (size_t i=0; i<h3d_4p_.size(); ++i) for (size_t j=0; j<h3d_4p_[i].size(); ++j) 
         for (size_t k=0; k<h3d_4p_[i][j].size(); ++k) for (size_t l=0; l<h3d_4p_[i][j][k].size(); ++l) write_(h3d_4p_[i][j][k][l]);
+    } else if (npf_==5) {
+      for (size_t i=0; i<h1d_5p_.size(); ++i) for (size_t j=0; j<h1d_5p_[i].size(); ++j) 
+        for (size_t k=0; k<h1d_5p_[i][j].size(); ++k) for (size_t l=0; l<h1d_5p_[i][j][k].size(); ++l)
+	  for (size_t m=0; m<h1d_5p_[i][j][k][l].size(); ++m) write_(h1d_5p_[i][j][k][l][m]);
+      for (size_t i=0; i<h2d_5p_.size(); ++i) for (size_t j=0; j<h2d_5p_[i].size(); ++j) 
+        for (size_t k=0; k<h2d_5p_[i][j].size(); ++k) for (size_t l=0; l<h2d_5p_[i][j][k].size(); ++l)
+	  for (size_t m=0; m<h2d_5p_[i][j][k][l].size(); ++m) write_(h2d_5p_[i][j][k][l][m]);
+      for (size_t i=0; i<h3d_5p_.size(); ++i) for (size_t j=0; j<h3d_5p_[i].size(); ++j) 
+        for (size_t k=0; k<h3d_5p_[i][j].size(); ++k) for (size_t l=0; l<h3d_5p_[i][j][k].size(); ++l)
+	  for (size_t m=0; m<h3d_5p_[i][j][k][l].size(); ++m) write_(h3d_5p_[i][j][k][l][m]);
     }
   }
   
@@ -1207,12 +1352,18 @@ public:
 	dps.push_back({ .hvec={}, .canname="", .legtitle="" });
 	for (size_t i=0; i<pfs_[0].vec.size(); ++i) dps[dps.size()-1].hvec.push_back(h1d_3p_[i][j][k]);
 	dps[dps.size()-1].canname=name_+"_"+pf_names_[0]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k];
-	dps[dps.size()-1].legtitle=pfs_[1].leg[j]+" "+pfs_[2].leg[k];
+	dps[dps.size()-1].legtitle=pfs_[1].leg[j]+", "+pfs_[2].leg[k];
       } else if (npf_==4) for (size_t j=0; j<pfs_[1].vec.size(); ++j) for (size_t k=0; k<pfs_[2].vec.size(); ++k) for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
 	dps.push_back({ .hvec={}, .canname="", .legtitle="" });
 	for (size_t i=0; i<pfs_[0].vec.size(); ++i) dps[dps.size()-1].hvec.push_back(h1d_4p_[i][j][k][l]);
 	dps[dps.size()-1].canname=name_+"_"+pf_names_[0]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l];
-	dps[dps.size()-1].legtitle=pfs_[1].leg[j]+" "+pfs_[2].leg[k]+" "+pfs_[3].leg[l];
+	dps[dps.size()-1].legtitle=pfs_[1].leg[j]+", "+pfs_[2].leg[k]+", "+pfs_[3].leg[l];
+      } else if (npf_==5) for (size_t j=0; j<pfs_[1].vec.size(); ++j) for (size_t k=0; k<pfs_[2].vec.size(); ++k) 
+	for (size_t l=0; l<pfs_[3].vec.size(); ++l) for (size_t m=0; m<pfs_[4].vec.size(); ++m) {
+	dps.push_back({ .hvec={}, .canname="", .legtitle="" });
+	for (size_t i=0; i<pfs_[0].vec.size(); ++i) dps[dps.size()-1].hvec.push_back(h1d_5p_[i][j][k][l][m]);
+	dps[dps.size()-1].canname=name_+"_"+pf_names_[0]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[l];
+	dps[dps.size()-1].legtitle=pfs_[1].leg[j]+", "+pfs_[2].leg[k]+", "+pfs_[3].leg[l]+", "+pfs_[4].leg[l];
       }
     }
     return dps;
@@ -1235,6 +1386,9 @@ public:
       else if (npf_==4) for (size_t i=0; i<pfs_[0].vec.size(); ++i) for (size_t j=0; j<pfs_[1].vec.size(); ++j)
 	for (size_t k=0; k<pfs_[2].vec.size(); ++k) for (size_t l=0; l<pfs_[3].vec.size(); ++l)
 	  dps.push_back({ .h=h2d_4p_[i][j][k][l], .canname=name_+"_"+pf_names_[0]+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l] });
+      else if (npf_==5) for (size_t i=0; i<pfs_[0].vec.size(); ++i) for (size_t j=0; j<pfs_[1].vec.size(); ++j)
+	for (size_t k=0; k<pfs_[2].vec.size(); ++k) for (size_t l=0; l<pfs_[3].vec.size(); ++l) for (size_t m=0; m<pfs_[4].vec.size(); ++m)
+	  dps.push_back({ .h=h2d_5p_[i][j][k][l][m], .canname=name_+"_"+pf_names_[0]+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[l] });
     }
     return dps;
   }
@@ -1292,6 +1446,9 @@ public:
   std::vector<std::vector<std::vector<std::vector<TH1D*> > > >& GetH1D4P() { return h1d_4p_; }
   std::vector<std::vector<std::vector<std::vector<TH2D*> > > >& GetH2D4P() { return h2d_4p_; }
   std::vector<std::vector<std::vector<std::vector<TH3D*> > > >& GetH3D4P() { return h3d_4p_; }
+  std::vector<std::vector<std::vector<std::vector<std::vector<TH1D*> > > > >& GetH1D5P() { return h1d_5p_; }
+  std::vector<std::vector<std::vector<std::vector<std::vector<TH2D*> > > > >& GetH2D5P() { return h2d_5p_; }
+  std::vector<std::vector<std::vector<std::vector<std::vector<TH3D*> > > > >& GetH3D5P() { return h3d_5p_; }
   
 };
 
@@ -1478,6 +1635,7 @@ public:
   }
   
   void Write(std::string name = "") { 
+    std::cout<<"Writing starts "<<name.size()<<std::endl;
     if (name.size()) for (size_t i=0; i<sh_[name].size(); ++i) sh_[name][i]->Write();
     else for(std::map<std::string, std::vector<SmartHisto*> >::iterator it = sh_.begin(); it != sh_.end(); ++it)
       for (size_t i=0; i<it->second.size(); ++i) it->second[i]->Write();

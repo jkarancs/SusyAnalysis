@@ -59,7 +59,7 @@ void make_ratio_plot(TFile* f, std::string name, std::string canname, float limi
   } else {
     c->Draw();
   }
-  //c->SaveAs((std::string("/afs/cern.ch/user/j/jkarancs/public/SUSY/Analysis/Plots/2015_03_09/")+canname+".png").c_str());
+  //c->SaveAs((std::string("/afs/cern.ch/user/j/jkarancs/public/SUSY/Analysis/Plots/2015_03_16/")+canname+".png").c_str());
 }
 
 void RatioPlots() {
@@ -79,18 +79,22 @@ void RatioPlots() {
   //make_ratio_plot(f, "AK8JetR/SideBand,Signal_DPhiAbove2p8",          "R_HTallBins_DPhiAbove2p8", 1);
   
   // 03/09
-  TFile *f = TFile::Open("ROOT_output/SignalCutPlots_RAbove0p45_DPhiBelow3p2_HtAllAbove1200.root");
-  make_ratio_plot(f, "R/CutHtAll_TTBar",                              "Ratio_R_HtAllBins_TTbar", 100000);
-  make_ratio_plot(f, "R/CutHtAll_QCD_HT",                             "Ratio_R_HtAllBins_QCD", 100000);
-  //make_ratio_plot(f, "HtAll/CutR_TTBar",                              "HtAll_RBins_TTbar", 100000);
-  //make_ratio_plot(f, "HtAll/CutR_QCD_HT",                             "HtAll_RBins_QCD", 100000);
-  f->Close();
+  //TFile *f = TFile::Open("ROOT_output/SignalCutPlots_RAbove0p45_DPhiBelow3p2_HtAllAbove1200.root");
+  //make_ratio_plot(f, "R/CutHtAll_TTBar",                              "Ratio_R_HtAllBins_TTbar", 100000);
+  //make_ratio_plot(f, "R/CutHtAll_QCD_HT",                             "Ratio_R_HtAllBins_QCD", 100000);
+  ////make_ratio_plot(f, "HtAll/CutR_TTBar",                              "HtAll_RBins_TTbar", 100000);
+  ////make_ratio_plot(f, "HtAll/CutR_QCD_HT",                             "HtAll_RBins_QCD", 100000);
+  //f->Close();
   
-  // 03/10
+  // 03/16
   TFile *f = TFile::Open("ROOT_output/SignalCutPlots_RAbove0p4_DPhiBelow2p8_HtAllAbove0.root");
-  make_ratio_plot(f, "R/CutDPhi_TTBar",                              "Ratio_R_DPhiBins_TTbar", 100000);
-  make_ratio_plot(f, "R/CutDPhi_QCD_HT",                             "Ratio_R_DPhiBins_QCD", 100000);
+  make_ratio_plot(f, "R/CutDPhi_2HadTop_TTBar",                       "Ratio_R_DPhiBins_TTbar", 100000);
+  make_ratio_plot(f, "R/CutDPhi_2HadTop_QCD_HT",                      "Ratio_R_DPhiBins_QCD",   100000);
+  make_ratio_plot(f, "R/CutDPhi_2HadTop_WJets_HT",                    "Ratio_R_DPhiBins_WJets", 100000);
+  make_ratio_plot(f, "R/CutDPhi_2HadTop_ZJets_HT",                    "Ratio_R_DPhiBins_ZJets", 100000);
   
-  
+  make_ratio_plot(f, "R/NTopHad_DPhiBelow2p8_TTBar",                   "Ratio_R_NTopBins_TTbar", 100000);
+  make_ratio_plot(f, "R/NTopHad_DPhiBelow2p8_QCD_HT",                  "Ratio_R_NTopBins_QCD",   100000);
+  make_ratio_plot(f, "R/NTopHad_DPhiBelow2p8_WJets_HT",                "Ratio_R_NTopBins_WJets", 100000);
+  make_ratio_plot(f, "R/NTopHad_DPhiBelow2p8_ZJets_HT",                "Ratio_R_NTopBins_ZJets", 100000);
 }
-
