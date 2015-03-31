@@ -61,14 +61,14 @@ void get_yields(std::string fname, std::vector<std::string>& samples, size_t nsi
 std::vector<TH3D*> get_best_cuts_(std::string fname, std::vector<std::string>& samples, size_t nsig,
                                   std::string xname, std::string yname, std::string zname,
                                   std::string xvarname, std::string yvarname, std::string zvarname,
-                                  bool xlowcut, bool ylowcut, bool zlowcut) {
+                                  bool xlowcut, bool ylowcut, bool zlowcut, std::string pf="") {
   std::vector<TH3D*> vh;
   std::string name = zname + "_vs_" + yname + "_vs_" + xname+"/";
   TFile* f = TFile::Open(fname.c_str());
   int nx=0, ny=0, nz=0;
   // Make cumulative plots for each samples
   for (size_t i=0; i<samples.size(); ++i) {
-    TH3D* h = (TH3D*)f->Get((name+samples[i]).c_str());
+    TH3D* h = (TH3D*)f->Get((name+samples[i]+pf).c_str());
     vh.push_back((TH3D*)h->Clone());
     // Make cumulative Histos depending on the applied cut
     // lowcut --> bin low edge is the cut, everything else is summed up
@@ -250,6 +250,7 @@ int main() {
   newsamples.push_back("QCD_Pt_bcToE");
   newsamples.push_back("TTBar");
   newsamples.push_back("GJets_HT");
+  //newsamples.push_back("GGJets_M");
   //newsamples.push_back("WJets");
   newsamples.push_back("WJets_HT");
   newsamples.push_back("T_tW");
@@ -257,7 +258,6 @@ int main() {
   newsamples.push_back("ZJets_HT");
   //newsamples.push_back("DYJets");
   newsamples.push_back("DYJets_HT");
-  //newsamples.push_back("GGJets_M");
   
   std::vector<std::string> newsamples2;
   //newsamples2.push_back("T5ttttDeg_4bodydec_mGo1300");
@@ -268,6 +268,7 @@ int main() {
   //newsamples2.push_back("QCD_Pt_bcToE");
   newsamples2.push_back("TTBar");
   newsamples2.push_back("GJets_HT");
+  //newsamples2.push_back("GGJets_M");
   //newsamples2.push_back("WJets");
   newsamples2.push_back("WJets_HT");
   newsamples2.push_back("T_tW");
@@ -275,7 +276,6 @@ int main() {
   newsamples2.push_back("ZJets_HT");
   //newsamples2.push_back("DYJets");
   //newsamples2.push_back("DYJets_HT");
-  //newsamples2.push_back("GGJets_M");
 
   std::string pfnames = "";
   for (auto sample : newsamples) pfnames += sample +";";
@@ -290,6 +290,7 @@ int main() {
   latexnames +="QCD (Pt bins, b/c#rightarrowe);";
   latexnames +="t#bar{t};";
   latexnames +="G+Jets (HT bins);";
+  //latexnames +="GG+Jets (M bins);";
   //latexnames +="W+Jets #rightarrow l+#nu;";
   latexnames +="W+Jets #rightarrow l+#nu (HT bins);";
   latexnames +="single t/#bar{t} (tW channel);";
@@ -297,10 +298,10 @@ int main() {
   latexnames +="Z+Jets #rightarrow #nu#nu (HT bins);";
   //latexnames +="DY+Jets #rightarrow l+l;";
   latexnames +="DY+Jets #rightarrow l+l (HT bins);";
-  //latexnames +="GG+Jets (M bins);";
   latexnames = latexnames.substr(0, latexnames.size()-1);
   //std::string colors = "1,14,4,2,804,3,617,401";
-  std::string colors = "1,14,4,38,2,804,3,617,882,401,797";
+  //std::string colors = "1,14,4,38,2,804,3,617,882,401,797";
+  std::string colors = "1,14,4,38,804,2,3,617,882,401,797";
   
   // Remake Cut dependant distributions
 #define CUTR 0.4
@@ -317,6 +318,7 @@ int main() {
   Data d;
   SmartHistos sh;
   sh.AddHistoType("post");
+  sh.AddHistoType("post2");
   
   double weight = 0;
   sh.SetHistoWeights({[&weight](){ return weight; }});
@@ -326,12 +328,14 @@ int main() {
   sh.AddNewPostfix("CutR",           [&d](){ return d.evt.R > CUTR;                  },  pf1, lat1, "4,2");
   sh.AddNewPostfix("CutDPhi",        [&d](){ return fabs(d.evt.TTHadDPhi) > CUTDPHI; },  pf2, lat2, "4,2");
   sh.AddNewPostfix("CutHtAll",       [&d](){ return d.evt.HTall > CUTHTALL;          },  pf3, lat3, "4,2");
-  sh.AddNewPostfix("NTopHad",        [&d](){ return (d.evt.NTopHad>1); }, "0To1HadTop;2HadTop", "N_{top,hadronic}<2;N_{top,hadronic}=2", "4,2");
+  sh.AddNewPostfix("NTopHad",        [&d](){ return (d.evt.NTopHad>1)+(d.evt.NTopHad>2); }, "0To1HadTop;2HadTop;3HadTop", "N_{top,hadronic}<2;N_{top,hadronic}=2;N_{top,hadronic}=3", "4,2,3");
   
-  sh.AddNewFillParam("R",           { .nbin= 100, .low=   0,   .high=    1, .fill=[&d](){ return d.evt.R;                }, .axis_title="R"});
-  sh.AddNewFillParam("DPhi",        { .nbin=  16, .low=   0,   .high=  3.2, .fill=[&d](){ return fabs(d.evt.TTHadDPhi);  }, .axis_title="|#Delta#phi_{t#bar{t}}|"});
-  sh.AddNewFillParam("HtAll",       { .nbin=  50, .low=   0,   .high=10000, .fill=[&d](){ return d.evt.HTall;            }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
-  sh.AddNewFillParam("HtAllCoarse", { .nbin=  20, .low=   0,   .high= 6000, .fill=[&d](){ return d.evt.HTall;            }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
+  sh.AddNewFillParam("R",           { .nbin= 100, .bins={   0,       1}, .fill=[&d](){ return d.evt.R;                }, .axis_title="R"});
+  sh.AddNewFillParam("DPhi",        { .nbin=  16, .bins={   0,     3.2}, .fill=[&d](){ return fabs(d.evt.TTHadDPhi);  }, .axis_title="|#Delta#phi_{t#bar{t}}|"});
+  sh.AddNewFillParam("HtAll",       { .nbin=  50, .bins={   0,   10000}, .fill=[&d](){ return d.evt.HTall;            }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
+  sh.AddNewFillParam("HtAllCoarse", { .nbin=  20, .bins={   0,    6000}, .fill=[&d](){ return d.evt.HTall;            }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
+  sh.AddNewFillParam("RCoarse",     { .nbin=  10, .bins={   0,    1.25}, .fill=[&d](){ return d.evt.R;                }, .axis_title="R"});
+  sh.AddNewFillParam("MR",          { .nbin=  16, .bins={300, 350, 400, 450, 500, 550, 600, 650, 700, 800, 900, 1000, 1200, 1600, 2000, 2800, 3500}, .fill=[&d](){ return d.evt.MR;               }, .axis_title="M_{R} (GeV)"});
   
   // N-(1,2,3) plots
   sh.AddHistos("post",   { .fill="R",               .pfs={"AllSamples","NTopHad"},                .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
@@ -391,8 +395,11 @@ int main() {
   sh.AddHistos("post",   { .fill="HtAll",     .pfs={"NTopHad","CutR","CutDPhi",    "AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
   sh.AddHistos("post",   { .fill="HtAll",     .pfs={"NTopHad","CutDPhi","CutR",    "AllSamples"}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
   
+  // Razor fit 2D plots
+  sh.AddHistos("post2",   { .fill="RCoarse_vs_MR", .pfs={"CutDPhi", "NTopHad","AllSamples"}, .cuts={}, .draw="", .opt="", .ranges={0,0, 0,0, 0,0} });
+  
   std::string R = "RFine";
-
+  
   // Make tables
   //get_yields("ROOT_output/CutTest_R0p35_DPhi2p8_HTall1500_fullstat.root", samples, "H_Tall/", "RAbove0p35", "DPhiBelow2p8", "HTallAbove1500", "R", "DPhi", "HTall");
   //get_yields("ROOT_output/CutTest_R0p3_DPhi2p8_HTall1500_fullstat.root", samples, "H_Tall/", "RAbove0p3", "DPhiBelow2p8", "HTallAbove1500", "R", "DPhi", "HTall");
@@ -412,13 +419,17 @@ int main() {
   get_best_cuts_("ROOT_output/CutTest_NewSamples_fullstat.root",                                 newsamples,  2, R, "TTHadDPhiFine", "HtAllFine", "R", "DPhi", "HTall", 1, 0, 1);
   get_best_cuts_("ROOT_output/BackGroundEstimate_NTopHadSideBand_TightLeptonVeto_fullstat.root", newsamples,  2, R, "TTHadDPhiFine", "HtAllFine", "R", "DPhi", "HTall", 1, 0, 1);
   get_best_cuts_("ROOT_output/BackGroundEstimate_NTopHadSideBand_LeptonVeto_fullstat.root",      newsamples,  2, R, "TTHadDPhiFine", "HtAllFine", "R", "DPhi", "HTall", 1, 0, 1);
+  get_best_cuts_("ROOT_output/BackGroundEstimate_NTopHadSideBand_NoLeptonVeto_50MassCut_fullstat.root",      newsamples,  2, R, "TTHadDPhiFine", "HtAllFine", "R", "DPhi", "HTall", 1, 0, 1, "_2HadTop");
   
   //TFile* f = TFile::Open("ROOT_output/CutTest_NewSamples_fullstat.root");
   //TFile* f = TFile::Open("ROOT_output/CutTest_NewSamples_NoLepTop_fullstat.root");
   //TFile* f = TFile::Open("ROOT_output/BackGroundEstimate_NTopHadSideBand_TightLeptonVeto_fullstat.root");
-  TFile* f = TFile::Open("ROOT_output/BackGroundEstimate_NTopHadSideBand_LeptonVeto_fullstat.root");
+  //TFile* f = TFile::Open("ROOT_output/BackGroundEstimate_NTopHadSideBand_LeptonVeto_fullstat.root");
+  //TFile* f = TFile::Open("ROOT_output/BackGroundEstimate_NTopHadSideBand_TightLeptonVeto_50MassCut_fullstat.root");
+  TFile* f = TFile::Open("ROOT_output/BackGroundEstimate_NTopHadSideBand_NoLeptonVeto_50MassCut_fullstat.root");
   int xlowcut = 1, ylowcut = 0, zlowcut=1;
   for (iSample=0; iSample<newsamples.size(); ++iSample) {
+  //for (iSample=2; iSample==2; ++iSample) {
     std::cout<<"Start filling plots for "<<newsamples[iSample]<<"\n";
     TH3D* h1 = (TH3D*)f->Get((std::string("HtAllFine_vs_TTHadDPhiFine_vs_")+R+"/"+newsamples[iSample]+"_0HadTop").c_str());
     TH3D* h2 = (TH3D*)f->Get((std::string("HtAllFine_vs_TTHadDPhiFine_vs_")+R+"/"+newsamples[iSample]+"_1HadTop").c_str());
@@ -445,6 +456,35 @@ int main() {
           d.evt.HTall = h3->GetZaxis()->GetBinCenter(binz);
           d.evt.NTopHad = 2;
           sh.Fill("post");
+        }
+      }
+    }
+    h1 = (TH3D*)f->Get((std::string("MRFine_vs_TTHadDPhiFine_vs_RFine/")+newsamples[iSample]+"_0HadTop").c_str());
+    h2 = (TH3D*)f->Get((std::string("MRFine_vs_TTHadDPhiFine_vs_RFine/")+newsamples[iSample]+"_1HadTop").c_str());
+    h3 = (TH3D*)f->Get((std::string("MRFine_vs_TTHadDPhiFine_vs_RFine/")+newsamples[iSample]+"_2HadTop").c_str());
+    nx = h1->GetNbinsX(), ny = h1->GetNbinsY(), nz = h1->GetNbinsZ();
+    for (int binx=(xlowcut ? nx : 1); xlowcut ? (binx>=1) : (binx<=nx); xlowcut ? --binx : ++binx) {
+      for (int biny=(ylowcut ? ny : 1); ylowcut ? (biny>=1) : (biny<=ny); ylowcut ? --biny : ++biny) {
+        for (int binz=(zlowcut ? nz : 1); zlowcut ? (binz>=1) : (binz<=nz); zlowcut ? --binz : ++binz) {
+	  // MR plots
+          weight = h1->GetBinContent(binx,biny,binz);
+          d.evt.R = h1->GetXaxis()->GetBinCenter(binx);
+          d.evt.TTHadDPhi = h1->GetYaxis()->GetBinCenter(biny);
+          d.evt.MR = h1->GetZaxis()->GetBinCenter(binz);
+          d.evt.NTopHad = 0;
+          sh.Fill("post2");
+          weight = h2->GetBinContent(binx,biny,binz);
+          d.evt.R = h2->GetXaxis()->GetBinCenter(binx);
+          d.evt.TTHadDPhi = h2->GetYaxis()->GetBinCenter(biny);
+          d.evt.MR = h2->GetZaxis()->GetBinCenter(binz);
+          d.evt.NTopHad = 1;
+          sh.Fill("post2");
+          weight = h3->GetBinContent(binx,biny,binz);
+          d.evt.R = h3->GetXaxis()->GetBinCenter(binx);
+          d.evt.TTHadDPhi = h3->GetYaxis()->GetBinCenter(biny);
+          d.evt.MR = h3->GetZaxis()->GetBinCenter(binz);
+          d.evt.NTopHad = 2;
+          sh.Fill("post2");
         }
       }
     }

@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
   // Specify the output root filename
   // Rest of the arguments are treated as files added
   // Note:
-  // If using postfixes with the v.pf_fila_add variable
+  // If using postfixes with the v.pf_file_add variable
   // each added file will increase this variable so when using *
   // add ""-s so instead of the shell TChain will parse the argument
   bool is_i = false;
@@ -72,44 +72,44 @@ int main(int argc, char* argv[]) {
       samples.AddSample("QCD_HT", "QCD (HT bins)", "4",
         		{ { .dir=sample_dir+"QCD_HT-100To250/*.root",  .xsec_pb=28730000 },
                           { .dir=sample_dir+"QCD_HT_250To500/*.root",  .xsec_pb=670500 },
-            	          { .dir=sample_dir+"QCD_HT-500To1000/*.root", .xsec_pb=26740 },
-            	          { .dir=sample_dir+"QCD_HT_1000ToInf/*.root", .xsec_pb=769.7 } });
-      samples.AddSample("QCD_Pt_bcToE", "QCD (Pt bins, b/c#rightarrowe)", "38",
-                        { { .dir=sample_dir+"QCD_Pt_20to30_bcToE/*.root",   .xsec_pb=675900000 },
-                          { .dir=sample_dir+"QCD_Pt_30to80_bcToE/*.root",   .xsec_pb=185900000 },
-                          { .dir=sample_dir+"QCD_Pt_80to170_bcToE/*.root",  .xsec_pb=3495000 },
-                          { .dir=sample_dir+"QCD_Pt_170toInf_bcToE/*.root", .xsec_pb=128500 } });
-      samples.AddSample("TTBar", "t#bar{t}", "2", { { .dir=sample_dir+"TT/*.root", .xsec_pb=806.1 } });
+			  { .dir=sample_dir+"QCD_HT-500To1000/*.root", .xsec_pb=26740 }, //
+            	          { .dir=sample_dir+"QCD_HT_1000ToInf/*.root", .xsec_pb=769.7 } }); //
+      //samples.AddSample("QCD_Pt_bcToE", "QCD (Pt bins, b/c#rightarrowe)", "38",
+      //                  { { .dir=sample_dir+"QCD_Pt_20to30_bcToE/*.root",   .xsec_pb=675900000 },
+      //                    { .dir=sample_dir+"QCD_Pt_30to80_bcToE/*.root",   .xsec_pb=185900000 },
+      //                    { .dir=sample_dir+"QCD_Pt_80to170_bcToE/*.root",  .xsec_pb=3495000 },
+      //                    { .dir=sample_dir+"QCD_Pt_170toInf_bcToE/*.root", .xsec_pb=128500 } }); //
+      samples.AddSample("TTBar", "t#bar{t}", "2", { { .dir=sample_dir+"TT/*.root", .xsec_pb=806.1 } }); //
       samples.AddSample("GJets_HT", "G+Jets (HT bins)", "804",
                         { { .dir=sample_dir+"GJets_HT-100to200/*.root",    .xsec_pb=1534 },
                           { .dir=sample_dir+"GJets_HT-200to400/*.root",    .xsec_pb=489.9 },
-                          { .dir=sample_dir+"GJets_HT-400to600/*.root",    .xsec_pb=62.05 },
-                          { .dir=sample_dir+"GJets_HT-600toInf/*.root",    .xsec_pb=20.87 } });
+                          { .dir=sample_dir+"GJets_HT-400to600/*.root",    .xsec_pb=62.05 }, //
+                          { .dir=sample_dir+"GJets_HT-600toInf/*.root",    .xsec_pb=20.87 } }); //
       //samples.AddSample("WJets", "W+Jets #rightarrow l+#nu", "3", { { .dir=sample_dir+"WJetsToLNu/*.root", .xsec_pb=61526.7 } });
       samples.AddSample("WJets_HT", "W+Jets #rightarrow l+#nu (HT bins)", "3",
         		{ { .dir=sample_dir+"WJetsToLNu_HT-100to200/*.root", .xsec_pb=2234.9 },
         		  { .dir=sample_dir+"WJetsToLNu_HT-200to400/*.root", .xsec_pb=580.1 }, 
         		  { .dir=sample_dir+"WJetsToLNu_HT-400to600/*.root", .xsec_pb=68.4 },
-            	          { .dir=sample_dir+"WJetsToLNu_HT-600toInf/*.root", .xsec_pb=23.14 } });
+            	          { .dir=sample_dir+"WJetsToLNu_HT-600toInf/*.root", .xsec_pb=23.14 } }); //
       samples.AddSample("T_tW", "single t/#bar{t} (tW channel)", "617",
-                        { { .dir=sample_dir+"T_tW-channel/*.root", .xsec_pb=35 },
-                          { .dir=sample_dir+"Tbar_tW-channel/*.root", .xsec_pb=35 } });
-      samples.AddSample("TToLep_s_t", "single t/#bar{t}#rightarrowl (s,t channel)", "882",
-                        { { .dir=sample_dir+"TToLeptons_s-channel/*.root",    .xsec_pb=2 },
-                          { .dir=sample_dir+"TBarToLeptons_s-channel/*.root", .xsec_pb=1 },
-                          { .dir=sample_dir+"TToLeptons_t-channel/*.root",    .xsec_pb=103.4 },
-                          { .dir=sample_dir+"TBarToLeptons_t-channel/*.root", .xsec_pb=61.6 } });
+                        { { .dir=sample_dir+"T_tW-channel/*.root", .xsec_pb=35 }, //
+                          { .dir=sample_dir+"Tbar_tW-channel/*.root", .xsec_pb=35 } }); //
+      //samples.AddSample("TToLep_s_t", "single t/#bar{t}#rightarrowl (s,t channel)", "882",
+      //                  { { .dir=sample_dir+"TToLeptons_s-channel/*.root",    .xsec_pb=2 }, //
+      //                    { .dir=sample_dir+"TBarToLeptons_s-channel/*.root", .xsec_pb=1 },
+      //                    { .dir=sample_dir+"TToLeptons_t-channel/*.root",    .xsec_pb=103.4 }, //
+      //                    { .dir=sample_dir+"TBarToLeptons_t-channel/*.root", .xsec_pb=61.6 } });
       samples.AddSample("ZJets_HT", "Z+Jets #rightarrow #nu#nu (HT bins)", "401",
         		{ { .dir=sample_dir+"ZJetsToNuNu_HT-100to200/*.root", .xsec_pb=372.6 },
         		  { .dir=sample_dir+"ZJetsToNuNu_HT-200to400/*.root", .xsec_pb=100.8 }, 
         		  { .dir=sample_dir+"ZJetsToNuNu_HT-400to600/*.root", .xsec_pb=11.99 },
-            	          { .dir=sample_dir+"ZJetsToNuNu_HT-600toInf/*.root", .xsec_pb=4.113 } });
+            	          { .dir=sample_dir+"ZJetsToNuNu_HT-600toInf/*.root", .xsec_pb=4.113 } }); //
       //samples.AddSample("DYJets", "DY+Jets #rightarrow l+l", "797", { { .dir=sample_dir+"DYJetsToLL/*.root", .xsec_pb=4746 } });
       samples.AddSample("DYJets_HT", "DY+Jets #rightarrow l+l (HT bins)", "797",
                         { { .dir=sample_dir+"DYJetsToLL_M-50_HT-100to200/*.root", .xsec_pb=194.3 },
                           { .dir=sample_dir+"DYJetsToLL_M-50_HT-200to400/*.root", .xsec_pb=52.24 },
-                          { .dir=sample_dir+"DYJetsToLL_M-50_HT-400to600/*.root", .xsec_pb=6.546 },
-                          { .dir=sample_dir+"DYJetsToLL_M-50_HT-600toInf/*.root", .xsec_pb=2.179 } });
+                          { .dir=sample_dir+"DYJetsToLL_M-50_HT-400to600/*.root", .xsec_pb=6.546 }, //
+                          { .dir=sample_dir+"DYJetsToLL_M-50_HT-600toInf/*.root", .xsec_pb=2.179 } }); //
       //samples.AddSample("GGJets_M", "GG+Jets (M bins)", "803",
       //  		{ { .dir=sample_dir+"GGJets_M-200To500/*.root",    .xsec_pb=2.43383 },
       //  		  { .dir=sample_dir+"GGJets_M-500To1000/*.root",   .xsec_pb=0.172872 },
@@ -144,6 +144,7 @@ int main(int argc, char* argv[]) {
   sh.AddNewPostfix("ttbar,qcd",                 [&looper](){ return looper.it_sample; }, "ttbar;qcd", "t#bar{t};QCD", "2,6");
   sh.AddNewPostfix("ttbar,qcd,Susy3,Susy4",     [&looper](){ return looper.it_sample; }, "ttbar;qcd;susy3body;susy4body", "t#bar{t};QCD;T5tttt - 3body;T5tttt - 4body", "2,6,4,3");
   sh.AddNewPostfix("AllSamples",                [&looper,&dir_to_index](){ return dir_to_index[looper.it_sample]; }, samples.GetPFNames(), samples.GetLatexNames(), samples.GetColors());
+  sh.AddNewPostfix("Samples",                   [&looper](){ return looper.it_sample; }, "[0to50]", "Sample [0to50]", "1-51");
   //const char* Samples = "ttbar,qcd,Susy3,Susy4";
   const char* Samples = "AllSamples";
   
@@ -156,7 +157,8 @@ int main(int argc, char* argv[]) {
   sh.AddNewPostfix("HtAll1200",       [&d](){ return d.evt.HTall > 1200; },  "HtAllBelow1200;HtAllAbove1200", "H_{T,all} < 1200;H_{T,all} > 1200", "4,2"); // Best cut
   sh.AddNewPostfix("HtAll1450",       [&d](){ return d.evt.HTall > 1450; },  "HtAllBelow1450;HtAllAbove1450", "H_{T,all} < 1450;H_{T,all} > 1450", "4,2"); // Best cut
   sh.AddNewPostfix("HtAll1500",       [&d](){ return d.evt.HTall > 1500; },  "HtAllBelow1500;HtAllAbove1500", "H_{T,all} < 1500;H_{T,all} > 1500", "4,2");
-  sh.AddNewPostfix("NTopHad",         [&d](){ return d.evt.NTopHad; },     "[0to3]HadTop", "N_{top,hadronic}==[0to3]", "1-4");
+  //sh.AddNewPostfix("NTopHad",         [&d](){ return d.evt.NTopHad; },     "[0to3]HadTop", "N_{top,hadronic}==[0to3]", "1-4");
+  sh.AddNewPostfix("NTopHad",         [&d](){ return (d.evt.NTopHad>1)+(d.evt.NTopHad>2); }, "0To1HadTop;2HadTop", "N_{top,hadronic}<2;N_{top,hadronic}=2", "4,2");
   
   //sh.AddNewPostfix("ttbar,Susy3,Susy4", &looper.it_sample, "ttbar;susy3body;susy4body", "SM t#bar{t};T5tttt - 3body;T5tttt - 4body", "2,4,3");
   sh.AddNewPostfix("AK4JetsPtOrdered", [&d](){ return d.jetsAK4.it; }, "Jet[1to10]", "1st Jet;2nd Jet;3rd Jet;[4to10]th Jet", "1-10");
@@ -165,91 +167,94 @@ int main(int argc, char* argv[]) {
   
   // Define histo parameters and filling variable
   // X/Y/Z - axis parameters:
-  sh.AddNewFillParam("MuEnergy",          { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.mu.E[NLEP];              }, .axis_title="Muon Energy (GeV)"});
-  sh.AddNewFillParam("MuPt",              { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.mu.Pt[NLEP];             }, .axis_title="Muon p_{T} (GeV/c)"});
-  sh.AddNewFillParam("MuDRJet",           { .nbin=  50, .low=   0,   .high=   5, .fill=[&d](){ return d.evt.MuDRJet[d.mu.it];    }, .axis_title="#DeltaR (#mu, jet)"});
-  sh.AddNewFillParam("MuRelPtJet",        { .nbin= 100, .low=   0,   .high= 500, .fill=[&d](){ return d.evt.MuRelPtJet[d.mu.it]; }, .axis_title="p_{T}^{rel} (#mu, jet) (GeV/c)"});
-  sh.AddNewFillParam("MuJetCombMass",     { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.evt.MuJetCombMass[d.mu.it]; }, .axis_title="Mass_{#mu+jet comb.} (GeV/c^{2})"});
+  sh.AddNewFillParam("Sample",            { .nbin= 50,  .bins={   0,     50}, .fill=[&looper](){ return looper.it_sample;     }, .axis_title="iSample"});
   
-  sh.AddNewFillParam("EleEnergy",         { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.ele.E[NLEP];              }, .axis_title="Electron Energy (GeV)"});
-  sh.AddNewFillParam("ElePt",             { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.ele.Pt[NLEP];             }, .axis_title="Electron p_{T} (GeV/c)"});
-  sh.AddNewFillParam("EleDRJet",          { .nbin=  50, .low=   0,   .high=   5, .fill=[&d](){ return d.evt.EleDRJet[d.ele.it];   }, .axis_title="#DeltaR (e, jet)"});
-  sh.AddNewFillParam("EleRelPtJet",       { .nbin= 100, .low=   0,   .high= 500, .fill=[&d](){ return d.evt.EleRelPtJet[d.ele.it];}, .axis_title="p_{T}^{rel} (e, jet) (GeV/c)"});
-  sh.AddNewFillParam("EleJetCombMass",    { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.evt.EleJetCombMass[d.ele.it]; }, .axis_title="Mass_{e+jet comb.} (GeV/c^{2})"});
+  sh.AddNewFillParam("MuEnergy",          { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.mu.E[NLEP];              }, .axis_title="Muon Energy (GeV)"});
+  sh.AddNewFillParam("MuPt",              { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.mu.Pt[NLEP];             }, .axis_title="Muon p_{T} (GeV/c)"});
+  sh.AddNewFillParam("MuDRJet",           { .nbin=  50, .bins={   0,      5}, .fill=[&d](){ return d.evt.MuDRJet[d.mu.it];    }, .axis_title="#DeltaR (#mu, jet)"});
+  sh.AddNewFillParam("MuRelPtJet",        { .nbin= 100, .bins={   0,    500}, .fill=[&d](){ return d.evt.MuRelPtJet[d.mu.it]; }, .axis_title="p_{T}^{rel} (#mu, jet) (GeV/c)"});
+  sh.AddNewFillParam("MuJetCombMass",     { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.evt.MuJetCombMass[d.mu.it]; }, .axis_title="Mass_{#mu+jet comb.} (GeV/c^{2})"});
   
-  sh.AddNewFillParam("MetPt",             { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.met.Pt;                   }, .axis_title="MET p_{T} (GeV/c)"});
+  sh.AddNewFillParam("EleEnergy",         { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.ele.E[NLEP];              }, .axis_title="Electron Energy (GeV)"});
+  sh.AddNewFillParam("ElePt",             { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.ele.Pt[NLEP];             }, .axis_title="Electron p_{T} (GeV/c)"});
+  sh.AddNewFillParam("EleDRJet",          { .nbin=  50, .bins={   0,      5}, .fill=[&d](){ return d.evt.EleDRJet[d.ele.it];   }, .axis_title="#DeltaR (e, jet)"});
+  sh.AddNewFillParam("EleRelPtJet",       { .nbin= 100, .bins={   0,    500}, .fill=[&d](){ return d.evt.EleRelPtJet[d.ele.it];}, .axis_title="p_{T}^{rel} (e, jet) (GeV/c)"});
+  sh.AddNewFillParam("EleJetCombMass",    { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.evt.EleJetCombMass[d.ele.it]; }, .axis_title="Mass_{e+jet comb.} (GeV/c^{2})"});
   
-  sh.AddNewFillParam("AK4JetEnergy",      { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK4.E[NJET];          }, .axis_title="AK4-jet Energy (GeV)"});
-  sh.AddNewFillParam("AK4JetPt",          { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK4.Pt[NJET];         }, .axis_title="AK4-jet p_{T} (GeV/c)"});
-  sh.AddNewFillParam("AK4JetMass",        { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK4.Mass[NJET];       }, .axis_title="AK4-jet Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("MetPt",             { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.met.Pt;                   }, .axis_title="MET p_{T} (GeV/c)"});
+  
+  sh.AddNewFillParam("AK4JetEnergy",      { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK4.E[NJET];          }, .axis_title="AK4-jet Energy (GeV)"});
+  sh.AddNewFillParam("AK4JetPt",          { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK4.Pt[NJET];         }, .axis_title="AK4-jet p_{T} (GeV/c)"});
+  sh.AddNewFillParam("AK4JetMass",        { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK4.Mass[NJET];       }, .axis_title="AK4-jet Mass (GeV/c^{2})"});
   
   // Jets
   // AK8
-  sh.AddNewFillParam("NJet",           { .nbin=  21, .low=-0.5,   .high=20.5, .fill=[&d](){ return d.jetsAK8.size;                       }, .axis_title="N_{AK8-jet}"});
-  sh.AddNewFillParam("NJetSelected",   { .nbin=  21, .low=-0.5,   .high=20.5, .fill=[&d](){ return d.evt.NTopHad+d.evt.NTopLep;          }, .axis_title="N_{Hadronic AK8-jet}"});
-  sh.AddNewFillParam("NJetHadronic",   { .nbin=  21, .low=-0.5,   .high=20.5, .fill=[&d](){ return d.evt.NTopHad;                        }, .axis_title="N_{Hadronic AK8-jet}"});
-  sh.AddNewFillParam("NJetLeptonic",   { .nbin=  21, .low=-0.5,   .high=20.5, .fill=[&d](){ return d.evt.NTopLep;                        }, .axis_title="N_{Leptonic AK8-jet}"});
-  sh.AddNewFillParam("JetEnergy",      { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.E[NJET];                    }, .axis_title="AK8-jet Energy (GeV)"});
-  sh.AddNewFillParam("JetPt",          { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.Pt[NJET];                   }, .axis_title="AK8-jet p_{T} (GeV/c)"});
-  sh.AddNewFillParam("JetMass",        { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.Mass[NJET];                 }, .axis_title="AK8-jet Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("JetPrunedMass",  { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.prunedMass[NJET];           }, .axis_title="AK8-jet Pruned Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("JetPrunedMassCoarse",{ .nbin= 200, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.prunedMass[NJET];           }, .axis_title="AK8-jet Pruned Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("JetFilteredMass",{ .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.filteredMass[NJET];         }, .axis_title="AK8-jet Filtered Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("JetTrimmedMass", { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.trimmedMass[NJET];          }, .axis_title="AK8-jet Trimmed Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("JetTopMass",     { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.topMass[NJET];              }, .axis_title="AK8-jet Top Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("JetMinMass",     { .nbin= 400, .low=   0,   .high=2000, .fill=[&d](){ return d.jetsAK8.minmass[NJET];              }, .axis_title="AK8-jet Min. Subjet-pair Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("JetNSubJets",    { .nbin=  11, .low=-0.5,   .high=10.5, .fill=[&d](){ return d.jetsAK8.nSubJets[NJET];             }, .axis_title="AK8-jet N_{subjet}"});
-  sh.AddNewFillParam("JetTau1",        { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetsAK8.tau1[NJET];                 }, .axis_title="#tau_{1}"});
-  sh.AddNewFillParam("JetTau2",        { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetsAK8.tau2[NJET];                 }, .axis_title="#tau_{2}"});
-  sh.AddNewFillParam("JetTau3",        { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetsAK8.tau3[NJET];                 }, .axis_title="#tau_{3}"});
-  sh.AddNewFillParam("JetTau21",       { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetsAK8.tau2[NJET]/d.jetsAK8.tau1[NJET];   }, .axis_title="#tau_{3}/#tau_{1}"});
-  sh.AddNewFillParam("JetTau31",       { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetsAK8.tau3[NJET]/d.jetsAK8.tau1[NJET];   }, .axis_title="#tau_{3}/#tau_{1}"});
-  sh.AddNewFillParam("JetTau32",       { .nbin= 100, .low=   0,   .high=   1, .fill=[&d](){ return d.jetsAK8.tau3[NJET]/d.jetsAK8.tau2[NJET];   }, .axis_title="#tau_{3}/#tau_{2}"});
-  sh.AddNewFillParam("JetTau21Coarse", { .nbin=  50, .low=   0,   .high=   1, .fill=[&d](){ return d.jetsAK8.tau2[NJET]/d.jetsAK8.tau1[NJET];   }, .axis_title="#tau_{2}/#tau_{1}"});
-  sh.AddNewFillParam("JetTau31Coarse", { .nbin=  50, .low=   0,   .high=   1, .fill=[&d](){ return d.jetsAK8.tau3[NJET]/d.jetsAK8.tau1[NJET];   }, .axis_title="#tau_{3}/#tau_{1}"});
-  sh.AddNewFillParam("JetTau32Coarse", { .nbin=  50, .low=   0,   .high=   1, .fill=[&d](){ return d.jetsAK8.tau3[NJET]/d.jetsAK8.tau2[NJET];   }, .axis_title="#tau_{3}/#tau_{2}"});
-  sh.AddNewFillParam("JetDRLep",       { .nbin=  50, .low=   0,   .high=   5, .fill=[&d](){ return d.evt.DRJetLep[d.jetsAK8.it];         }, .axis_title="#DeltaR (lepton, jet)"});
-  sh.AddNewFillParam("JetRelPtLep",    { .nbin= 100, .low=   0,   .high= 500, .fill=[&d](){ return d.evt.RelPtJetLep[d.jetsAK8.it];      }, .axis_title="p_{T}^{rel} (lepton, jet) [GeV/c]"});
+  sh.AddNewFillParam("NJet",               { .nbin=  21, .bins={-0.5,   20.5}, .fill=[&d](){ return d.jetsAK8.size;                       }, .axis_title="N_{AK8-jet}"});
+  sh.AddNewFillParam("NJetSelected",       { .nbin=  21, .bins={-0.5,   20.5}, .fill=[&d](){ return d.evt.NTopHad+d.evt.NTopLep;          }, .axis_title="N_{Hadronic AK8-jet}"});
+  sh.AddNewFillParam("NJetHadronic",       { .nbin=  21, .bins={-0.5,   20.5}, .fill=[&d](){ return d.evt.NTopHad;                        }, .axis_title="N_{Hadronic AK8-jet}"});
+  sh.AddNewFillParam("NJetLeptonic",       { .nbin=  21, .bins={-0.5,   20.5}, .fill=[&d](){ return d.evt.NTopLep;                        }, .axis_title="N_{Leptonic AK8-jet}"});
+  sh.AddNewFillParam("JetEnergy",          { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.E[NJET];                    }, .axis_title="AK8-jet Energy (GeV)"});
+  sh.AddNewFillParam("JetPt",              { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.Pt[NJET];                   }, .axis_title="AK8-jet p_{T} (GeV/c)"});
+  sh.AddNewFillParam("JetMass",            { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.Mass[NJET];                 }, .axis_title="AK8-jet Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("JetPrunedMass",      { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.prunedMass[NJET];           }, .axis_title="AK8-jet Pruned Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("JetPrunedMassCoarse",{ .nbin= 200, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.prunedMass[NJET];           }, .axis_title="AK8-jet Pruned Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("JetFilteredMass",    { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.filteredMass[NJET];         }, .axis_title="AK8-jet Filtered Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("JetTrimmedMass",     { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.trimmedMass[NJET];          }, .axis_title="AK8-jet Trimmed Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("JetTopMass",         { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.topMass[NJET];              }, .axis_title="AK8-jet Top Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("JetMinMass",         { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.minmass[NJET];              }, .axis_title="AK8-jet Min. Subjet-pair Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("JetNSubJets",        { .nbin=  11, .bins={-0.5,   10.5}, .fill=[&d](){ return d.jetsAK8.nSubJets[NJET];             }, .axis_title="AK8-jet N_{subjet}"});
+  sh.AddNewFillParam("JetTau1",            { .nbin= 100, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau1[NJET];                 }, .axis_title="#tau_{1}"});
+  sh.AddNewFillParam("JetTau2",            { .nbin= 100, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau2[NJET];                 }, .axis_title="#tau_{2}"});
+  sh.AddNewFillParam("JetTau3",            { .nbin= 100, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau3[NJET];                 }, .axis_title="#tau_{3}"});
+  sh.AddNewFillParam("JetTau21",           { .nbin= 100, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau2[NJET]/d.jetsAK8.tau1[NJET];   }, .axis_title="#tau_{3}/#tau_{1}"});
+  sh.AddNewFillParam("JetTau31",           { .nbin= 100, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau3[NJET]/d.jetsAK8.tau1[NJET];   }, .axis_title="#tau_{3}/#tau_{1}"});
+  sh.AddNewFillParam("JetTau32",           { .nbin= 100, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau3[NJET]/d.jetsAK8.tau2[NJET];   }, .axis_title="#tau_{3}/#tau_{2}"});
+  sh.AddNewFillParam("JetTau21Coarse",     { .nbin=  50, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau2[NJET]/d.jetsAK8.tau1[NJET];   }, .axis_title="#tau_{2}/#tau_{1}"});
+  sh.AddNewFillParam("JetTau31Coarse",     { .nbin=  50, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau3[NJET]/d.jetsAK8.tau1[NJET];   }, .axis_title="#tau_{3}/#tau_{1}"});
+  sh.AddNewFillParam("JetTau32Coarse",     { .nbin=  50, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau3[NJET]/d.jetsAK8.tau2[NJET];   }, .axis_title="#tau_{3}/#tau_{2}"});
+  sh.AddNewFillParam("JetDRLep",           { .nbin=  50, .bins={   0,      5}, .fill=[&d](){ return d.evt.DRJetLep[d.jetsAK8.it];         }, .axis_title="#DeltaR (lepton, jet)"});
+  sh.AddNewFillParam("JetRelPtLep",        { .nbin= 100, .bins={   0,    500}, .fill=[&d](){ return d.evt.RelPtJetLep[d.jetsAK8.it];      }, .axis_title="p_{T}^{rel} (lepton, jet) [GeV/c]"});
   
   // Event variables
-  sh.AddNewFillParam("NLep",             { .nbin=   6, .low=-0.5,   .high=  5.5, .fill=[&d](){ return d.evt.NLep;                      }, .axis_title="N_{lepton}"});
-  sh.AddNewFillParam("NLepTight",        { .nbin=   6, .low=-0.5,   .high=  5.5, .fill=[&d](){ return d.evt.neletight+d.evt.nmu;       }, .axis_title="N_{lepton}"});
-  sh.AddNewFillParam("NMu",              { .nbin=   6, .low=-0.5,   .high=  5.5, .fill=[&d](){ return d.evt.nmu;                       }, .axis_title="N_{muon}"});
-  sh.AddNewFillParam("NEle",             { .nbin=   6, .low=-0.5,   .high=  5.5, .fill=[&d](){ return d.evt.nele;                      }, .axis_title="N_{electron}"});
-  sh.AddNewFillParam("NEleTight",        { .nbin=   6, .low=-0.5,   .high=  5.5, .fill=[&d](){ return d.evt.neletight;                 }, .axis_title="N_{electron}"});
-  sh.AddNewFillParam("NLepVeto",         { .nbin=   6, .low=-0.5,   .high=  5.5, .fill=[&d](){ return d.evt.neleveto+d.evt.nmuveto;    }, .axis_title="N_{lepton}"});
-  sh.AddNewFillParam("NMuVeto",          { .nbin=   6, .low=-0.5,   .high=  5.5, .fill=[&d](){ return d.evt.nmuveto;                   }, .axis_title="N_{muon}"});
-  sh.AddNewFillParam("NEleVeto",         { .nbin=   6, .low=-0.5,   .high=  5.5, .fill=[&d](){ return d.evt.neleveto;                  }, .axis_title="N_{electron}"});
-  sh.AddNewFillParam("NTopLikeHad",      { .nbin=   6, .low=-0.5,   .high=  5.5, .fill=[&d](){ return d.evt.nhadtoplike;               }, .axis_title="N_{jet} (p_{T}>400, M>100)"});
-  sh.AddNewFillParam("NTopLep",          { .nbin=   6, .low=-0.5,   .high=  5.5, .fill=[&d](){ return d.evt.NTopLep;                   }, .axis_title="N_{top, leptonic}"});
-  sh.AddNewFillParam("NTopHad",          { .nbin=   6, .low=-0.5,   .high=  5.5, .fill=[&d](){ return d.evt.NTopHad;                   }, .axis_title="N_{top, hadronic}"});
-  sh.AddNewFillParam("TTHadMR",          { .nbin=  50, .low=   0,   .high= 5000, .fill=[&d](){ return d.evt.TTHadMR;                   }, .axis_title="M_{R,t#bar{t}} (GeV/c)"});
-  sh.AddNewFillParam("TTHadMRFine",      { .nbin= 200, .low=   0,   .high=10000, .fill=[&d](){ return d.evt.TTHadMR;                   }, .axis_title="M_{R,t#bar{t}} (GeV/c)"});
-  sh.AddNewFillParam("TTHadMTR",         { .nbin=  50, .low=   0,   .high= 5000, .fill=[&d](){ return d.evt.TTHadMTR;                  }, .axis_title="M_{T,t#bar{t}}^{R} (GeV/c)"});
-  sh.AddNewFillParam("TTHadDPhi",        { .nbin=  16, .low=   0,   .high=  3.2, .fill=[&d](){ return fabs(d.evt.tt_dPhi);             }, .axis_title="|#Delta#phi_{t#bar{t}}|"});
-  sh.AddNewFillParam("TTHadDPhiFine",    { .nbin=  64, .low=   0,   .high=  3.2, .fill=[&d](){ return fabs(d.evt.tt_dPhi);             }, .axis_title="|#Delta#phi_{t#bar{t}}|"});
-  sh.AddNewFillParam("TTHadDEta",        { .nbin=  50, .low=   0,   .high=    5, .fill=[&d](){ return d.evt.TTHadDEta;                 }, .axis_title="#Delta#eta_{t#bar{t}}"});
-  sh.AddNewFillParam("TTHadDR",          { .nbin=  50, .low=   0,   .high=    5, .fill=[&d](){ return d.evt.TTHadDR;                   }, .axis_title="#DeltaR_{t#bar{t}}"});
-  sh.AddNewFillParam("TTHadPz",          { .nbin= 100, .low=   0,   .high= 5000, .fill=[&d](){ return d.evt.TTHadPz;                   }, .axis_title="P_{Z,t#bar{t}} (GeV/c)"});
-  sh.AddNewFillParam("TTHadDPz",         { .nbin= 100, .low=   0,   .high= 5000, .fill=[&d](){ return d.evt.TTHadDPz;                  }, .axis_title="#DeltaP_{Z,t#bar{t}} (GeV/c)"});
-  sh.AddNewFillParam("TTHadHz",          { .nbin= 100, .low=   0,   .high= 5000, .fill=[&d](){ return d.evt.TTHadHz;                   }, .axis_title="H_{Z,t#bar{t}} (GeV/c)"});
-  sh.AddNewFillParam("TTHadMass",        { .nbin= 100, .low=   0,   .high= 5000, .fill=[&d](){ return d.evt.TTHadMass;                 }, .axis_title="M_{t#bar{t}} (GeV/c^{2})"});
-  sh.AddNewFillParam("TTHadR",           { .nbin=  20, .low=   0,   .high=    1, .fill=[&d](){ return d.evt.TTHadR;                    }, .axis_title="R_{t#bar{t}}"});
-  sh.AddNewFillParam("TTHadRFine",       { .nbin= 100, .low=   0,   .high=    1, .fill=[&d](){ return d.evt.TTHadR;                    }, .axis_title="R_{t#bar{t}}"});
-  sh.AddNewFillParam("TTHadR2",          { .nbin=  20, .low=   0,   .high=    1, .fill=[&d](){ return d.evt.TTHadR2;                   }, .axis_title="R_{t#bar{t}}^{2}"});
-  sh.AddNewFillParam("R",                { .nbin=  20, .low=   0,   .high=    1, .fill=[&d](){ return d.evt.R;                         }, .axis_title="R"});
-  sh.AddNewFillParam("RFine",            { .nbin= 200, .low=   0,   .high=    1, .fill=[&d](){ return d.evt.R;                         }, .axis_title="R"});
-  sh.AddNewFillParam("R2",               { .nbin=  20, .low=   0,   .high=    1, .fill=[&d](){ return d.evt.R2;                        }, .axis_title="R^{2}"});
-  sh.AddNewFillParam("MR",               { .nbin=  50, .low=   0,   .high= 5000, .fill=[&d](){ return d.evt.MR;                        }, .axis_title="M_{R} (GeV/c)"});
-  sh.AddNewFillParam("MTR",              { .nbin=  50, .low=   0,   .high= 5000, .fill=[&d](){ return d.evt.MTR;                       }, .axis_title="M_{T}^{R} (GeV/c)"});
-  sh.AddNewFillParam("HtTopFraction",    { .nbin=  20, .low=   0,   .high=    1, .fill=[&d](){ return d.evt.HtTopFr;                   }, .axis_title="H_{T,tops}/(H_{T}+H_{T,leptonic}+#slash{p}_{T}) (GeV/c)"});
-  sh.AddNewFillParam("HtExFraction",     { .nbin=  20, .low=   0,   .high=    1, .fill=[&d](){ return d.evt.HtExFr;                    }, .axis_title="H_{T,extra}/(H_{T}+H_{T,leptonic}+#slash{p}_{T}) (GeV/c)"});
-  sh.AddNewFillParam("Ht",               { .nbin=  50, .low=   0,   .high=10000, .fill=[&d](){ return d.evt.Ht;                        }, .axis_title="H_{T} (GeV/c)"});
-  sh.AddNewFillParam("HtAllCoarse",      { .nbin=  20, .low=   0,   .high= 6000, .fill=[&d](){ return d.evt.HTall;                     }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
-  sh.AddNewFillParam("HtAll",            { .nbin=  50, .low=   0,   .high=10000, .fill=[&d](){ return d.evt.HTall;                     }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
-  sh.AddNewFillParam("HtAllFine",        { .nbin= 200, .low=   0,   .high=10000, .fill=[&d](){ return d.evt.HTall;                     }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
-  sh.AddNewFillParam("HtTop",            { .nbin=  25, .low=   0,   .high= 5000, .fill=[&d](){ return d.evt.HtTop;                     }, .axis_title="H_{T,tops} (GeV/c)"});
-  sh.AddNewFillParam("HtEx",             { .nbin=  50, .low=   0,   .high=10000, .fill=[&d](){ return d.evt.HtEx;                      }, .axis_title="H_{T,extra} (GeV/c)"});
+  sh.AddNewFillParam("NLep",             { .nbin=   6, .bins={-0.5,     5.5}, .fill=[&d](){ return d.evt.NLep;                      }, .axis_title="N_{lepton}"});
+  sh.AddNewFillParam("NLepTight",        { .nbin=   6, .bins={-0.5,     5.5}, .fill=[&d](){ return d.evt.neletight+d.evt.nmu;       }, .axis_title="N_{lepton}"});
+  sh.AddNewFillParam("NMu",              { .nbin=   6, .bins={-0.5,     5.5}, .fill=[&d](){ return d.evt.nmu;                       }, .axis_title="N_{muon}"});
+  sh.AddNewFillParam("NEle",             { .nbin=   6, .bins={-0.5,     5.5}, .fill=[&d](){ return d.evt.nele;                      }, .axis_title="N_{electron}"});
+  sh.AddNewFillParam("NEleTight",        { .nbin=   6, .bins={-0.5,     5.5}, .fill=[&d](){ return d.evt.neletight;                 }, .axis_title="N_{electron}"});
+  sh.AddNewFillParam("NLepVeto",         { .nbin=   6, .bins={-0.5,     5.5}, .fill=[&d](){ return d.evt.neleveto+d.evt.nmuveto;    }, .axis_title="N_{lepton}"});
+  sh.AddNewFillParam("NMuVeto",          { .nbin=   6, .bins={-0.5,     5.5}, .fill=[&d](){ return d.evt.nmuveto;                   }, .axis_title="N_{muon}"});
+  sh.AddNewFillParam("NEleVeto",         { .nbin=   6, .bins={-0.5,     5.5}, .fill=[&d](){ return d.evt.neleveto;                  }, .axis_title="N_{electron}"});
+  sh.AddNewFillParam("NTopLikeHad",      { .nbin=   6, .bins={-0.5,     5.5}, .fill=[&d](){ return d.evt.nhadtoplike;               }, .axis_title="N_{jet} (p_{T}>400, M>100)"});
+  sh.AddNewFillParam("NTopLep",          { .nbin=   6, .bins={-0.5,     5.5}, .fill=[&d](){ return d.evt.NTopLep;                   }, .axis_title="N_{top, leptonic}"});
+  sh.AddNewFillParam("NTopHad",          { .nbin=   6, .bins={-0.5,     5.5}, .fill=[&d](){ return d.evt.NTopHad;                   }, .axis_title="N_{top, hadronic}"});
+  sh.AddNewFillParam("TTHadMR",          { .nbin=  50, .bins={   0,    5000}, .fill=[&d](){ return d.evt.TTHadMR;                   }, .axis_title="M_{R,t#bar{t}} (GeV/c)"});
+  sh.AddNewFillParam("TTHadMRFine",      { .nbin= 200, .bins={   0,   10000}, .fill=[&d](){ return d.evt.TTHadMR;                   }, .axis_title="M_{R,t#bar{t}} (GeV/c)"});
+  sh.AddNewFillParam("TTHadMTR",         { .nbin=  50, .bins={   0,    5000}, .fill=[&d](){ return d.evt.TTHadMTR;                  }, .axis_title="M_{T,t#bar{t}}^{R} (GeV/c)"});
+  sh.AddNewFillParam("TTHadDPhi",        { .nbin=  16, .bins={   0,     3.2}, .fill=[&d](){ return fabs(d.evt.tt_dPhi);             }, .axis_title="|#Delta#phi_{t#bar{t}}|"});
+  sh.AddNewFillParam("TTHadDPhiFine",    { .nbin=  64, .bins={   0,     3.2}, .fill=[&d](){ return fabs(d.evt.tt_dPhi);             }, .axis_title="|#Delta#phi_{t#bar{t}}|"});
+  sh.AddNewFillParam("TTHadDEta",        { .nbin=  50, .bins={   0,       5}, .fill=[&d](){ return d.evt.TTHadDEta;                 }, .axis_title="#Delta#eta_{t#bar{t}}"});
+  sh.AddNewFillParam("TTHadDR",          { .nbin=  50, .bins={   0,       5}, .fill=[&d](){ return d.evt.TTHadDR;                   }, .axis_title="#DeltaR_{t#bar{t}}"});
+  sh.AddNewFillParam("TTHadPz",          { .nbin= 100, .bins={   0,    5000}, .fill=[&d](){ return d.evt.TTHadPz;                   }, .axis_title="P_{Z,t#bar{t}} (GeV/c)"});
+  sh.AddNewFillParam("TTHadDPz",         { .nbin= 100, .bins={   0,    5000}, .fill=[&d](){ return d.evt.TTHadDPz;                  }, .axis_title="#DeltaP_{Z,t#bar{t}} (GeV/c)"});
+  sh.AddNewFillParam("TTHadHz",          { .nbin= 100, .bins={   0,    5000}, .fill=[&d](){ return d.evt.TTHadHz;                   }, .axis_title="H_{Z,t#bar{t}} (GeV/c)"});
+  sh.AddNewFillParam("TTHadMass",        { .nbin= 100, .bins={   0,    5000}, .fill=[&d](){ return d.evt.TTHadMass;                 }, .axis_title="M_{t#bar{t}} (GeV/c^{2})"});
+  sh.AddNewFillParam("TTHadR",           { .nbin=  20, .bins={   0,       1}, .fill=[&d](){ return d.evt.TTHadR;                    }, .axis_title="R_{t#bar{t}}"});
+  sh.AddNewFillParam("TTHadRFine",       { .nbin= 100, .bins={   0,       1}, .fill=[&d](){ return d.evt.TTHadR;                    }, .axis_title="R_{t#bar{t}}"});
+  sh.AddNewFillParam("TTHadR2",          { .nbin=  20, .bins={   0,       1}, .fill=[&d](){ return d.evt.TTHadR2;                   }, .axis_title="R_{t#bar{t}}^{2}"});
+  sh.AddNewFillParam("R",                { .nbin=  20, .bins={   0,       1}, .fill=[&d](){ return d.evt.R;                         }, .axis_title="R"});
+  sh.AddNewFillParam("RFine",            { .nbin= 200, .bins={   0,       1}, .fill=[&d](){ return d.evt.R;                         }, .axis_title="R"});
+  sh.AddNewFillParam("R2",               { .nbin=  20, .bins={   0,       1}, .fill=[&d](){ return d.evt.R2;                        }, .axis_title="R^{2}"});
+  sh.AddNewFillParam("MR",               { .nbin=  50, .bins={   0,    5000}, .fill=[&d](){ return d.evt.MR;                        }, .axis_title="M_{R} (GeV/c)"});
+  sh.AddNewFillParam("MRFine",           { .nbin= 200, .bins={   0,   10000}, .fill=[&d](){ return d.evt.MR;                        }, .axis_title="M_{R} (GeV/c)"});
+  sh.AddNewFillParam("MTR",              { .nbin=  50, .bins={   0,    5000}, .fill=[&d](){ return d.evt.MTR;                       }, .axis_title="M_{T}^{R} (GeV/c)"});
+  sh.AddNewFillParam("HtTopFraction",    { .nbin=  20, .bins={   0,       1}, .fill=[&d](){ return d.evt.HtTopFr;                   }, .axis_title="H_{T,tops}/(H_{T}+H_{T,leptonic}+#slash{p}_{T}) (GeV/c)"});
+  sh.AddNewFillParam("HtExFraction",     { .nbin=  20, .bins={   0,       1}, .fill=[&d](){ return d.evt.HtExFr;                    }, .axis_title="H_{T,extra}/(H_{T}+H_{T,leptonic}+#slash{p}_{T}) (GeV/c)"});
+  sh.AddNewFillParam("Ht",               { .nbin= 100, .bins={   0,   10000}, .fill=[&d](){ return d.evt.Ht;                        }, .axis_title="H_{T} (GeV/c)"});
+  sh.AddNewFillParam("HtAllCoarse",      { .nbin=  20, .bins={   0,    6000}, .fill=[&d](){ return d.evt.HTall;                     }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
+  sh.AddNewFillParam("HtAll",            { .nbin=  50, .bins={   0,   10000}, .fill=[&d](){ return d.evt.HTall;                     }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
+  sh.AddNewFillParam("HtAllFine",        { .nbin= 200, .bins={   0,   10000}, .fill=[&d](){ return d.evt.HTall;                     }, .axis_title="H_{T}+H_{T,leptonic}+#slash{p}_{T} (GeV/c)"});
+  sh.AddNewFillParam("HtTop",            { .nbin=  25, .bins={   0,    5000}, .fill=[&d](){ return d.evt.HtTop;                     }, .axis_title="H_{T,tops} (GeV/c)"});
+  sh.AddNewFillParam("HtEx",             { .nbin=  50, .bins={   0,   10000}, .fill=[&d](){ return d.evt.HtEx;                      }, .axis_title="H_{T,extra} (GeV/c)"});
   
   // Define Cuts here:
   sh.AddNewCut("GoodEle",       [&d](){ return d.ele.Pt[NLEP] > 35 && fabs(d.ele.Eta[NLEP]) < 2.5 && d.ele.isTight[NLEP] > 0; });
@@ -271,6 +276,7 @@ int main(int argc, char* argv[]) {
   
   sh.AddNewCut("NTop==2",          [&d](){ return d.evt.NTopHad+d.evt.NTopLep==2; });
   //sh.AddNewCut("NTopHad==2",       [&d](){ return d.evt.NTopHad==2&&d.evt.NTopLep==0; }); // This cut was enforced previously
+  sh.AddNewCut("NTopHad<3",        [&d](){ return d.evt.NTopHad<3; });
   sh.AddNewCut("NTopHad==2",       [&d](){ return d.evt.NTopHad==2; });
   sh.AddNewCut("NTopLep==1",       [&d](){ return d.evt.NTopLep==1; });
   sh.AddNewCut("NLepTight==0",     [&d](){ return (d.evt.nmu+d.evt.neletight)==0; });
@@ -420,109 +426,104 @@ int main(int argc, char* argv[]) {
   //sh.AddHistos("jetsAK8", { .fill="NJetHadronic",  .pfs={Samples}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
   //sh.AddHistos("jetsAK8", { .fill="NJetLeptonic",  .pfs={Samples}, .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
   
-  const char* cut1 = "R0p4";
-  const char* cut2 = "DPhi2p8";
-  const char* cut3 = "HtAll1200";
-  const char* lepveto = "NTightLepVeto==0";
+  //const char* cut1 = "R0p4";
+  //const char* cut2 = "DPhi2p8";
+  //const char* cut3 = "HtAll1200";
+  //const char* lepveto = "NLepTight==0";
   
   // 02/24 - Razor presentation
-  // Signal cut variables
-  sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="R",               .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples,cut1}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="R",               .pfs={Samples,cut1}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples,cut1}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples,cut1}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples,cut1}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples,cut1}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples,cut1}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="R",               .pfs={Samples,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="R",               .pfs={Samples,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="R",               .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples,cut1,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="R",               .pfs={Samples,cut1,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples,cut1,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples,cut1,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples,cut1,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples,cut1,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples,cut1,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples,cut2,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="R",               .pfs={Samples,cut2,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples,cut2,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples,cut2,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples,cut2,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples,cut2,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples,cut2,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples,cut1,cut2,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="R",               .pfs={Samples,cut1,cut2,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples,cut1,cut2,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples,cut1,cut2,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples,cut1,cut2,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples,cut1,cut2,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples,cut1,cut2,cut3}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  // Signal cut variables --> B2GAnalyzer
+  //sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="R",               .pfs={Samples}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples,cut1}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="R",               .pfs={Samples,cut1}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples,cut1}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples,cut1}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples,cut1}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples,cut1}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples,cut1}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="R",               .pfs={Samples,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="R",               .pfs={Samples,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="R",               .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples,cut1,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="R",               .pfs={Samples,cut1,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples,cut1,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples,cut1,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples,cut1,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples,cut1,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples,cut1,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples,cut2,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="R",               .pfs={Samples,cut2,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples,cut2,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples,cut2,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples,cut2,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples,cut2,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples,cut2,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadR",          .pfs={Samples,cut1,cut2,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="R",               .pfs={Samples,cut1,cut2,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="Ht",              .pfs={Samples,cut1,cut2,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtAll",           .pfs={Samples,cut1,cut2,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtEx" ,           .pfs={Samples,cut1,cut2,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtExFraction",    .pfs={Samples,cut1,cut2,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadDPhi",       .pfs={Samples,cut1,cut2,cut3}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
   
   // 2D Correlation plots
-  sh.AddHistos("evt",   { .fill="HtAllCoarse_vs_TTHadDPhi",   .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="HtAllCoarse_vs_R",           .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="HtAllCoarse_vs_TTHadR",      .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="HtTopFraction_vs_TTHadDPhi", .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="HtTopFraction_vs_R",         .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="HtTopFraction_vs_TTHadR",    .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="R_vs_TTHadDPhi",             .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="TTHadR_vs_TTHadDPhi",        .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="HtAllCoarse_vs_TTHadDPhi",   .pfs={Samples}, .cuts={"NTopHad==2"/*,lepveto*/}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="HtAllCoarse_vs_R",           .pfs={Samples}, .cuts={"NTopHad==2"/*,lepveto*/}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="HtAllCoarse_vs_TTHadR",      .pfs={Samples}, .cuts={"NTopHad==2"/*,lepveto*/}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="HtTopFraction_vs_TTHadDPhi", .pfs={Samples}, .cuts={"NTopHad==2"/*,lepveto*/}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="HtTopFraction_vs_R",         .pfs={Samples}, .cuts={"NTopHad==2"/*,lepveto*/}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="HtTopFraction_vs_TTHadR",    .pfs={Samples}, .cuts={"NTopHad==2"/*,lepveto*/}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="R_vs_TTHadDPhi",             .pfs={Samples}, .cuts={"NTopHad==2"/*,lepveto*/}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="TTHadR_vs_TTHadDPhi",        .pfs={Samples}, .cuts={"NTopHad==2"/*,lepveto*/}, .draw="COLZ", .opt="", .ranges={0,0, 0,0, 0,0} });
   
-  // Latest
+  // Since 04/03
   // Try MR instead of HtAll
-  sh.AddHistos("evt",   { .fill="TTHadMR",   .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="MR",        .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadMR",   .pfs={Samples,cut1}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="MR",        .pfs={Samples,cut1}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadMR",   .pfs={Samples,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="MR",        .pfs={Samples,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadMR",   .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="MR",        .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  // Plots for Background estimation
-  sh.AddHistos("evt",   { .fill="R",         .pfs={cut2,Samples},      .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="R",         .pfs={cut3,Samples},      .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="R",         .pfs={cut2,cut3,Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="R",         .pfs={cut3,cut2,Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadDPhi", .pfs={cut1,Samples},      .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadDPhi", .pfs={cut3,Samples},      .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadDPhi", .pfs={cut1,cut3,Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="TTHadDPhi", .pfs={cut3,cut1,Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtAll",     .pfs={cut1,Samples},      .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtAll",     .pfs={cut2,Samples},      .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtAll",     .pfs={cut1,cut2,Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  sh.AddHistos("evt",   { .fill="HtAll",     .pfs={cut2,cut1,Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
-  // 3D Plots to get best signal cuts (Maximize Smin)
-  sh.AddHistos("evt",   { .fill="HtAllFine_vs_TTHadDPhiFine_vs_RFine",        .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="HtAllFine_vs_TTHadDPhiFine_vs_TTHadRFine",   .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="TTHadMRFine_vs_TTHadDPhiFine_vs_TTHadRFine", .pfs={Samples}, .cuts={"NTopHad==2",lepveto}, .draw="", .opt="", .ranges={0,0, 0,0, 0,0} });
-  
-  // Since 04 March
+  //sh.AddHistos("evt",   { .fill="TTHadMR",   .pfs={Samples}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="MR",        .pfs={Samples}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadMR",   .pfs={Samples,cut1}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="MR",        .pfs={Samples,cut1}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadMR",   .pfs={Samples,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="MR",        .pfs={Samples,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadMR",   .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="MR",        .pfs={Samples,cut1,cut2}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  // Plots for Background estimation --> B2GAnalyzer
+  //sh.AddHistos("evt",   { .fill="R",         .pfs={cut2,Samples},      .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="R",         .pfs={cut3,Samples},      .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="R",         .pfs={cut2,cut3,Samples}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="R",         .pfs={cut3,cut2,Samples}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadDPhi", .pfs={cut1,Samples},      .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadDPhi", .pfs={cut3,Samples},      .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadDPhi", .pfs={cut1,cut3,Samples}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="TTHadDPhi", .pfs={cut3,cut1,Samples}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtAll",     .pfs={cut1,Samples},      .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtAll",     .pfs={cut2,Samples},      .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtAll",     .pfs={cut1,cut2,Samples}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  //sh.AddHistos("evt",   { .fill="HtAll",     .pfs={cut2,cut1,Samples}, .cuts={"NTopHad==2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+
   // Semi-leptonic channel
   sh.AddHistos("evt",   { .fill="NTopLep",      .pfs={Samples},           .cuts={}, .draw="", .opt="Norm", .ranges={0,0, 0,1.1} });
   sh.AddHistos("evt",   { .fill="NLep",         .pfs={Samples},           .cuts={}, .draw="", .opt="Norm", .ranges={0,0, 0,1.1} });
@@ -545,11 +546,18 @@ int main(int argc, char* argv[]) {
   sh.AddHistos("mu",    { .fill="MuDRJet",                     .pfs={Samples},               .cuts={"NMuTight==1","GoodMu","MuJetCombMass>90"}, .draw="", .opt="Norm", .ranges={0,0, 0,0, 0,0} });
   sh.AddHistos("mu",    { .fill="MuRelPtJet",                  .pfs={Samples},               .cuts={"NMuTight==1","GoodMu","MuJetCombMass>90"}, .draw="", .opt="Norm", .ranges={0,0, 0,0, 0,0} });
   
-  // Fully hadronic - Background estimation
-  sh.AddHistos("evt",   { .fill="NTopHad",                                    .pfs={Samples},           .cuts={lepveto,"NTopLikeHad>=2"}, .draw="", .opt="Log", .ranges={0,0, 0.001,1000000} });
-  sh.AddHistos("evt",   { .fill="HtAllFine_vs_TTHadDPhiFine_vs_RFine",        .pfs={Samples,"NTopHad"}, .cuts={lepveto,"NTopLikeHad>=2"}, .draw="", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="HtAllFine_vs_TTHadDPhiFine_vs_TTHadRFine",   .pfs={Samples,"NTopHad"}, .cuts={lepveto,"NTopLikeHad>=2"}, .draw="", .opt="", .ranges={0,0, 0,0, 0,0} });
-  sh.AddHistos("evt",   { .fill="TTHadMRFine_vs_TTHadDPhiFine_vs_TTHadRFine", .pfs={Samples,"NTopHad"}, .cuts={lepveto,"NTopLikeHad>=2"}, .draw="", .opt="", .ranges={0,0, 0,0, 0,0} });
+  // Since 10/03
+  sh.AddHistos("evt",   { .fill="NTopHad",                                    .pfs={Samples},           .cuts={"NTopHad<3","NTopLikeHad>=2"/*,lepveto*/}, .draw="", .opt="Log", .ranges={0,0, 0.001,1000000} });
+  sh.AddHistos("evt",   { .fill="Sample",                                     .pfs={"NTopHad"},         .cuts={"NTopHad<3","NTopLikeHad>=2"/*,lepveto*/}, .draw="", .opt="Log", .ranges={0,0, 0.001,1000000} });
+  sh.AddHistos("evt",   { .fill="Ht",                                         .pfs={"Samples"},         .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,1000000} });
+  sh.AddHistos("evt",   { .fill="HtAll",                                      .pfs={"Samples"},         .cuts={}, .draw="", .opt="Log", .ranges={0,0, 0.001,1000000} });
+  // 3D Plots to get best signal cuts (Maximize Smin) --> input for B2GAnalyzer
+  sh.AddHistos("evt",   { .fill="HtAllFine_vs_TTHadDPhiFine_vs_RFine",        .pfs={Samples,"NTopHad"}, .cuts={"NTopHad<3","NTopLikeHad>=2"/*,lepveto*/}, .draw="", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="HtAllFine_vs_TTHadDPhiFine_vs_TTHadRFine",   .pfs={Samples,"NTopHad"}, .cuts={"NTopHad<3","NTopLikeHad>=2"/*,lepveto*/}, .draw="", .opt="", .ranges={0,0, 0,0, 0,0} });
+  sh.AddHistos("evt",   { .fill="MRFine_vs_TTHadDPhiFine_vs_RFine",           .pfs={Samples,"NTopHad"}, .cuts={"NTopHad<3","NTopLikeHad>=2"/*,lepveto*/}, .draw="", .opt="", .ranges={0,0, 0,0, 0,0} });
+  // For ratio plots and background estimation - Correct error done here, not in the B2GAnalyzer
+  sh.AddHistos("evt",   { .fill="RFine",     .pfs={"NTopHad","DPhi2p8","AllSamples"}, .cuts={"NTopHad<3","NTopLikeHad>=2"/*,lepveto*/}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
+  sh.AddHistos("evt",   { .fill="RFine",     .pfs={"DPhi2p8","NTopHad","AllSamples"}, .cuts={"NTopHad<3","NTopLikeHad>=2"/*,lepveto*/}, .draw="", .opt="Log", .ranges={0,0, 0.001,100000} });
   
   std::cout<<"-----------------------------------------------------------------\n";
   std::cout<<"Creating the following plots:\n"; sh.PrintNames();

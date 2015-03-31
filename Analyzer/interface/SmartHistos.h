@@ -632,64 +632,66 @@ public:
   //
   // 1D
   void AddNew(std::string name, std::string title,
-	      int nbin1, double low1, double high1) {
+	      size_t nbinsx, std::vector<double> binsx) {
+    Double_t xbins[nbinsx+1]; for (size_t i=0; i<binsx.size(); ++i) if (i<nbinsx+1) xbins[i] = binsx[i];
+    if (binsx.size()==2&&nbinsx>1) for (size_t i=0; i<=nbinsx; ++i) xbins[i] = binsx[0] + i*(binsx[1]-binsx[0])/nbinsx;
     if (npf_==0) {
-      h1d_0p_ = new TH1D(name.c_str(), title.c_str(), nbin1, low1, high1);
-      h1d_0p_->Sumw2();
-    } else if (npf_==1) {
+      if (binsx.size()==2) h1d_0p_ = new TH1D(name.c_str(), title.c_str(), nbinsx, binsx[0], binsx[1]);
+      else h1d_0p_ = new TH1D(name.c_str(), title.c_str(), nbinsx, xbins);
+      if (sumw2_) h1d_0p_->Sumw2();
+    } else {
       for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	h1d_1p_.push_back(new TH1D((name+"_"+pfs_[0].vec[i]).c_str(), title.c_str(), nbin1, low1, high1));
-	if (sumw2_) h1d_1p_[i]->Sumw2();
-      }
-    } else if (npf_==2) {
-      for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	h1d_2p_.push_back(std::vector<TH1D*>());
-	for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	  h1d_2p_[i].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(),
-					title.c_str(), nbin1, low1, high1));
-	  if (sumw2_) h1d_2p_[i][j]->Sumw2();
-	}
-      }
-    } else if (npf_==3) {
-      for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	h1d_3p_.push_back(std::vector<std::vector<TH1D*> > ());
-	for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	  h1d_3p_[i].push_back(std::vector<TH1D*>());
-	  for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
-	    h1d_3p_[i][j].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(),
-					     title.c_str(), nbin1, low1, high1));
-	    if (sumw2_) h1d_3p_[i][j][k]->Sumw2();
-	  }
-	}
-      }
-    } else if (npf_==4) {
-      for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	h1d_4p_.push_back(std::vector<std::vector<std::vector<TH1D*> > >());
-	for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	  h1d_4p_[i].push_back(std::vector<std::vector<TH1D*> >());
-	  for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
-	    h1d_4p_[i][j].push_back(std::vector<TH1D*>());
-	    for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
-	      h1d_4p_[i][j][k].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(),
-						  title.c_str(), nbin1, low1, high1));
-	      if (sumw2_) h1d_4p_[i][j][k][l]->Sumw2();
-	    }
-	  }
-	}
-      }
-    } else if (npf_==5) {
-      for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	h1d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH1D*> > > >());
-	for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	  h1d_5p_[i].push_back(std::vector<std::vector<std::vector<TH1D*> > >());
-	  for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
-	    h1d_5p_[i][j].push_back(std::vector<std::vector<TH1D*> >());
-	    for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
-	      h1d_5p_[i][j][k].push_back(std::vector<TH1D*>());
-	      for (size_t m=0; m<pfs_[4].vec.size(); ++m) {
-		h1d_5p_[i][j][k][l].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
-						       title.c_str(), nbin1, low1, high1));
-		if (sumw2_) h1d_5p_[i][j][k][l][m]->Sumw2();
+	if (npf_==1) {
+	  if (binsx.size()==2) h1d_1p_.push_back(new TH1D((name+"_"+pfs_[0].vec[i]).c_str(), title.c_str(), nbinsx, binsx[0], binsx[1]));
+	  else h1d_1p_.push_back(new TH1D((name+"_"+pfs_[0].vec[i]).c_str(), title.c_str(), nbinsx, xbins));
+	  if (sumw2_) h1d_1p_[i]->Sumw2();
+	} else {
+	  if (npf_==2) h1d_2p_.push_back(std::vector<TH1D*>());
+	  else if (npf_==3) h1d_3p_.push_back(std::vector<std::vector<TH1D*> > ());
+	  else if (npf_==4) h1d_4p_.push_back(std::vector<std::vector<std::vector<TH1D*> > >());
+	  else if (npf_==5) h1d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH1D*> > > >());
+	  for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
+	    if (npf_==2) {
+	      if (binsx.size()==2) h1d_2p_[i].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(),
+								 title.c_str(), nbinsx, binsx[0], binsx[1]));
+	      else h1d_2p_[i].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(),
+								 title.c_str(), nbinsx, xbins));
+	      if (sumw2_) h1d_2p_[i][j]->Sumw2();
+	    } else {
+	      if (npf_==3) h1d_3p_[i].push_back(std::vector<TH1D*>());
+	      else if (npf_==4) h1d_4p_[i].push_back(std::vector<std::vector<TH1D*> >());
+	      else if (npf_==5) h1d_5p_[i].push_back(std::vector<std::vector<std::vector<TH1D*> > >());
+	      for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
+		if (npf_==3) {
+		  if (binsx.size()==2) h1d_3p_[i][j].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(),
+									title.c_str(), nbinsx, binsx[0], binsx[1]));
+		  else h1d_3p_[i][j].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(),
+									title.c_str(), nbinsx, xbins));
+		  if (sumw2_) h1d_3p_[i][j][k]->Sumw2();
+		} else {
+		  if (npf_==4) h1d_4p_[i][j].push_back(std::vector<TH1D*>());
+		  else if (npf_==5) h1d_5p_[i][j].push_back(std::vector<std::vector<TH1D*> >());
+		  for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
+		    if (npf_==4) {
+		      if (binsx.size()==2) h1d_4p_[i][j][k].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(),
+									       title.c_str(), nbinsx, binsx[0], binsx[1]));
+		      else h1d_4p_[i][j][k].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(),
+									       title.c_str(), nbinsx, xbins));
+		      if (sumw2_) h1d_4p_[i][j][k][l]->Sumw2();
+		    } else {
+		      if (npf_==5) h1d_5p_[i][j][k].push_back(std::vector<TH1D*>());
+		      for (size_t m=0; m<pfs_[4].vec.size(); ++m) {
+			if (npf_==5) {
+			  if (binsx.size()==2) h1d_5p_[i][j][k][l].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+										      title.c_str(), nbinsx, binsx[0], binsx[1]));
+			  else h1d_5p_[i][j][k][l].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+										      title.c_str(), nbinsx, xbins));
+			  if (sumw2_) h1d_5p_[i][j][k][l][m]->Sumw2();
+			}
+		      }
+		    }
+		  }
+		}
 	      }
 	    }
 	  }
@@ -697,182 +699,127 @@ public:
       }
     }
   }
+  
   // 2D
   void AddNew(std::string name, std::string title,
-	      int nbin1, double low1, double high1,
-	      int nbin2, double low2, double high2) { 
+	      size_t nbinsx, std::vector<double> binsx,
+	      size_t nbinsy, std::vector<double> binsy) {
+    Double_t xbins[nbinsx+1]; for (size_t i=0; i<binsx.size(); ++i) if (i<nbinsx+1) xbins[i] = binsx[i];
+    Double_t ybins[nbinsy+1]; for (size_t i=0; i<binsy.size(); ++i) if (i<nbinsy+1) ybins[i] = binsy[i];
+    if (binsx.size()==2&&nbinsx>1) for (size_t i=0; i<=nbinsx; ++i) xbins[i] = binsx[0] + i*(binsx[1]-binsx[0])/nbinsx;
+    if (binsy.size()==2&&nbinsy>1) for (size_t i=0; i<=nbinsy; ++i) ybins[i] = binsy[0] + i*(binsy[1]-binsy[0])/nbinsy;
     size_t s =find_spec_(name); 
-    size_t s2 =find_spec2_(name); 
+    size_t s2 =find_spec2_(name);
+    bool spec = (s!=(size_t)-1||s2!=(size_t)-1);
+    std::string name_1d = name;
+    std::string name_2d = (s!=(size_t)-1) ? std::string(name).replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]) : (s2!=(size_t)-1) ? std::string(name).erase(0,spec2_[s2][0].size()) : name;
+    std::string title_1d = (s!=(size_t)-1) ? title : (s2!=(size_t)-1) ? std::string(title).insert(1,spec2_[s2][1]) : title;
+    std::string title_2d = (s!=(size_t)-1) ? std::string(title).replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]) : title;
     if (npf_==0) {
-      if (s!=(size_t)-1) {
-	h1d_0p_ = new TH1D(name.c_str(), title.c_str(), nbin1, low1, high1);
-	name.replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]);
-	title.replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]);
-      } else if (s2!=(size_t)-1) {
-	h1d_0p_ = new TH1D(name.c_str(), std::string(title).insert(1,spec2_[s2][1]).c_str(), nbin1, low1, high1);
-	name.erase(0,spec2_[s2][0].size());
+      if (binsx.size()==2&&binsy.size()==2) {
+	h2d_0p_ = new TH2D(name_2d.c_str(), title_2d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1]);
+	if (spec) h1d_0p_ = new TH1D(name_1d.c_str(), title_1d.c_str(), nbinsx, binsx[0], binsx[1]);
+      } else {
+	h2d_0p_ = new TH2D(name_2d.c_str(), title_2d.c_str(), nbinsx, xbins, nbinsy, ybins);
+	if (spec) h1d_0p_ = new TH1D(name_1d.c_str(), title_1d.c_str(), nbinsx, xbins);
       }
-      h2d_0p_ = new TH2D(name.c_str(), title.c_str(), nbin1, low1, high1, nbin2, low2, high2);
-    } else if (npf_==1) {
-      if (s!=(size_t)-1) {
-	for (size_t i=0; i<pfs_[0].vec.size(); ++i)
-	  h1d_1p_.push_back(new TH1D((name+"_"+pfs_[0].vec[i]).c_str(), title.c_str(), nbin1, low1, high1));
-	name.replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]);
-	title.replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]);
-      } else if (s2!=(size_t)-1) {
-	for (size_t i=0; i<pfs_[0].vec.size(); ++i)
-	  h1d_1p_.push_back(new TH1D((name+"_"+pfs_[0].vec[i]).c_str(), std::string(title).insert(1,spec2_[s2][1]).c_str(), nbin1, low1, high1));
-	name.erase(0,spec2_[s2][0].size());
-      }
-      for (size_t i=0; i<pfs_[0].vec.size(); ++i)
-	h2d_1p_.push_back(new TH2D((name+"_"+pfs_[0].vec[i]).c_str(), title.c_str(), 
-				   nbin1, low1, high1, nbin2, low2, high2));
-    } else if (npf_==2) {
-      if (s!=(size_t)-1) {
-	for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	  h1d_2p_.push_back(std::vector<TH1D*>());
-	  for (size_t j=0; j<pfs_[1].vec.size(); ++j)
-	    h1d_2p_[i].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(), title.c_str(), nbin1, low1, high1));
-	}
-	name.replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]);
-	title.replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]);
-      } else if (s2!=(size_t)-1) {
-	for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	  h1d_2p_.push_back(std::vector<TH1D*>());
-	  for (size_t j=0; j<pfs_[1].vec.size(); ++j)
-	    h1d_2p_[i].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(), std::string(title).insert(1,spec2_[s2][1]).c_str(), nbin1, low1, high1));
-	}
-	name.erase(0,spec2_[s2][0].size());
-      }
+    } else {
       for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	h2d_2p_.push_back(std::vector<TH2D*>());
-	for (size_t j=0; j<pfs_[1].vec.size(); ++j)
-	  h2d_2p_[i].push_back(new TH2D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(), title.c_str(),
-					nbin1, low1, high1, nbin2, low2, high2));
-      }
-    } else if (npf_==3) {
-      if (s!=(size_t)-1) {
-	for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	  h1d_3p_.push_back(std::vector<std::vector<TH1D*> > ());
-	  for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	    h1d_3p_[i].push_back(std::vector<TH1D*>());
-	    for (size_t k=0; k<pfs_[2].vec.size(); ++k)
-	      h1d_3p_[i][j].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(), title.c_str(), nbin1, low1, high1));
+	if (npf_==1) {
+	  if (binsx.size()==2&&binsy.size()==2) {
+	    h2d_1p_.push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]).c_str(), title_2d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1]));
+	    if (spec) h1d_1p_.push_back(new TH1D((name_1d+"_"+pfs_[0].vec[i]).c_str(), title_1d.c_str(), nbinsx, binsx[0], binsx[1]));
+	  } else {
+	    h2d_1p_.push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]).c_str(), title_2d.c_str(), nbinsx, xbins, nbinsy, ybins));
+	    if (spec) h1d_1p_.push_back(new TH1D((name_1d+"_"+pfs_[0].vec[i]).c_str(), title_1d.c_str(), nbinsx, xbins));
 	  }
-	}
-	name.replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]);
-	title.replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]);
-      } else if (s2!=(size_t)-1) {
-	for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	  h1d_3p_.push_back(std::vector<std::vector<TH1D*> > ());
-	  for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	    h1d_3p_[i].push_back(std::vector<TH1D*>());
-	    for (size_t k=0; k<pfs_[2].vec.size(); ++k)
-	      h1d_3p_[i][j].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(),
-					       std::string(title).insert(1,spec2_[s2][1]).c_str(), nbin1, low1, high1));
+	} else {
+	  if (npf_==2) h2d_2p_.push_back(std::vector<TH2D*>());
+	  else if (npf_==3) h2d_3p_.push_back(std::vector<std::vector<TH2D*> > ());
+	  else if (npf_==4) h2d_4p_.push_back(std::vector<std::vector<std::vector<TH2D*> > >());
+	  else if (npf_==5) h2d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH2D*> > > >());
+	  if (spec) {
+	    if (npf_==2) h1d_2p_.push_back(std::vector<TH1D*>());
+	    else if (npf_==3) h1d_3p_.push_back(std::vector<std::vector<TH1D*> > ());
+	    else if (npf_==4) h1d_4p_.push_back(std::vector<std::vector<std::vector<TH1D*> > >());
+	    else if (npf_==5) h1d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH1D*> > > >());
 	  }
-	}
-	name.erase(0,spec2_[s2][0].size());
-      }
-      for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	h2d_3p_.push_back(std::vector<std::vector<TH2D*> > ());
-	for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	  h2d_3p_[i].push_back(std::vector<TH2D*>());
-	  for (size_t k=0; k<pfs_[2].vec.size(); ++k)
-	    h2d_3p_[i][j].push_back(new TH2D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(), title.c_str(),
-					     nbin1, low1, high1, nbin2, low2, high2));
-	}
-      }
-    } else if (npf_==4) {
-      if (s!=(size_t)-1) {
-	for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	  h1d_4p_.push_back(std::vector<std::vector<std::vector<TH1D*> > >());
 	  for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	    h1d_4p_[i].push_back(std::vector<std::vector<TH1D*> >());
-	    for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
-	      h1d_4p_[i][j].push_back(std::vector<TH1D*>());
-	      for (size_t l=0; l<pfs_[3].vec.size(); ++l)
-		h1d_4p_[i][j][k].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(), title.c_str(), nbin1, low1, high1));
-	    }
-	  }
-	}
-	name.replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]);
-	title.replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]);
-      } else if (s2!=(size_t)-1) {
-	for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	  h1d_4p_.push_back(std::vector<std::vector<std::vector<TH1D*> > >());
-	  for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	    h1d_4p_[i].push_back(std::vector<std::vector<TH1D*> >());
-	    for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
-	      h1d_4p_[i][j].push_back(std::vector<TH1D*>());
-	      for (size_t l=0; l<pfs_[3].vec.size(); ++l)
-		h1d_4p_[i][j][k].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(),
-						    std::string(title).insert(1,spec2_[s2][1]).c_str(), nbin1, low1, high1));
-	    }
-	  }
-	}
-	name.erase(0,spec2_[s2][0].size());
-      }
-      for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	h2d_4p_.push_back(std::vector<std::vector<std::vector<TH2D*> > >());
-	for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	  h2d_4p_[i].push_back(std::vector<std::vector<TH2D*> >());
-	  for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
-	    h2d_4p_[i][j].push_back(std::vector<TH2D*>());
-	    for (size_t l=0; l<pfs_[3].vec.size(); ++l)
-	      h2d_4p_[i][j][k].push_back(new TH2D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(), title.c_str(),
-						  nbin1, low1, high1, nbin2, low2, high2));
-	  }
-	}
-      }
-    } else if (npf_==5) {
-      if (s!=(size_t)-1) {
-	for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	  h1d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH1D*> > > >());
-	  for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	    h1d_5p_[i].push_back(std::vector<std::vector<std::vector<TH1D*> > >());
-	    for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
-	      h1d_5p_[i][j].push_back(std::vector<std::vector<TH1D*> >());
-	      for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
-		h1d_5p_[i][j][k].push_back(std::vector<TH1D*>());
-		for (size_t m=0; m<pfs_[4].vec.size(); ++m)
-		  h1d_5p_[i][j][k][l].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
-							 title.c_str(), nbin1, low1, high1));
+	    if (npf_==2) {
+	      if (binsx.size()==2&&binsy.size()==2) {
+		h2d_2p_[i].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(),
+					      title_2d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1]));
+		if (spec) h1d_2p_[i].push_back(new TH1D((name_1d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(), 
+							title_1d.c_str(), nbinsx, binsx[0], binsx[1]));
+	      } else {
+		h2d_2p_[i].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(),
+					      title_2d.c_str(), nbinsx, xbins, nbinsy, ybins));
+		if (spec) h1d_2p_[i].push_back(new TH1D((name_1d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(), 
+							title_1d.c_str(), nbinsx, xbins));
 	      }
-	    }
-	  }
-	}
-	name.replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]);
-	title.replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]);
-      } else if (s2!=(size_t)-1) {
-	for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	  h1d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH1D*> > > >());
-	  for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	    h1d_5p_[i].push_back(std::vector<std::vector<std::vector<TH1D*> > >());
-	    for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
-	      h1d_5p_[i][j].push_back(std::vector<std::vector<TH1D*> >());
-	      for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
-		h1d_5p_[i][j][k].push_back(std::vector<TH1D*>());
-		for (size_t m=0; m<pfs_[4].vec.size(); ++m)
-		  h1d_5p_[i][j][k][l].push_back(new TH1D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
-							 title.c_str(), nbin1, low1, high1));
+	    } else {
+	      if (npf_==3) h2d_3p_[i].push_back(std::vector<TH2D*>());
+	      else if (npf_==4) h2d_4p_[i].push_back(std::vector<std::vector<TH2D*> >());
+	      else if (npf_==5) h2d_5p_[i].push_back(std::vector<std::vector<std::vector<TH2D*> > >());
+	      if (spec) {
+		if (npf_==3) h1d_3p_[i].push_back(std::vector<TH1D*>());
+		else if (npf_==4) h1d_4p_[i].push_back(std::vector<std::vector<TH1D*> >());
+		else if (npf_==5) h1d_5p_[i].push_back(std::vector<std::vector<std::vector<TH1D*> > >());
 	      }
-	    }
-	  }
-	}
-	name.erase(0,spec2_[s2][0].size());
-      }
-      for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	h2d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH2D*> > > >());
-	for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	  h2d_5p_[i].push_back(std::vector<std::vector<std::vector<TH2D*> > >());
-	  for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
-	    h2d_5p_[i][j].push_back(std::vector<std::vector<TH2D*> >());
-	    for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
-	      h2d_5p_[i][j][k].push_back(std::vector<TH2D*>());
-	      for (size_t m=0; m<pfs_[4].vec.size(); ++m)
-		h2d_5p_[i][j][k][l].push_back(new TH2D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
-						       title.c_str(), nbin1, low1, high1, nbin2, low2, high2));
+	      for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
+		if (npf_==3) {
+		  if (binsx.size()==2&&binsy.size()==2) {
+		    h2d_3p_[i][j].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(),
+						     title_2d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1]));
+		    if (spec) h1d_3p_[i][j].push_back(new TH1D((name_1d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(),
+							       title_1d.c_str(), nbinsx, binsx[0], binsx[1]));
+		  } else {
+		    h2d_3p_[i][j].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(),
+						     title_2d.c_str(), nbinsx, xbins, nbinsy, ybins));
+		    if (spec) h1d_3p_[i][j].push_back(new TH1D((name_1d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(),
+							       title_1d.c_str(), nbinsx, xbins));
+		  }
+		} else {
+		  if (npf_==4) h2d_4p_[i][j].push_back(std::vector<TH2D*>());
+		  else if (npf_==5) h2d_5p_[i][j].push_back(std::vector<std::vector<TH2D*> >());
+		  if (spec) {
+		    if (npf_==4) h1d_4p_[i][j].push_back(std::vector<TH1D*>());
+		    else if (npf_==5) h1d_5p_[i][j].push_back(std::vector<std::vector<TH1D*> >());
+		  }
+		  for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
+		    if (npf_==4) {
+		      if (binsx.size()==2&&binsy.size()==2) {
+			h2d_4p_[i][j][k].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(),
+							    title_2d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1]));
+			if (spec) h1d_4p_[i][j][k].push_back(new TH1D((name_1d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(),
+								      title_1d.c_str(), nbinsx, binsx[0], binsx[1]));
+		      } else {
+			h2d_4p_[i][j][k].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(),
+							    title_2d.c_str(), nbinsx, xbins, nbinsy, ybins));
+			if (spec) h1d_4p_[i][j][k].push_back(new TH1D((name_1d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(),
+								      title_1d.c_str(), nbinsx, xbins));		      }
+		    } else {
+		      if (npf_==5) h2d_5p_[i][j][k].push_back(std::vector<TH2D*>());
+		      if (spec) { if (npf_==5) h1d_5p_[i][j][k].push_back(std::vector<TH1D*>()); }
+		      for (size_t m=0; m<pfs_[4].vec.size(); ++m) {
+			if (npf_==5) {
+			  if (binsx.size()==2&&binsy.size()==2) {
+			    h2d_5p_[i][j][k][l].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+								   title_2d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1]));
+			    if (spec) h1d_5p_[i][j][k][l].push_back(new TH1D((name_1d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+									     title_1d.c_str(), nbinsx, binsx[0], binsx[1]));
+			  } else {
+			    h2d_5p_[i][j][k][l].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+								   title_2d.c_str(), nbinsx, xbins, nbinsy, ybins));
+			    if (spec) h1d_5p_[i][j][k][l].push_back(new TH1D((name_1d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+									     title_1d.c_str(), nbinsx, xbins));
+			  }
+			}
+		      }
+		    }
+		  }
+		}
+	      }
 	    }
 	  }
 	}
@@ -881,128 +828,128 @@ public:
   }
   // 3D
   void AddNew(std::string name, std::string title,
-	      int nbin1, double low1, double high1,
-	      int nbin2, double low2, double high2,
-	      int nbin3, double low3, double high3) { 
+	      size_t nbinsx, std::vector<double> binsx,
+	      size_t nbinsy, std::vector<double> binsy,
+	      size_t nbinsz, std::vector<double> binsz) {
+    Double_t xbins[nbinsx+1]; for (size_t i=0; i<binsx.size(); ++i) if (i<nbinsx+1) xbins[i] = binsx[i];
+    Double_t ybins[nbinsy+1]; for (size_t i=0; i<binsy.size(); ++i) if (i<nbinsy+1) ybins[i] = binsy[i];
+    Double_t zbins[nbinsz+1]; for (size_t i=0; i<binsz.size(); ++i) if (i<nbinsz+1) zbins[i] = binsz[i];
+    if (binsx.size()==2&&nbinsx>1) for (size_t i=0; i<=nbinsx; ++i) xbins[i] = binsx[0] + i*(binsx[1]-binsx[0])/nbinsx;
+    if (binsy.size()==2&&nbinsy>1) for (size_t i=0; i<=nbinsy; ++i) ybins[i] = binsy[0] + i*(binsy[1]-binsy[0])/nbinsy;
+    if (binsz.size()==2&&nbinsz>1) for (size_t i=0; i<=nbinsz; ++i) zbins[i] = binsz[0] + i*(binsz[1]-binsz[0])/nbinsz;
     size_t s =find_spec_(name); 
+    size_t s2 =find_spec2_(name);
+    bool spec = (s!=(size_t)-1||s2!=(size_t)-1);
+    std::string name_2d = name;
+    std::string name_3d = (s!=(size_t)-1) ? std::string(name).replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]) : (s2!=(size_t)-1) ? std::string(name).erase(0,spec2_[s2][0].size()) : name;
+    std::string title_2d = (s!=(size_t)-1) ? title : (s2!=(size_t)-1) ? std::string(title).insert(1,spec2_[s2][1]) : title;
+    std::string title_3d = (s!=(size_t)-1) ? std::string(title).replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]) : title;
     if (npf_==0) {
-      if (s!=(size_t)-1) {
-	h2d_0p_ = new TH2D(name.c_str(), title.c_str(), nbin1, low1, high1, nbin2, low2, high2);
-	name.replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]);
-	title.replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]);
+      if (binsx.size()==2&&binsy.size()==2&&binsz.size()==2) {
+	h3d_0p_ = new TH3D(name_3d.c_str(), title_3d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1], nbinsz, binsz[0], binsz[1]);
+	if (spec) h2d_0p_ = new TH2D(name_2d.c_str(), title_2d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1]);
+      } else {
+	h3d_0p_ = new TH3D(name_3d.c_str(), title_3d.c_str(), nbinsx, xbins, nbinsy, ybins, nbinsz, zbins);
+	if (spec) h2d_0p_ = new TH2D(name_2d.c_str(), title_2d.c_str(), nbinsx, xbins, nbinsy, ybins);
       }
-      h3d_0p_ = new TH3D(name.c_str(), title.c_str(), nbin1, low1, high1, nbin2, low2, high2, nbin3, low3, high3);
-    } else if (npf_==1) {
-      if (s!=(size_t)-1) {
-	for (size_t i=0; i<pfs_[0].vec.size(); ++i) 
-	  h2d_1p_.push_back(new TH2D((name+"_"+pfs_[0].vec[i]).c_str(), title.c_str(),
-				     nbin1, low1, high1, nbin2, low2, high2));
-	name.replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]);
-	title.replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]);
-      }
-      for (size_t i=0; i<pfs_[0].vec.size(); ++i) 
-	h3d_1p_.push_back(new TH3D((name+"_"+pfs_[0].vec[i]).c_str(), title.c_str(),
-				   nbin1, low1, high1, nbin2, low2, high2, nbin3, low3, high3));
-    } else if (npf_==2) {
-      if (s!=(size_t)-1) {
-	for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	  h2d_2p_.push_back(std::vector<TH2D*>());
-	  for (size_t j=0; j<pfs_[1].vec.size(); ++j)
-	    h2d_2p_[i].push_back(new TH2D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(), title.c_str(),
-					  nbin1, low1, high1, nbin2, low2, high2));
-	}
-	name.replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]);
-	title.replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]);
-      }
+    } else {
       for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	h3d_2p_.push_back(std::vector<TH3D*>());
-	for (size_t j=0; j<pfs_[1].vec.size(); ++j)
-	  h3d_2p_[i].push_back(new TH3D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(), title.c_str(),
-					nbin1, low1, high1, nbin2, low2, high2, nbin3, low3, high3));
-      }
-    } else if (npf_==3) {
-      if (s!=(size_t)-1) {
-	for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	  h2d_3p_.push_back(std::vector<std::vector<TH2D*> > ());
-	  for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	    h2d_3p_[i].push_back(std::vector<TH2D*>());
-	    for (size_t k=0; k<pfs_[2].vec.size(); ++k)
-	      h2d_3p_[i][j].push_back(new TH2D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(), title.c_str(),
-					       nbin1, low1, high1, nbin2, low2, high2));
+	if (npf_==1) {
+	  if (binsx.size()==2&&binsy.size()==2&&binsz.size()==2) {
+	    h3d_1p_.push_back(new TH3D((name_3d+"_"+pfs_[0].vec[i]).c_str(), title_3d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1], nbinsz, binsz[0], binsz[1]));
+	    if (spec) h2d_1p_.push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]).c_str(), title_2d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1]));
+	  } else {
+	    h3d_1p_.push_back(new TH3D((name_3d+"_"+pfs_[0].vec[i]).c_str(), title_3d.c_str(), nbinsx, xbins, nbinsy, ybins, nbinsz, zbins));
+	    if (spec) h2d_1p_.push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]).c_str(), title_2d.c_str(), nbinsx, xbins, nbinsy, ybins));
 	  }
-	}
-	name.replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]);
-	title.replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]);
-      }
-      for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	h3d_3p_.push_back(std::vector<std::vector<TH3D*> > ());
-	for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	  h3d_3p_[i].push_back(std::vector<TH3D*>());
-	  for (size_t k=0; k<pfs_[2].vec.size(); ++k)
-	    h3d_3p_[i][j].push_back(new TH3D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(), title.c_str(),
-					     nbin1, low1, high1, nbin2, low2, high2, nbin3, low3, high3));
-	}
-      }
-    } else if (npf_==4) {
-      if (s!=(size_t)-1) {
-	for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	  h2d_4p_.push_back(std::vector<std::vector<std::vector<TH2D*> > >());
-	  for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	    h2d_4p_[i].push_back(std::vector<std::vector<TH2D*> >());
-	    for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
-	      h2d_4p_[i][j].push_back(std::vector<TH2D*>());
-	      for (size_t l=0; l<pfs_[3].vec.size(); ++l)
-		h2d_4p_[i][j][k].push_back(new TH2D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(), title.c_str(),
-						    nbin1, low1, high1, nbin2, low2, high2));
-	    }
+	} else {
+	  if (npf_==2) h3d_2p_.push_back(std::vector<TH3D*>());
+	  else if (npf_==3) h3d_3p_.push_back(std::vector<std::vector<TH3D*> > ());
+	  else if (npf_==4) h3d_4p_.push_back(std::vector<std::vector<std::vector<TH3D*> > >());
+	  else if (npf_==5) h3d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH3D*> > > >());
+	  if (spec) {
+	    if (npf_==2) h2d_2p_.push_back(std::vector<TH2D*>());
+	    else if (npf_==3) h2d_3p_.push_back(std::vector<std::vector<TH2D*> > ());
+	    else if (npf_==4) h2d_4p_.push_back(std::vector<std::vector<std::vector<TH2D*> > >());
+	    else if (npf_==5) h2d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH2D*> > > >());
 	  }
-	}
-	name.replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]);
-	title.replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]);
-      }
-      for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	h3d_4p_.push_back(std::vector<std::vector<std::vector<TH3D*> > >());
-	for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	  h3d_4p_[i].push_back(std::vector<std::vector<TH3D*> >());
-	  for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
-	    h3d_4p_[i][j].push_back(std::vector<TH3D*>());
-	    for (size_t l=0; l<pfs_[3].vec.size(); ++l)
-	      h3d_4p_[i][j][k].push_back(new TH3D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(), title.c_str(),
-						  nbin1, low1, high1, nbin2, low2, high2, nbin3, low3, high3));
-	  }
-	}
-      }
-    } else if (npf_==5) {
-      if (s!=(size_t)-1) {
-	for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	  h2d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH2D*> > > >());
 	  for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	    h2d_5p_[i].push_back(std::vector<std::vector<std::vector<TH2D*> > >());
-	    for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
-	      h2d_5p_[i][j].push_back(std::vector<std::vector<TH2D*> >());
-	      for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
-		h2d_5p_[i][j][k].push_back(std::vector<TH2D*>());
-		for (size_t m=0; m<pfs_[4].vec.size(); ++m)
-		  h2d_5p_[i][j][k][l].push_back(new TH2D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
-							 title.c_str(), nbin1, low1, high1, nbin2, low2, high2));
+	    if (npf_==2) {
+	      if (binsx.size()==2&&binsy.size()==2&&binsz.size()==2) {
+		h3d_2p_[i].push_back(new TH3D((name_3d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(),
+					      title_3d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1], nbinsz, binsz[0], binsz[1]));
+		if (spec) h2d_2p_[i].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(), 
+							title_2d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1]));
+	      } else {
+		h3d_2p_[i].push_back(new TH3D((name_3d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(),
+					      title_3d.c_str(), nbinsx, xbins, nbinsy, ybins, nbinsz, zbins));
+		if (spec) h2d_2p_[i].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]).c_str(), 
+							title_2d.c_str(), nbinsx, xbins, nbinsy, ybins));
 	      }
-	    }
-	  }
-	}
-	name.replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]);
-	title.replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]);
-      }
-      for (size_t i=0; i<pfs_[0].vec.size(); ++i) {
-	h3d_5p_.push_back(std::vector<std::vector<std::vector<std::vector<TH3D*> > > >());
-	for (size_t j=0; j<pfs_[1].vec.size(); ++j) {
-	  h3d_5p_[i].push_back(std::vector<std::vector<std::vector<TH3D*> > >());
-	  for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
-	    h3d_5p_[i][j].push_back(std::vector<std::vector<TH3D*> >());
-	    for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
-	      h3d_5p_[i][j][k].push_back(std::vector<TH3D*>());
-	      for (size_t m=0; m<pfs_[4].vec.size(); ++m)
-		h3d_5p_[i][j][k][l].push_back(new TH3D((name+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
-						       title.c_str(), nbin1, low1, high1, nbin2, low2, high2, nbin3, low3, high3));
+	    } else {
+	      if (npf_==3) h3d_3p_[i].push_back(std::vector<TH3D*>());
+	      else if (npf_==4) h3d_4p_[i].push_back(std::vector<std::vector<TH3D*> >());
+	      else if (npf_==5) h3d_5p_[i].push_back(std::vector<std::vector<std::vector<TH3D*> > >());
+	      if (spec) {
+		if (npf_==3) h2d_3p_[i].push_back(std::vector<TH2D*>());
+		else if (npf_==4) h2d_4p_[i].push_back(std::vector<std::vector<TH2D*> >());
+		else if (npf_==5) h2d_5p_[i].push_back(std::vector<std::vector<std::vector<TH2D*> > >());
+	      }
+	      for (size_t k=0; k<pfs_[2].vec.size(); ++k) {
+		if (npf_==3) {
+		  if (binsx.size()==2&&binsy.size()==2&&binsz.size()==2) {
+		    h3d_3p_[i][j].push_back(new TH3D((name_3d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(),
+						     title_3d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1], nbinsz, binsz[0], binsz[1]));
+		    if (spec) h2d_3p_[i][j].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(),
+							       title_2d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1]));
+		  } else {
+		    h3d_3p_[i][j].push_back(new TH3D((name_3d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(),
+						     title_3d.c_str(), nbinsx, xbins, nbinsy, ybins, nbinsz, zbins));
+		    if (spec) h2d_3p_[i][j].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]).c_str(),
+							       title_2d.c_str(), nbinsx, xbins, nbinsy, ybins));
+		  }
+		} else {
+		  if (npf_==4) h3d_4p_[i][j].push_back(std::vector<TH3D*>());
+		  else if (npf_==5) h3d_5p_[i][j].push_back(std::vector<std::vector<TH3D*> >());
+		  if (spec) {
+		    if (npf_==4) h2d_4p_[i][j].push_back(std::vector<TH2D*>());
+		    else if (npf_==5) h2d_5p_[i][j].push_back(std::vector<std::vector<TH2D*> >());
+		  }
+		  for (size_t l=0; l<pfs_[3].vec.size(); ++l) {
+		    if (npf_==4) {
+		      if (binsx.size()==2&&binsy.size()==2&&binsz.size()==2) {
+			h3d_4p_[i][j][k].push_back(new TH3D((name_3d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(),
+							    title_3d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1], nbinsz, binsz[0], binsz[1]));
+			if (spec) h2d_4p_[i][j][k].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(),
+								      title_2d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1]));
+		      } else {
+			h3d_4p_[i][j][k].push_back(new TH3D((name_3d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(),
+							    title_3d.c_str(), nbinsx, xbins, nbinsy, ybins, nbinsz, zbins));
+			if (spec) h2d_4p_[i][j][k].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]).c_str(),
+								      title_2d.c_str(), nbinsx, xbins, nbinsy, ybins));
+		      }
+		    } else {
+		      if (npf_==5) h3d_5p_[i][j][k].push_back(std::vector<TH3D*>());
+		      if (spec) { if (npf_==5) h2d_5p_[i][j][k].push_back(std::vector<TH2D*>()); }
+		      for (size_t m=0; m<pfs_[4].vec.size(); ++m) {
+			if (npf_==5) {
+			  if (binsx.size()==2&&binsy.size()==2&&binsz.size()==2) {
+			    h3d_5p_[i][j][k][l].push_back(new TH3D((name_3d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+								   title_3d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1], nbinsz, binsz[0], binsz[1]));
+			    if (spec) h2d_5p_[i][j][k][l].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+									     title_2d.c_str(), nbinsx, binsx[0], binsx[1], nbinsy, binsy[0], binsy[1]));
+			  } else {
+			    h3d_5p_[i][j][k][l].push_back(new TH3D((name_3d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+								   title_3d.c_str(), nbinsx, xbins, nbinsy, ybins, nbinsz, zbins));
+			    if (spec) h2d_5p_[i][j][k][l].push_back(new TH2D((name_2d+"_"+pfs_[0].vec[i]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m]).c_str(),
+									     title_2d.c_str(), nbinsx, xbins, nbinsy, ybins));
+			  }
+			}
+		      }
+		    }
+		  }
+		}
+	      }
 	    }
 	  }
 	}
@@ -1458,7 +1405,8 @@ public:
   // constructor, destructor
   SmartHistos() { pf_ = new Postfixes(); cut_ = new Cuts(); weights_={}; }
   ~SmartHistos() {}
-  typedef struct FillParams { int nbin; double low; double high; std::function<double()> fill; std::string axis_title; } FillParams;
+  //typedef struct FillParams { int nbin; double low; double high; std::function<double()> fill; std::string axis_title; } FillParams;
+  typedef struct FillParams { size_t nbin; std::vector<double> bins; std::function<double()> fill; std::string axis_title; } FillParams;
   
 private:
   // Postfix container
@@ -1494,7 +1442,7 @@ private:
 	return hp_map_[match];
       } else {
 	std::cout<<"!!! ERROR: SmartHistos::get_hp_: FillParams with name = "<<name<<" was not found."<<std::endl;
-	return FillParams({.nbin=0,.low=0,.high=0,.fill={ [](){return -9999.9;} },.axis_title=""});
+	return FillParams({.nbin=0,.bins={},.fill={ [](){return -9999.9;} },.axis_title=""});
       }
     }
   }
@@ -1540,7 +1488,11 @@ private:
   }
 
 public:
-  void AddNewFillParam(std::string name, FillParams hp) { hp_map_.insert(std::pair<std::string, FillParams>(name, hp )); }
+  void AddNewFillParam(std::string name, FillParams hp) {
+    if (hp.nbin>=hp.bins.size()&&hp.bins.size()>2) 
+      std::cout<<"SmartHistos::AddNewFillParam() Warning: Smaller number of bins defined, decrease nbin param or add new bins!\n";
+    hp_map_.insert(std::pair<std::string, FillParams>(name, hp )); 
+  }
   
   void AddNewPostfix(const char* name, std::function<size_t()> sel, std::string pf, std::string leg, std::string colz) { pf_->AddNew(name, sel, pf, leg, colz); }
   
@@ -1572,15 +1524,14 @@ public:
 	std::vector<std::function<bool()>> cuts;
         for (size_t i=0; i<hp.cuts.size(); ++i) cuts.push_back(cut_->GetCut(hp.cuts[i]));
         sh_[name].push_back(new SmartHisto(hp.fill.c_str(), hp.pfs, pfs, fillfuncs, weights_, cuts, hp.draw, hp.opt, hp.ranges));
-        if (hp_vec.size()==1) sh_[name][sh_[name].size()-1]->AddNew(hp.fill, axis_titles, 
-								    hp_vec[0].nbin, hp_vec[0].low, hp_vec[0].high);
+        if (hp_vec.size()==1) sh_[name][sh_[name].size()-1]->AddNew(hp.fill, axis_titles, hp_vec[0].nbin, hp_vec[0].bins);
         else if (hp_vec.size()==2) sh_[name][sh_[name].size()-1]->AddNew(hp.fill, axis_titles,
-									 hp_vec[1].nbin, hp_vec[1].low, hp_vec[1].high,
-									 hp_vec[0].nbin, hp_vec[0].low, hp_vec[0].high);
+									 hp_vec[1].nbin, hp_vec[1].bins,
+									 hp_vec[0].nbin, hp_vec[0].bins);
         else if (hp_vec.size()==3) sh_[name][sh_[name].size()-1]->AddNew(hp.fill, axis_titles,
-									 hp_vec[2].nbin, hp_vec[2].low, hp_vec[2].high,
-									 hp_vec[1].nbin, hp_vec[1].low, hp_vec[1].high,
-									 hp_vec[0].nbin, hp_vec[0].low, hp_vec[0].high);
+									 hp_vec[2].nbin, hp_vec[2].bins,
+									 hp_vec[1].nbin, hp_vec[1].bins,
+									 hp_vec[0].nbin, hp_vec[0].bins);
       }
     }
   }
@@ -1635,7 +1586,7 @@ public:
   }
   
   void Write(std::string name = "") { 
-    std::cout<<"Writing starts "<<name.size()<<std::endl;
+    //std::cout<<"Writing starts "<<name.size()<<std::endl;
     if (name.size()) for (size_t i=0; i<sh_[name].size(); ++i) sh_[name][i]->Write();
     else for(std::map<std::string, std::vector<SmartHisto*> >::iterator it = sh_.begin(); it != sh_.end(); ++it)
       for (size_t i=0; i<it->second.size(); ++i) it->second[i]->Write();
