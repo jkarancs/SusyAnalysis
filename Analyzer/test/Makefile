@@ -16,6 +16,13 @@ B2GANALYZER       = B2GAnalyzer$(ExeSuf)
 OBJS          += $(B2GANALYZERO)
 PROGRAMS      += $(B2GANALYZER)
 #------------------------------------------------------------------------------
+DRAWEVENTO      = DrawEvent.$(ObjSuf)
+DRAWEVENTS      = DrawEvent.$(SrcSuf)
+DRAWEVENT       = DrawEvent$(ExeSuf)
+
+OBJS          += $(DRAWEVENTO)
+PROGRAMS      += $(DRAWEVENT)
+#------------------------------------------------------------------------------
 
 
 .SUFFIXES: .$(SrcSuf) .$(ObjSuf) .$(DllSuf)
@@ -27,6 +34,10 @@ $(B2GPLOTTER):     $(B2GPLOTTERO)
 		$(MT_EXE)
 		@echo "$@ done"
 $(B2GANALYZER):     $(B2GANALYZERO)
+		$(LD) $(LDFLAGS) $^ $(LIBS) $(OutPutOpt)$@
+		$(MT_EXE)
+		@echo "$@ done"
+$(DRAWEVENT):     $(DRAWEVENTO)
 		$(LD) $(LDFLAGS) $^ $(LIBS) $(OutPutOpt)$@
 		$(MT_EXE)
 		@echo "$@ done"

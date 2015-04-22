@@ -6,11 +6,12 @@
 #include "TStyle.h"
 
 void EstimateBg() {
-  gStyle->SetOptTitle(1);
+  gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
   
   std::vector<std::string> samples;
-  samples.push_back("TTBar");
+  samples.push_back("TTJets");
+  //samples.push_back("TTBar");
   //samples.push_back("WJets");
   samples.push_back("WJets_HT");
   samples.push_back("ZJets_HT");
@@ -18,7 +19,7 @@ void EstimateBg() {
   //samples.push_back("QCD_Pt_bcToE");
   samples.push_back("T_tW");
   //samples.push_back("TToLep_s_t");
-  samples.push_back("DYJets_HT");
+  //samples.push_back("DYJets_HT");
   //samples.push_back("DYJets");
   //samples.push_back("GJets_HT");
   
@@ -27,16 +28,24 @@ void EstimateBg() {
   //int rebin[] = { 5, 5, 5, 5, 5, 5};
   //double sideband_fit_low_range[] = { 0.15, 0.20, 0.10, 0.30, 0.10, 0.15 };
   //int rebin[] = { 5, 5, 5, 5, 5, 5};
-  int rebin[] = { 2, 2, 2, 2, 2, 2};
-  double sideband_fit_low_range[] = { 0.14, 0.14, 0.30, 0.13, 0.13, 0.13 };
-  bool dphi_sideband[] = { 1, 0, 0, 1, 0, 0 };
-  bool baderror = false;
-  double weight[] = { 2.69454, 0.0505037, 0.00921411, 6.80717, 0.354934, 0.00484915 };
+  //double weight[] = { 2.69454, 0.0505037, 0.00921411, 6.80717, 0.354934, 0.00484915 };
+  bool baderror = true;
+  //double weight[] = { 0.32686, 2.69454, 0.0505037, 0.00921411, 6.80717, 0.354934, 0.00484915 };
+  //int rebin[] = { 4, 4, 4, 4, 4, 4, 4};
+  //double sideband_fit_low_range[] = { 0.14, 0.14, 0.14, 0.30, 0.13, 0.13, 0.13 };
+  //bool dphi_sideband[] = { 0, 0, 0, 0, 0, 0, 0 };
+  double weight[] = { 0.32686, 0.0505037, 0.00921411, 6.80717, 0.354934, 0.00484915 };
+  int rebin[] = { 4, 4, 8, 4, 10, 4};
+  double sideband_fit_low_range[] = { 0.14, 0.14, 0.16, 0.14, 0.10, 0.14 };
+  bool dphi_sideband[] = { 0, 0, 0, 0, 0, 0 };
   
   //TFile *f = TFile::Open("ROOT_output/SignalCutPlots_RAbove0p4_DPhiBelow2p8_HtAllAbove0_TightLeptonVeto.root");
   //TFile *f = TFile::Open("ROOT_output/SignalCutPlots_RAbove0p4_DPhiBelow2p8_HtAllAbove0.root");
-  TFile *f = TFile::Open("ROOT_output/BackGroundEstimate_NTopHadSideBand_NoLeptonVeto_50MassCut_fullstat.root");
-  double Rranges_ABCD[3] = { 0, 0.4, 1.0 };
+  //TFile *f = TFile::Open("ROOT_output/BackGroundEstimate_NTopHadSideBand_NoLeptonVeto_50MassCut_fullstat.root");
+  //TFile *f = TFile::Open("ROOT_output/BackGroundEstimate_Apr02_fullstat.root");
+  TFile *f = TFile::Open("ROOT_output/BackGroundEstimate_Apr02_140MassCut_fullstat.root");
+  //TFile *f = TFile::Open("ROOT_output/BackGroundEstimate_Apr02_140MassCut_LepVeto_fullstat.root");
+  double Rranges_ABCD[3] = { 0.00, 0.4, 1.20 };
   //TFile *f = TFile::Open("ROOT_output/SignalCutPlots_RAbove0p35_DPhiBelow2p8_HtAllAbove0.root");
   //double Rranges_ABCD[3] = { 0, 0.35, 1.0 };
   bool doFitting = false;
@@ -45,13 +54,17 @@ void EstimateBg() {
   double sum_b_fit = 0, sum_d_fit = 0, sum_d_fit_comb = 0;
   double sum_b_fit_err = 0, sum_d_fit_err = 0, sum_d_fit_comb_err = 0;
   //printf("| *Sample* | *A (R<0.4, NTop<2)* | *B (R>0.4, NTop<2)* | *C (R<0.4, NTop==2)* | *D (R>0.4, NTop==2) obs.* | *D = B*C/A pred.* | *A->B (R-shape fit) pred.* | *C->D (R-shape fit) pred.* | *D pred (From sideband R-shape fit)* | \n");
-  printf("| *Sample* | *A (R<0.4, Sideband)* | *B (R fit in Sideband) pred.* | *B (R>0.4, Sideband)* | *C (R<0.4, Signal band)* | *D (R fit in C) pred.* | *D = B*C/A pred.* | *D = B (R fit in Sideband) * C/A* | *D (R>0.4, Signal band) obs.* | *Nevent in D* | \n");
+  printf("| *Sample* | *A (R<0.4, SB)* | *B (R fit, SB) pred.* | *B (R>0.4, SB)* | *C (R<0.4, Sig.B.)* | *D (R fit, Sig.B.) pred.* | *D = B*C/A pred.* | *D = B (R fit, SB) * C/A pred.* | *D (R>0.4, Sig.B.) obs.* | *Statistics in D* | \n");
   for (size_t iSample = 0; iSample<samples.size(); ++iSample) {
     std::string canname = std::string(dphi_sideband[iSample] ? "RFine/DPhi2p8_2HadTop_" : "RFine/NTopHad_DPhiBelow2p8_")+samples[iSample];
     //std::string canname = std::string(dphi_sideband[iSample] ? "R/CutDPhi_2HadTop_" : "R/NTopHad_DPhiBelow2p8_")+samples[iSample];
     TCanvas *can = (TCanvas*)f->Get(canname.c_str()); can->Draw();
-    TH1D *h_side = (TH1D*)can->GetListOfPrimitives()->At(dphi_sideband[iSample]); h_side->Rebin(rebin[iSample]);
-    TH1D *h_signal = (TH1D*)can->GetListOfPrimitives()->At(1-dphi_sideband[iSample]); h_signal->Rebin(rebin[iSample]);
+    TH1D *h_side = (TH1D*)can->GetListOfPrimitives()->At(dphi_sideband[iSample]); 
+    TH1D *h_signal = (TH1D*)can->GetListOfPrimitives()->At(1-dphi_sideband[iSample]);
+    if (rebin[iSample]>1) {
+      h_side->Rebin(rebin[iSample]);
+      h_signal->Rebin(rebin[iSample]);
+    }
     TLegend *leg = (TLegend*)can->GetListOfPrimitives()->At(2);
     leg->SetX1(0.35); leg->SetX2(0.65); leg->SetY1(0.6);
 
@@ -71,6 +84,7 @@ void EstimateBg() {
     p->SetPad(0,(y2+60+mid2)/(y1+y2+100.0+mid2),1,1);
     p->SetTopMargin(40.0/(y1+40));
     p->SetBottomMargin(0);
+    p->SetRightMargin(0.05);
     p->SetLogy(1);
     h_side->GetYaxis()->SetRangeUser(1.00001e-4,1e4);
     h_side->Draw("HIST");
@@ -82,22 +96,25 @@ void EstimateBg() {
     p->SetPad(0,0,1,(y2+60+mid2)/(y1+y2+100.0+mid2));
     p->SetTopMargin(((float)mid2)/(y2+60+mid2));
     p->SetBottomMargin(60.0/(y2+60+mid2));
-    TH1D* ratio = (TH1D*)h_side->Clone();
-    TH1D* div = (TH1D*)h_signal->Clone();
+    p->SetRightMargin(0.05);
+    TH1D* ratio = (TH1D*)h_signal->Clone();
+    TH1D* div = (TH1D*)h_side->Clone();
     ratio->Scale(1/ratio->GetSumOfWeights());
     ratio->SetTitleSize(32.0/(y2+60+mid2),"xyz");
     ratio->SetLabelSize(20.0/(y2+60+mid2),"xyz");
     div->Scale(1/div->GetSumOfWeights());
     ratio->Divide(div);
     //ratio->GetYaxis()->SetRangeUser(0,2);
+    ratio->GetXaxis()->SetTitleOffset(0.7);
     ratio->GetYaxis()->SetNdivisions(305);
-    ratio->GetYaxis()->SetTitle("Ratio");
-    ratio->GetYaxis()->SetTitleOffset(0.45);
+    ratio->GetYaxis()->SetTitle("Ratio (Norm.)");
+    ratio->GetYaxis()->SetTitleOffset(0.4);
     ratio->SetTitleSize(24.0/(y2+60+mid2),"y");
     ratio->SetTitle("");
     ratio->SetMarkerStyle(20);
     ratio->SetMarkerColor(1);
     ratio->SetLineColor(1);
+    ratio->GetYaxis()->SetRangeUser(0,4);
     ratio->Draw("PE1");
     TLine* l = new TLine(ratio->GetXaxis()->GetXmin(), 1, ratio->GetXaxis()->GetXmax(), 1);
     l->SetLineWidth(2);
@@ -127,7 +144,7 @@ void EstimateBg() {
           integral[1][i] += c1;
           integral_error[0][i] += e0*e0;
           integral_error[1][i] += e1*e1;
-	  //if (e1>0) std::cout<<bin<<" "<<c1<<" +- "<<e1*e1<<" nevt = "<<((int)(c1*c1/(e1*e1) + 0.5))<<std::endl;
+	  //if (iSample==0&&e1>0) std::cout<<bin<<" "<<c1<<" +- "<<e1*e1<<" nevt = "<<((int)(c1*c1/(e1*e1) + 0.5))<<std::endl;
         }
       }
       //if (iSample==1&&i==1) std::cout<<integral[1][i]<<" +- "<<integral_error[1][i]<<std::endl;
@@ -236,12 +253,11 @@ void EstimateBg() {
     //std::cout<<"Intagrals (NTop sideband,   R signalband) - MC-sum: "<<integral[0][1]<<" +- "<<integral_error[0][1]<<" Fit: "<<fit_integral[0][1]<<" +- "<<fit_integral_error[0][1]<<std::endl;
     //std::cout<<"Intagrals (NTop signalband, R sideband)   - MC-sum: "<<integral[1][0]<<" +- "<<integral_error[1][0]<<" Fit: "<<fit_integral[1][0]<<" +- "<<fit_integral_error[1][0]<<std::endl;
     //std::cout<<"Intagrals (NTop signalband, R signalband) - MC-sum: "<<integral[1][1]<<" +- "<<integral_error[1][1]<<" Fit: "<<fit_integral[1][1]<<" +- "<<fit_integral_error[1][1]<<std::endl;
-    //can->SaveAs((std::string("/afs/cern.ch/user/j/jkarancs/public/SUSY/Analysis/Plots/2015_03_29/")+can->GetName()+".png").c_str());
+    //can->SaveAs((std::string("/afs/cern.ch/user/j/jkarancs/public/SUSY/Analysis/Plots/2015_04_07/")+can->GetName()+".png").c_str());
   }
   sum_a_err = sqrt(sum_a_err); sum_b_err = sqrt(sum_b_err); sum_c_err = sqrt(sum_c_err); sum_d_err = sqrt(sum_d_err);
   sum_b_fit_err = sqrt(sum_b_fit_err); sum_d_fit_err = sqrt(sum_d_fit_err); sum_d_fit_comb_err = sqrt(sum_d_fit_comb_err);
   printf("| SUM |  %.2f +- %.2f |  %.2f +- %.2f |  %.2f +- %.2f |  %.2f +- %.2f |",
 	 sum_a, sum_a_err, sum_b_fit, sum_b_fit_err, sum_b, sum_b_err, sum_c, sum_c_err);
-  printf("  %.2f +- %.2f |  %.2f +- %.2f |  %.2f +- %.2f |  %.2f +- %.2f |  %d |\n", sum_d_fit, sum_d_fit_err, sum_d_abcd, sum_d_abcd_err, sum_d_fit_comb, sum_d_fit_comb_err, sum_d, sum_d_err, sum_d_nevt); // R-shape fit and ABCD combined result
+  printf("  %.2f +- %.2f |  %.2f +- %.2f |  %.2f +- %.2f |  %.2f +- %.2f |  |\n", sum_d_fit, sum_d_fit_err, sum_d_abcd, sum_d_abcd_err, sum_d_fit_comb, sum_d_fit_comb_err, sum_d, sum_d_err); // R-shape fit and ABCD combined result
 }
-

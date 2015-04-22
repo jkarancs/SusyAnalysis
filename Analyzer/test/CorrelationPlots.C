@@ -33,15 +33,17 @@ void make_comparison_plot(TFile* f, std::string name, std::string canname, float
 void save_1d(TFile* f, float limit, std::string name, std::string canname) {
   TCanvas* c = ((TCanvas*)f->Get(name.c_str()));
   TH1D* h = (TH1D*)c->GetListOfPrimitives()->At(0);
-  if (limit>0) h->GetYaxis()->SetRangeUser(0.00001,limit);
-  c->SetLogy(1);
+  if (limit>10) {
+    h->GetYaxis()->SetRangeUser(0.001,limit);
+    c->SetLogy(1);
+  }
   c->Draw();
   //c->SaveAs((std::string("Plots/2015_01_17/")+canname+".png").c_str());
 }
 
 void CorrelationPlots() {
   gStyle->SetOptStat(0);
-  TFile *f = TFile::Open("feb23_AllSamples_HTBinned_fullstat.root");
+  //TFile *f = TFile::Open("feb23_AllSamples_HTBinned_fullstat.root");
   
   // 01/16
   //save_1d(f, 0.1, "HT/ttbar,qcd,Susy3,Susy4",           "H_T");
@@ -97,13 +99,24 @@ void CorrelationPlots() {
   //make_comparison_plot(f, "Rtt_vs_DeltaPhi",          "Rtt_vs_DeltaPhi_Signal",            0.4,  "_Signal");
   
   // 02/27
-  save_1d(f, 1000000, "AK8JetR/AllSamples",       "R");
-  save_1d(f, 1000000, "AK8JetR2/AllSamples",      "R2");
-  save_1d(f, 1000000, "TT_R/AllSamples",          "Rtt");
-  save_1d(f, 1000000, "TT_R2/AllSamples",         "R2tt");
-  save_1d(f, 1000000, "TT_AbsDeltaPhi/AllSamples","DeltaPhi");
-  save_1d(f, 1000000, "H_Tevt/AllSamples",        "HTevt");
-  save_1d(f, 1000000, "H_T/AllSamples",           "HT");
-  save_1d(f, 1000000, "H_TttFraction/AllSamples", "HTttFraction");
-  save_1d(f, 1000000, "H_TexFraction/AllSamples", "HTexFraction");
+  //save_1d(f, 1000000, "AK8JetR/AllSamples",       "R");
+  //save_1d(f, 1000000, "AK8JetR2/AllSamples",      "R2");
+  //save_1d(f, 1000000, "TT_R/AllSamples",          "Rtt");
+  //save_1d(f, 1000000, "TT_R2/AllSamples",         "R2tt");
+  //save_1d(f, 1000000, "TT_AbsDeltaPhi/AllSamples","DeltaPhi");
+  //save_1d(f, 1000000, "H_Tevt/AllSamples",        "HTevt");
+  //save_1d(f, 1000000, "H_T/AllSamples",           "HT");
+  //save_1d(f, 1000000, "H_TttFraction/AllSamples", "HTttFraction");
+  //save_1d(f, 1000000, "H_TexFraction/AllSamples", "HTexFraction");
+  
+  // 04/11
+  TFile *f = TFile::Open("ROOT_output/SignalCutPlots_RAbove0p4_DPhiBelow2p8_HtAllAbove0.root");
+  // Distributions - no cut
+  save_1d(f, 1000000, "R/AllSamples_2HadTop",         "R");
+  save_1d(f, 1000000, "TTHadDPhi/AllSamples_2HadTop", "DPhi");
+  // N-1 cut plots
+  save_1d(f, 7,    "R/AllSamples_2HadTop_DPhiBelow2p8",      "R_DPhiCut");
+  save_1d(f, 1000, "TTHadDPhi/AllSamples_2HadTop_RAbove0p4", "DPhi_RCut");
+  
+  
 }

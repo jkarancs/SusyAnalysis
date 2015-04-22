@@ -6,6 +6,7 @@
 
 #define NLEP 20
 #define NJET 50
+#define NGEN 500
 
 #include <vector>
 #include "TLorentzVector.h"
@@ -17,6 +18,69 @@ class Data {
 public:
   Data() {}
   ~Data() {}
+  
+  class GenVars {
+  public:
+    GenVars() { init(); }
+    ~GenVars() {}
+    
+    // Basic
+    float Mass[NGEN+1];
+    float Pt[NGEN+1];
+    float Eta[NGEN+1];
+    float Y[NGEN+1];
+    float Phi[NGEN+1];
+    float E[NGEN+1];
+    float Charge[NGEN+1];
+    float ID[NGEN+1];
+    float Status[NGEN+1];
+    float MomID[NGEN+1];
+    
+    size_t it;
+    int size;
+    
+    void init() {
+      for (size_t i=0; i<=NGEN; ++i) {
+        Mass[i]=NOVAL_F;
+        Pt[i]=NOVAL_F;
+        Eta[i]=NOVAL_F;
+        Y[i]=NOVAL_F;
+        Phi[i]=NOVAL_F;
+        E[i]=NOVAL_F;
+        Charge[i]=NOVAL_F;
+        ID[i]=NOVAL_F;
+	Status[i]=NOVAL_F;
+        MomID[i]=NOVAL_F;
+      }
+      it = -1;
+      size = 0;
+    }
+    
+    void SetCurrent(size_t it) {
+      Mass[NGEN]              = Mass[it];             
+      Pt[NGEN]		      = Pt[it];		     
+      Eta[NGEN]		      = Eta[it];		     
+      Y[NGEN]		      = Y[it];		     
+      Phi[NGEN]		      = Phi[it];		     
+      E[NGEN]		      = E[it];		     
+      Charge[NGEN]	      = Charge[it];	     
+      ID[NGEN]		      = ID[it];		     
+      Status[NGEN]	      = Status[it];		     
+      MomID[NGEN]	      = MomID[it];		     
+    }
+    
+    bool Loop() {
+      ++it;
+      if (it<(size_t)size) {
+	SetCurrent(it);
+	return 1;
+      } else {
+	it=-1;
+	return 0;
+      }
+    }
+    
+  } gen;
   
   class ElectronVars {
   public:
@@ -728,6 +792,10 @@ public:
     float EleJetCombMass[NLEP+1];
     float MuJetCombMass[NLEP+1];
     int nhadtoplike;
+
+    // Development 20 April
+    bool isTop[NJET];
+    bool isTopHadBoosted[NJET];
     
     void init() {
       NLep=NOVAL_I;
@@ -806,6 +874,12 @@ public:
 	MuJetCombMass[i]=NOVAL_F;
       }
       nhadtoplike=NOVAL_I;
+      
+      // Development 20 April
+      for (size_t i=0; i<NJET; ++i) {
+	isTop[i]=NOVAL_F;
+	isTopHadBoosted[i]=NOVAL_F;
+      }
     }
   } evt;
   
@@ -873,6 +947,23 @@ public:
       }
     }
     
+    // Make a list of Generator level objects and save their location
+    std::vector<TLorentzVector> gen_top;
+    std::vector<TLorentzVector> gen_W;
+    std::vector<TLorentzVector> gen_b;
+    std::vector<TLorentzVector> gen_lep;
+    while(gen.Loop()) {
+      if (gen.Pt[NGEN]>0) {
+	TLorentzVector genp; genp.SetPtEtaPhiE(gen.Pt[NGEN], gen.Eta[NGEN], gen.Phi[NGEN], gen.E[NGEN]);
+        if (gen.ID[NGEN]!=gen.MomID[NGEN]) {
+          if (abs(gen.ID[NGEN])==6) gen_top.push_back(genp);
+          if (abs(gen.ID[NGEN])==5) gen_b.push_back(genp);
+          if (abs(gen.ID[NGEN])==24) gen_W.push_back(genp);
+          if ((abs(gen.ID[NGEN])==11||abs(gen.ID[NGEN])==13)&&abs(gen.MomID[NGEN])==24) gen_lep.push_back(genp);
+        }
+      }
+    }
+    
     // Tag hadronic tops
     std::vector<TLorentzVector> hadtop;
     std::vector<TLorentzVector> hadtoplike;
@@ -883,13 +974,23 @@ public:
     evt.HT = 0;
     evt.nhadtoplike = 0;
     while(jetsAK8.Loop()) {
-      // Find subjets
-      //int nsubjet = 0;
-      //std::cout<<jetsAK8.it<<" "<<jetsAK8.size<<" "<<subjetsAK8.size<<" "<<jetsAK8.subjetIndex0[NJET]<<" "<<jetsAK8.subjetIndex1[NJET]<<std::endl;
       bool is_top = false;
       TLorentzVector topcand; topcand.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
+      // Gen particle truth
+      bool is_gen_top = false, is_gen_boosted_top = false, has_gen_W = false, has_gen_b = false, has_gen_lep = false;
+      for (size_t i=0; i<gen_top.size(); ++i) if (topcand.DeltaR(gen_top[i])<0.8) {
+	is_gen_top = true;
+	if (gen_top[i].Pt()>400) is_gen_boosted_top = true;
+      }
+      for (size_t i=0; i<gen_W.size(); ++i) if (topcand.DeltaR(gen_W[i])<0.8) has_gen_W = true;
+      for (size_t i=0; i<gen_b.size(); ++i) if (topcand.DeltaR(gen_b[i])<0.8) has_gen_b = true;
+      for (size_t i=0; i<gen_lep.size(); ++i) if (topcand.DeltaR(gen_lep[i])<0.8) has_gen_lep = true;
+      bool is_gen_boosted_had_top = is_gen_boosted_top && has_gen_W && has_gen_b && !has_gen_lep;
+      evt.isTop[jetsAK8.it] = is_gen_top;
+      evt.isTopHadBoosted[jetsAK8.it] = is_gen_boosted_had_top;
+      
       // hadronic tops
-      //if (jetsAK8.tau1[NJET]>0 && jetsAK8.tau2[NJET]>0 ? jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 140 && (jetsAK8.tau2[NJET]/jetsAK8.tau1[NJET]) < 0.75 : 0) { // orig
+	//if (jetsAK8.tau1[NJET]>0 && jetsAK8.tau2[NJET]>0 ? jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 140 && (jetsAK8.tau2[NJET]/jetsAK8.tau1[NJET]) < 0.75 : 0) { // orig
       if ( (jetsAK8.tau2[NJET]>0 && jetsAK8.tau3[NJET]>0 ? jetsAK8.tau3[NJET]/jetsAK8.tau2[NJET] < 0.75 : 0 ) &&
            //jetsAK8.nSubJets[NJET] > 2 &&
            //jetsAK8.minmass[NJET] > 50 &&
@@ -899,7 +1000,7 @@ public:
         ++evt.nhadtoplike;
         is_top = true;
         hadtop.push_back(topcand);
-      } else if (jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 50) { // Top like jets for sideband fitting
+      } else if (jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 140) { // Top like jets for sideband fitting
       //} else if (jetsAK8.Pt[NJET] > 400) { // High pT jets for sideband fitting
         ++evt.nhadtoplike;
         hadtoplike.push_back(topcand);

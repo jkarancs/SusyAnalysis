@@ -86,10 +86,10 @@ void Analyzer::beginJob() {
   
   // Define histo parameters and filling variable
   // X/Y/Z - axis parameters:
-  sh_->AddNewFillParam("MuPt",  { .nbin=200, .low=0, .high=200, .fill=[this](){ return muon_.pt(); }, .axis_title=";Muon p_{T} (GeV/c)"});
-  sh_->AddNewFillParam("ElePt", { .nbin=200, .low=0, .high=200, .fill=[this](){ return ele_.pt(); },  .axis_title=";Electron p_{T} (GeV/c)"});
-  sh_->AddNewFillParam("MetPt", { .nbin=200, .low=0, .high=200, .fill=[this](){ return met_.pt(); },  .axis_title=";MET p_{T} (GeV/c)"});
-  sh_->AddNewFillParam("GenMetPt", { .nbin=200, .low=0, .high=200, .fill=[this](){ return met_.genMET()->pt(); },  .axis_title=";Gen-MET p_{T} (GeV/c)"});
+  sh_->AddNewFillParam("MuPt",     { .nbin=200, .bins={0, 200}, .fill=[this](){ return muon_.pt(); }, .axis_title=";Muon p_{T} (GeV/c)"});
+  sh_->AddNewFillParam("ElePt",    { .nbin=200, .bins={0, 200}, .fill=[this](){ return ele_.pt(); },  .axis_title=";Electron p_{T} (GeV/c)"});
+  sh_->AddNewFillParam("MetPt",    { .nbin=200, .bins={0, 200}, .fill=[this](){ return met_.pt(); },  .axis_title=";MET p_{T} (GeV/c)"});
+  sh_->AddNewFillParam("GenMetPt", { .nbin=200, .bins={0, 200}, .fill=[this](){ return met_.genMET()->pt(); },  .axis_title=";Gen-MET p_{T} (GeV/c)"});
   
   // Define Cuts here:
   sh_->AddNewCut("GenMetPt>1", [this](){ return met_.genMET()->pt()>1; });

@@ -18,8 +18,19 @@ public:
     tree_ = (TTree*)f.Get(name);
     bool debug = false;
     
-    set_branch_("el_size", &data.ele.size, 1);
-    set_branch_("el_size", &data.ele.size, 1);
+    set_branch_("gen_size", &data.gen.size, 1);
+    set_branch_("gen_Mass", &data.gen.Mass, 1);
+    set_branch_("gen_Pt", &data.gen.Pt, 1);
+    set_branch_("gen_Eta", &data.gen.Eta, 1);
+    set_branch_("gen_Y", &data.gen.Y, 0);
+    set_branch_("gen_Phi", &data.gen.Phi, 1);
+    set_branch_("gen_E", &data.gen.E, 1);
+    set_branch_("gen_Charge", &data.gen.Charge, 0);
+    set_branch_("gen_ID", &data.gen.ID, 1);
+    set_branch_("gen_Status", &data.gen.Status, 1);
+    set_branch_("gen_MomID", &data.gen.MomID, 1);
+    if (debug) std::cout<<"B2GTreeReader: gen particles loaded"<<std::endl;
+    
     set_branch_("el_size", &data.ele.size, 1);
     set_branch_("el_Mass", &data.ele.Mass, 1);
     set_branch_("el_Pt", &data.ele.Pt, 1);
@@ -361,7 +372,7 @@ public:
   }
   Int_t GetEntry(Long64_t entry, Int_t getall = 0) {
     Int_t result = tree_->GetEntry(entry,getall);
-    //if (data.gen.size>1) std::cout<<"B2GReader Warning!!: Size of Data object too small for gen."<<std::endl;
+    if (data.gen.size>500) std::cout<<"B2GReader Warning!!: Size of Data object too small for gen."<<std::endl;
     if (data.ele.size>NLEP) std::cout<<"B2GReader Warning!!: Size of Data object too small for ele. Set NLEP>="<<data.ele.size<<std::endl;
     if (data.mu.size>NLEP) std::cout<<"B2GReader Warning!!: Size of Data object too small for mu. Set NLEP>="<<data.mu.size<<std::endl;
     if (data.jetsAK4.size>NJET) std::cout<<"B2GReader Warning!!: Size of Data object too small for jetsAK4. Set NJET>="<<data.jetsAK4.size<<std::endl;
