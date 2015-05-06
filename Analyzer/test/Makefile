@@ -8,6 +8,7 @@ B2GPLOTTER       = B2GPlotter$(ExeSuf)
 
 OBJS          = $(B2GPLOTTERO)
 PROGRAMS      = $(B2GPLOTTER)
+
 #------------------------------------------------------------------------------
 B2GANALYZERO      = B2GAnalyzer.$(ObjSuf)
 B2GANALYZERS      = B2GAnalyzer.$(SrcSuf)
@@ -15,6 +16,15 @@ B2GANALYZER       = B2GAnalyzer$(ExeSuf)
 
 OBJS          += $(B2GANALYZERO)
 PROGRAMS      += $(B2GANALYZER)
+
+#------------------------------------------------------------------------------
+SUSYHISTOMAKERO      = SusyHistoMaker.$(ObjSuf)
+SUSYHISTOMAKERS      = SusyHistoMaker.$(SrcSuf)
+SUSYHISTOMAKER       = SusyHistoMaker$(ExeSuf)
+
+OBJS          = $(SUSYHISTOMAKERO)
+PROGRAMS      = $(SUSYHISTOMAKER)
+
 #------------------------------------------------------------------------------
 DRAWEVENTO      = DrawEvent.$(ObjSuf)
 DRAWEVENTS      = DrawEvent.$(SrcSuf)
@@ -22,6 +32,7 @@ DRAWEVENT       = DrawEvent$(ExeSuf)
 
 OBJS          += $(DRAWEVENTO)
 PROGRAMS      += $(DRAWEVENT)
+
 #------------------------------------------------------------------------------
 
 
@@ -34,6 +45,10 @@ $(B2GPLOTTER):     $(B2GPLOTTERO)
 		$(MT_EXE)
 		@echo "$@ done"
 $(B2GANALYZER):     $(B2GANALYZERO)
+		$(LD) $(LDFLAGS) $^ $(LIBS) $(OutPutOpt)$@
+		$(MT_EXE)
+		@echo "$@ done"
+$(SUSYHISTOMAKER):     $(SUSYHISTOMAKERO)
 		$(LD) $(LDFLAGS) $^ $(LIBS) $(OutPutOpt)$@
 		$(MT_EXE)
 		@echo "$@ done"

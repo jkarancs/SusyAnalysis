@@ -240,6 +240,14 @@ private:
     //                HistoParam name, +1D name, Axis Title, +1D Axis Title
     spec_.push_back({"HitEfficiency","ValidHit","Hit Efficiency", "Valid Hit"});
     spec_.push_back({"DColEfficiency","Validhit","DCol Efficiency", "Valid Hit"});
+    spec_.push_back({"MergedTopFraction","IsGenTopMerged","Fraction of Merged Tops", "Gen. b and W Merged in R<0.8 (bool)"});
+    spec_.push_back({"JetFindingEfficiency", "HasJet", "Jet finding Efficiency", "Found AK8 Jet (bool)"});
+    spec_.push_back({"TopFindingEfficiency", "HasHadTopTaggedJet", "Top finding Efficiency", "Has hadronic top-tagged Jet (bool)"});
+    spec_.push_back({"Pt300TopFindingEfficiency", "HasPt300HadTopTaggedJet", "Top finding Efficiency", "Has hadronic top-tagged Jet (bool)"});
+    spec_.push_back({"TopTagEfficiency", "JetIsHadTopTagged", "Top-tagging Efficiency", "Jet is hadronic top-tagged (bool)"});
+    spec_.push_back({"Pt300TopTagEfficiency", "JetIsPt300HadTopTagged", "Top-tagging Efficiency", "Jet is hadronic top-tagged (bool)"});
+    spec_.push_back({"MisTagRate", "JetHasNoGenTop", "Mis-tag Rate", "Jet is mis-matched (bool)"});
+    
     //                Name Prefix, Title Prefix
     spec2_.push_back({"Avg","Avg. "});
     
@@ -274,15 +282,19 @@ private:
   
   // Define which functions to use for each special histo
   void calc_spec_1d_(TH1D* h1d, TH2D* h2d) {
-    if (find_spec_(name_)==0) calc_eff_1d_(h1d, h2d); // HitEfficiency
-    if (find_spec_(name_)==1) calc_dcol_1d_(h1d, h2d); // DColEfficiency
     if (find_spec2_(name_)==0) calc_eff_1d_(h1d, h2d, 0); // Average (Use Profile)
+    else switch ( find_spec_(name_) ) {
+    case 1 : calc_dcol_1d_(h1d, h2d); break;
+    default : calc_eff_1d_(h1d, h2d); // Efficiencies/Fractions/Rates
+    }
   }
   
   void calc_spec_2d_(TH2D* h2d, TH3D* h3d) {
-    if (find_spec_(name_)==0) calc_eff_2d_(h2d, h3d); // HitEfficiency
-    //if (find_spec_(name_)==1) calc_dcol_2d_(h2d, h3d); // DColEfficiency
     if (find_spec2_(name_)==0) calc_eff_2d_(h2d, h3d); // Average (Use 3DProfile)
+    else switch ( find_spec_(name_) ) {
+    case 1 : /* calc_dcol_2d_(h2d, h3d); */ break;
+    default : calc_eff_2d_(h2d, h3d); // Efficiencies/Fractions/Rates
+    }
   }
   
   // Define functions below: (eg: Efficiency, MPV etc...)
@@ -713,7 +725,7 @@ public:
     bool spec = (s!=(size_t)-1||s2!=(size_t)-1);
     std::string name_1d = name;
     std::string name_2d = (s!=(size_t)-1) ? std::string(name).replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]) : (s2!=(size_t)-1) ? std::string(name).erase(0,spec2_[s2][0].size()) : name;
-    std::string title_1d = (s!=(size_t)-1) ? title : (s2!=(size_t)-1) ? std::string(title).insert(1,spec2_[s2][1]) : title;
+    std::string title_1d = (s!=(size_t)-1) ? title : (s2!=(size_t)-1) ? std::string(title).insert(title.find(";")+1,spec2_[s2][1]) : title;
     std::string title_2d = (s!=(size_t)-1) ? std::string(title).replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]) : title;
     if (npf_==0) {
       if (binsx.size()==2&&binsy.size()==2) {
@@ -1309,8 +1321,8 @@ public:
 	for (size_t l=0; l<pfs_[3].vec.size(); ++l) for (size_t m=0; m<pfs_[4].vec.size(); ++m) {
 	dps.push_back({ .hvec={}, .canname="", .legtitle="" });
 	for (size_t i=0; i<pfs_[0].vec.size(); ++i) dps[dps.size()-1].hvec.push_back(h1d_5p_[i][j][k][l][m]);
-	dps[dps.size()-1].canname=name_+"_"+pf_names_[0]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[l];
-	dps[dps.size()-1].legtitle=pfs_[1].leg[j]+", "+pfs_[2].leg[k]+", "+pfs_[3].leg[l]+", "+pfs_[4].leg[l];
+	dps[dps.size()-1].canname=name_+"_"+pf_names_[0]+"_"+pfs_[1].vec[j]+"_"+pfs_[2].vec[k]+"_"+pfs_[3].vec[l]+"_"+pfs_[4].vec[m];
+	dps[dps.size()-1].legtitle=pfs_[1].leg[j]+", "+pfs_[2].leg[k]+", "+pfs_[3].leg[l]+", "+pfs_[4].leg[m];
       }
     }
     return dps;
@@ -1341,6 +1353,7 @@ public:
   }
   
   void DrawPlots() {
+    calc_specials_();
     gStyle->SetOptStat(stat_);
     // 1D plots
     std::vector<DrawParams1D> dps1d = get_dps_1stpf_1d_();
@@ -1351,13 +1364,13 @@ public:
 	if (skip==dps1d[i].hvec.size()) break; 
       }
       if (skip<dps1d[i].hvec.size()) {
+	TCanvas *c = custom_can_(dps1d[i].hvec[skip], dps1d[i].canname);
+	if (npf_) multidraw_with_legend_(skip, dps1d[i].hvec, pfs_[0].leg, pfs_[0].colz, dps1d[i].legtitle);
+	else draw_one_(dps1d[i].hvec[0]);
 	if (axis_ranges_.size()>=2) if (axis_ranges_[0]!=axis_ranges_[1]) 
 	  dps1d[i].hvec[skip]->GetXaxis()->SetRangeUser(axis_ranges_[0],axis_ranges_[1]);
 	if (axis_ranges_.size()>=4) if (axis_ranges_[2]!=axis_ranges_[3]) 
 	  dps1d[i].hvec[skip]->GetYaxis()->SetRangeUser(axis_ranges_[2],axis_ranges_[3]);
-	TCanvas *c = custom_can_(dps1d[i].hvec[skip], dps1d[i].canname);
-	if (npf_) multidraw_with_legend_(skip, dps1d[i].hvec, pfs_[0].leg, pfs_[0].colz, dps1d[i].legtitle);
-	else draw_one_(dps1d[i].hvec[0]);
 	write_(c);
       }
     }
@@ -1365,13 +1378,13 @@ public:
     std::vector<DrawParams2D> dps2d = get_dps_2d_();
     for (size_t i=0; i<dps2d.size(); ++i) {
       if (dps2d[i].h->GetEntries()) {
+	TCanvas *c = custom_can_(dps2d[i].h, dps2d[i].canname);
 	if (axis_ranges_.size()>=2) if (axis_ranges_[0]!=axis_ranges_[1]) 
 	  dps2d[i].h->GetXaxis()->SetRangeUser(axis_ranges_[0],axis_ranges_[1]);
 	if (axis_ranges_.size()>=4) if (axis_ranges_[2]!=axis_ranges_[3]) 
 	  dps2d[i].h->GetYaxis()->SetRangeUser(axis_ranges_[2],axis_ranges_[3]);
 	if (axis_ranges_.size()==6) if (axis_ranges_[4]!=axis_ranges_[5]) 
 	  dps2d[i].h->GetZaxis()->SetRangeUser(axis_ranges_[4],axis_ranges_[5]);
-	TCanvas *c = custom_can_(dps2d[i].h, dps2d[i].canname);
 	write_(c);
       }
     }

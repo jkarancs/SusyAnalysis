@@ -12,6 +12,6 @@ foreach n ( `seq 1 $#argv` )
 end
 
 make clean
-make
+make B2GPlotter
 ./B2GPlotter $args | tee $log
 root 'show_result.C("'$out'")'

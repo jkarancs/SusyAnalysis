@@ -86,7 +86,7 @@ public:
       size = samples_.size();
     }
     if (new_loop!=-1) samples_[size-1]->Add((fileaddress+treename).c_str());
-    
+
     // Calculate total number of entries - For ProgressEstimator
     Long64_t sample_entries = 0;
     if (nthstat_==1) {
@@ -96,7 +96,7 @@ public:
       sample_entries += ((TTree*)f.Get(samples_[size-1]->GetListOfFiles()->At(nf)->GetName()))->GetEntries()/nthstat_;
     }
     total_entries_+=sample_entries;
-    step_size_ = 50000/total_entries_;
+    step_size_ = 50000/(total_entries_==0 ? 1 : total_entries_);
     nevents.push_back(sample_entries);
   }
   

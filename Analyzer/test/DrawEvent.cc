@@ -64,8 +64,9 @@ int main(int argc, char **argv) {
   Samples samples;
   std::string sample_dir = "/data/gridout/jkarancs/SusyAnalysis/B2G/TTreeNtuple/Apr02_edm_Apr01/";
   samples.AddSample("T5ttttDeg_3bodydec_mGo1300", "T5tttt (#tilde{g}#rightarrowt#tilde{t}_{2,3body}, M_{#tilde{g}}=1.3TeV)", "12",
-		    { { .dir=sample_dir+"T5ttttDeg_mGo1300_23bodydec/*.root", .xsec_pb=0.0460525 } });
-  samples.AddSample("TTJets", "t#bar{t}+jets", "633", { { .dir=sample_dir+"TTJets/*.root", .xsec_pb=831.76 } }); //
+                    { { .dir=sample_dir+"T5ttttDeg_mGo1300_23bodydec/*.root", .xsec_pb=0.0460525 } });
+  //samples.AddSample("TTJets", "t#bar{t}+jets", "633", { { .dir=sample_dir+"TTJets/*.root", .xsec_pb=831.76 } }); //
+  //samples.AddSample("TTJets74X", "t#bar{t}+jets", "633", { { .dir="/data/jkarancs/CMSSW/SusyAnalysis/rappoccio_74X_test/CMSSW_7_4_0_patch1/src/B2GTTreeNtupleExtra.root", .xsec_pb=831.76 } });
   // Initialize TreeReader
   B2GTreeReader reader;
   
@@ -91,8 +92,10 @@ int main(int argc, char **argv) {
   while (looper.LoopOnEntries()) {
     reader.GetEntry(looper.CurrentEntry());
     d = reader.data;
+    d.CalculateAllVariables();
     TH2D *h = new TH2D("h","",100,-5,5, 64,-3.2,3.2);
     std::vector<double> top_pt;
+    int nlep_from_W = 0;
     for (int i=0; i<d.gen.size; ++i) {
       if ((abs(d.gen.ID[i])==5||abs(d.gen.ID[i])==6||abs(d.gen.ID[i])==11||abs(d.gen.ID[i])==13||abs(d.gen.ID[i])==15||abs(d.gen.ID[i])>1e6||abs(d.gen.ID[i])==24)&&d.gen.Pt[i]>10) {
         //std::cout<<i<<" Particle: "<<particle[d.gen.ID[i]]<<" ID: "<<d.gen.ID[i]<<" MomID: "<<d.gen.MomID[i]<<" Status: "<<d.gen.Status[i]<<" Pt: "<<d.gen.Pt[i]<<" Eta: "<<d.gen.Eta[i]<<" Phi: "<<d.gen.Phi[i]<<std::endl;
@@ -104,10 +107,11 @@ int main(int argc, char **argv) {
 	  }
           //if (fillid==5) h->Fill(d.gen.Eta[i],d.gen.Phi[i],1);
           //if (fillid==24) h->Fill(d.gen.Eta[i],d.gen.Phi[i],7);
+          if ((fillid==11||fillid==13)&&abs(d.gen.MomID[i])==24) ++nlep_from_W;
         }
       }
     }
-    if (top_pt.size()>1) if (top_pt[0]>800&&top_pt[1]>800) {
+    if (top_pt.size()>1) if (top_pt[0]>400&&top_pt[1]>400&&nlep_from_W>0) {
       h->Draw("COLZ");
       for (int i=0; i<d.jetsAK8.size; ++i) {
 	TLatex *jet = new TLatex(d.jetsAK8.Eta[i], d.jetsAK8.Phi[i], "#times"); jet->SetTextAlign(22); jet->Draw();

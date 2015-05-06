@@ -210,10 +210,12 @@ public:
     set_branch_("jetAK8_SmearedE", &data.jetsAK8.SmearedE, 0);
     set_branch_("jetAK8_JERup", &data.jetsAK8.JERup, 0);
     set_branch_("jetAK8_JERdown", &data.jetsAK8.JERdown, 0);
-    set_branch_("jetAK8_subjetIndex0", &data.jetsAK8.subjetIndex0, 0);
-    set_branch_("jetAK8_subjetIndex1", &data.jetsAK8.subjetIndex1, 0);
-    set_branch_("jetAK8_subjetIndex2", &data.jetsAK8.subjetIndex2, 0);
-    set_branch_("jetAK8_subjetIndex4", &data.jetsAK8.subjetIndex3, 0);
+    set_branch_("jetAK8_vSubjetIndex0", &data.jetsAK8.vSubjetIndex0, 1);
+    set_branch_("jetAK8_vSubjetIndex1", &data.jetsAK8.vSubjetIndex1, 1);
+    set_branch_("jetAK8_topSubjetIndex0", &data.jetsAK8.topSubjetIndex0, 1);
+    set_branch_("jetAK8_topSubjetIndex1", &data.jetsAK8.topSubjetIndex1, 1);
+    set_branch_("jetAK8_topSubjetIndex2", &data.jetsAK8.topSubjetIndex2, 1);
+    set_branch_("jetAK8_topSubjetIndex3", &data.jetsAK8.topSubjetIndex3, 1);
     set_branch_("jetAK8_tau1", &data.jetsAK8.tau1, 1);
     set_branch_("jetAK8_tau2", &data.jetsAK8.tau2, 1);
     set_branch_("jetAK8_tau3", &data.jetsAK8.tau3, 1);
@@ -278,6 +280,7 @@ public:
     set_branch_("subjetAK8_SmearedE", &data.subjetsAK8.SmearedE, 0);
     set_branch_("subjetAK8_JERup", &data.subjetsAK8.JERup, 0);
     set_branch_("subjetAK8_JERdown", &data.subjetsAK8.JERdown, 0);
+    set_branch_("subjetAK8_subjetCSV", &data.subjetsAK8.subjetCSV, 1);
     if (debug) std::cout<<"B2GTreeReader: AK8 subjets loaded"<<std::endl;
     
     set_branch_("subjetsCmsTopTag_size", &data.subjetsCmsTopTag.size, 0);
