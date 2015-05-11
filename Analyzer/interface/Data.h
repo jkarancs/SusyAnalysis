@@ -28,22 +28,22 @@ public:
     ~GenVars() {}
     
     // Basic
-    float Mass[NGEN+1];
-    float Pt[NGEN+1];
-    float Eta[NGEN+1];
-    float Y[NGEN+1];
-    float Phi[NGEN+1];
-    float E[NGEN+1];
-    float Charge[NGEN+1];
-    float ID[NGEN+1];
-    float Status[NGEN+1];
-    float MomID[NGEN+1];
+    float Mass[NGEN];
+    float Pt[NGEN];
+    float Eta[NGEN];
+    float Y[NGEN];
+    float Phi[NGEN];
+    float E[NGEN];
+    float Charge[NGEN];
+    float ID[NGEN];
+    float Status[NGEN];
+    float MomID[NGEN];
     
     size_t it;
     int size;
     
     void init() {
-      for (size_t i=0; i<=NGEN; ++i) {
+      for (size_t i=0; i<NGEN; ++i) {
         Mass[i]=NOVAL_F;
         Pt[i]=NOVAL_F;
         Eta[i]=NOVAL_F;
@@ -59,23 +59,9 @@ public:
       size = 0;
     }
     
-    void SetCurrent(size_t it) {
-      Mass[NGEN]              = Mass[it];             
-      Pt[NGEN]		      = Pt[it];		     
-      Eta[NGEN]		      = Eta[it];		     
-      Y[NGEN]		      = Y[it];		     
-      Phi[NGEN]		      = Phi[it];		     
-      E[NGEN]		      = E[it];		     
-      Charge[NGEN]	      = Charge[it];	     
-      ID[NGEN]		      = ID[it];		     
-      Status[NGEN]	      = Status[it];		     
-      MomID[NGEN]	      = MomID[it];		     
-    }
-    
     bool Loop() {
       ++it;
       if (it<(size_t)size) {
-	SetCurrent(it);
 	return 1;
       } else {
 	it=-1;
@@ -91,37 +77,37 @@ public:
     ~ElectronVars() {}
     
     // Basic
-    float Mass[NLEP+1];
-    float Pt[NLEP+1];
-    float Eta[NLEP+1];
-    float Y[NLEP+1];
-    float Phi[NLEP+1];
-    float E[NLEP+1];
-    float Charge[NLEP+1];
+    float Mass[NLEP];
+    float Pt[NLEP];
+    float Eta[NLEP];
+    float Y[NLEP];
+    float Phi[NLEP];
+    float E[NLEP];
+    float Charge[NLEP];
     // ElectronVars
-    float Iso03[NLEP+1];
-    float D0[NLEP+1];
-    float Dz[NLEP+1];
-    float dEtaIn[NLEP+1];
-    float dPhiIn[NLEP+1];
-    float HoE[NLEP+1];
-    float full5x5siee[NLEP+1];
-    float ooEmooP[NLEP+1];
-    float missHits[NLEP+1];
-    float hasMatchedConVeto[NLEP+1];
-    float isEB[NLEP+1];
-    float isVeto[NLEP+1];
-    float isLoose[NLEP+1];
-    float isTight[NLEP+1];
-    float isMedium[NLEP+1];
-    float scEta[NLEP+1];
+    float Iso03[NLEP];
+    float D0[NLEP];
+    float Dz[NLEP];
+    float dEtaIn[NLEP];
+    float dPhiIn[NLEP];
+    float HoE[NLEP];
+    float full5x5siee[NLEP];
+    float ooEmooP[NLEP];
+    float missHits[NLEP];
+    float hasMatchedConVeto[NLEP];
+    float isEB[NLEP];
+    float isVeto[NLEP];
+    float isLoose[NLEP];
+    float isTight[NLEP];
+    float isMedium[NLEP];
+    float scEta[NLEP];
     
     size_t it;
     int size;
 
     
     void init() {
-      for (size_t i=0; i<=NLEP; ++i) {
+      for (size_t i=0; i<NLEP; ++i) {
         Mass[i]=NOVAL_F;
         Pt[i]=NOVAL_F;
         Eta[i]=NOVAL_F;
@@ -150,36 +136,9 @@ public:
       size = 0;
     }
     
-    void SetCurrent(size_t it) {
-      Mass[NLEP]              = Mass[it];             
-      Pt[NLEP]		      = Pt[it];		     
-      Eta[NLEP]		      = Eta[it];		     
-      Y[NLEP]		      = Y[it];		     
-      Phi[NLEP]		      = Phi[it];		     
-      E[NLEP]		      = E[it];		     
-      Charge[NLEP]	      = Charge[it];	     
-      Iso03[NLEP]	      = Iso03[it];	     
-      D0[NLEP]		      = D0[it];		     
-      Dz[NLEP]		      = Dz[it];		     
-      dEtaIn[NLEP]	      = dEtaIn[it];	     
-      dPhiIn[NLEP]	      = dPhiIn[it];	     
-      HoE[NLEP]		      = HoE[it];		     
-      full5x5siee[NLEP]	      = full5x5siee[it];	     
-      ooEmooP[NLEP]	      = ooEmooP[it];	     
-      missHits[NLEP]	      = missHits[it];	     
-      hasMatchedConVeto[NLEP] = hasMatchedConVeto[it];
-      isEB[NLEP]	      = isEB[it];	     
-      isVeto[NLEP]	      = isVeto[it];	     
-      isLoose[NLEP]	      = isLoose[it];	     
-      isTight[NLEP]	      = isTight[it];	     
-      isMedium[NLEP]          = isMedium[it];         
-      scEta[NLEP]	      = scEta[it];		     
-    }
-    
     bool Loop() {
       ++it;
       if (it<(size_t)size) {
-	SetCurrent(it);
 	return 1;
       } else {
 	it=-1;
@@ -195,51 +154,51 @@ public:
     ~MuonVars() {}
     
     // Basic
-    float Mass[NLEP+1];
-    float Pt[NLEP+1];
-    float Eta[NLEP+1];
-    float Y[NLEP+1];
-    float Phi[NLEP+1];
-    float E[NLEP+1];
-    float Charge[NLEP+1];
+    float Mass[NLEP];
+    float Pt[NLEP];
+    float Eta[NLEP];
+    float Y[NLEP];
+    float Phi[NLEP];
+    float E[NLEP];
+    float Charge[NLEP];
     // MuonVars
-    float Iso04[NLEP+1];
-    float D0[NLEP+1];
-    float D0err[NLEP+1];
-    float Dxy[NLEP+1];
-    float Dxyerr[NLEP+1];
-    float Dz[NLEP+1];
-    float Dzerr[NLEP+1];
-    float IsLooseMuon[NLEP+1];
-    float IsSoftMuon[NLEP+1];
-    float IsTightMuon[NLEP+1];
-    float IsPFMuon[NLEP+1];
-    float IsGlobalMuon[NLEP+1];
-    float IsTrackerMuon[NLEP+1];
-    float GlbTrkNormChi2[NLEP+1];
-    float NumberValidMuonHits[NLEP+1];
-    float NumberMatchedStations[NLEP+1];
-    float NumberValidPixelHits[NLEP+1];
-    float NumberTrackerLayers[NLEP+1];
-    float NumberOfValidTrackerHits[NLEP+1];
-    float NumberOfPixelLayers[NLEP+1];
-    float InTrkNormChi2[NLEP+1];
-    float SumChargedHadronPt[NLEP+1];
-    float SumNeutralHadronPt[NLEP+1];
-    float SumPhotonPt[NLEP+1];
-    float SumPUPt[NLEP+1];
-    float GenMuonY[NLEP+1];
-    float GenMuonEta[NLEP+1];
-    float GenMuonPhi[NLEP+1];
-    float GenMuonPt[NLEP+1];
-    float GenMuonE[NLEP+1];
-    float GenMuonCharge[NLEP+1];
+    float Iso04[NLEP];
+    float D0[NLEP];
+    float D0err[NLEP];
+    float Dxy[NLEP];
+    float Dxyerr[NLEP];
+    float Dz[NLEP];
+    float Dzerr[NLEP];
+    float IsLooseMuon[NLEP];
+    float IsSoftMuon[NLEP];
+    float IsTightMuon[NLEP];
+    float IsPFMuon[NLEP];
+    float IsGlobalMuon[NLEP];
+    float IsTrackerMuon[NLEP];
+    float GlbTrkNormChi2[NLEP];
+    float NumberValidMuonHits[NLEP];
+    float NumberMatchedStations[NLEP];
+    float NumberValidPixelHits[NLEP];
+    float NumberTrackerLayers[NLEP];
+    float NumberOfValidTrackerHits[NLEP];
+    float NumberOfPixelLayers[NLEP];
+    float InTrkNormChi2[NLEP];
+    float SumChargedHadronPt[NLEP];
+    float SumNeutralHadronPt[NLEP];
+    float SumPhotonPt[NLEP];
+    float SumPUPt[NLEP];
+    float GenMuonY[NLEP];
+    float GenMuonEta[NLEP];
+    float GenMuonPhi[NLEP];
+    float GenMuonPt[NLEP];
+    float GenMuonE[NLEP];
+    float GenMuonCharge[NLEP];
     
     size_t it;
     int size;
     
     void init() {
-      for (size_t i=0; i<=NLEP; ++i) {
+      for (size_t i=0; i<NLEP; ++i) {
         Mass[i]=NOVAL_F;
         Pt[i]=NOVAL_F;
         Eta[i]=NOVAL_F;
@@ -283,51 +242,9 @@ public:
       size = 0;
     }
     
-    void SetCurrent(size_t it) {
-      Mass[NLEP]              = Mass[it];             
-      Pt[NLEP]		      = Pt[it];		     
-      Eta[NLEP]		      = Eta[it];		     
-      Y[NLEP]		      = Y[it];		     
-      Phi[NLEP]		      = Phi[it];		     
-      E[NLEP]		      = E[it];		     
-      Charge[NLEP]	      = Charge[it];
-      Iso04[NLEP]                    = Iso04[it];                   
-      D0[NLEP] 			     = D0[it]; 			    
-      D0err[NLEP] 		     = D0err[it]; 		    
-      Dxy[NLEP] 		     = Dxy[it]; 			    
-      Dxyerr[NLEP] 		     = Dxyerr[it]; 		    
-      Dz[NLEP] 			     = Dz[it]; 			    
-      Dzerr[NLEP] 		     = Dzerr[it]; 		    
-      IsLooseMuon[NLEP] 	     = IsLooseMuon[it]; 	    
-      IsSoftMuon[NLEP] 		     = IsSoftMuon[it]; 		    
-      IsTightMuon[NLEP] 	     = IsTightMuon[it]; 	    
-      IsPFMuon[NLEP] 		     = IsPFMuon[it]; 		    
-      IsGlobalMuon[NLEP] 	     = IsGlobalMuon[it]; 	    
-      IsTrackerMuon[NLEP] 	     = IsTrackerMuon[it]; 	    
-      GlbTrkNormChi2[NLEP] 	     = GlbTrkNormChi2[it]; 	    
-      NumberValidMuonHits[NLEP]      = NumberValidMuonHits[it];     
-      NumberMatchedStations[NLEP]    = NumberMatchedStations[it];   
-      NumberValidPixelHits[NLEP]     = NumberValidPixelHits[it];    
-      NumberTrackerLayers[NLEP]      = NumberTrackerLayers[it];     
-      NumberOfValidTrackerHits[NLEP] = NumberOfValidTrackerHits[it];
-      NumberOfPixelLayers[NLEP]      = NumberOfPixelLayers[it];     
-      InTrkNormChi2[NLEP] 	     = InTrkNormChi2[it]; 	    
-      SumChargedHadronPt[NLEP] 	     = SumChargedHadronPt[it]; 	    
-      SumNeutralHadronPt[NLEP] 	     = SumNeutralHadronPt[it]; 	    
-      SumPhotonPt[NLEP] 	     = SumPhotonPt[it]; 	    
-      SumPUPt[NLEP] 		     = SumPUPt[it]; 		    
-      GenMuonY[NLEP] 		     = GenMuonY[it]; 		    
-      GenMuonEta[NLEP] 		     = GenMuonEta[it];		    
-      GenMuonPhi[NLEP]		     = GenMuonPhi[it]; 		    
-      GenMuonPt[NLEP] 		     = GenMuonPt[it]; 		    
-      GenMuonE[NLEP] 		     = GenMuonE[it]; 		    
-      GenMuonCharge[NLEP] 	     = GenMuonCharge[it]; 	    
-    }
-    
     bool Loop() {
       ++it;
       if (it<(size_t)size) {
-	SetCurrent(it);
 	return 1;
       } else {
 	it=-1;
@@ -340,66 +257,66 @@ public:
   class JetVars {
   public:
     // Basic
-    float Mass[NJET+1];
-    float Pt[NJET+1];
-    float Eta[NJET+1];
-    float Y[NJET+1];
-    float Phi[NJET+1];
-    float E[NJET+1];
-    float Charge[NJET+1];
+    float Mass[NJET];
+    float Pt[NJET];
+    float Eta[NJET];
+    float Y[NJET];
+    float Phi[NJET];
+    float E[NJET];
+    float Charge[NJET];
     // B-TAGGING
-    float CSV[NJET+1];
-    float CSVV1[NJET+1];
+    float CSV[NJET];
+    float CSVV1[NJET];
     // GEN PARTON
-    float GenPartonY[NJET+1];
-    float GenPartonEta[NJET+1];
-    float GenPartonPhi[NJET+1];
-    float GenPartonPt[NJET+1];
-    float GenPartonE[NJET+1];
-    float GenPartonCharge[NJET+1];
-    float PartonFlavour[NJET+1];
-    float HadronFlavour[NJET+1];
+    float GenPartonY[NJET];
+    float GenPartonEta[NJET];
+    float GenPartonPhi[NJET];
+    float GenPartonPt[NJET];
+    float GenPartonE[NJET];
+    float GenPartonCharge[NJET];
+    float PartonFlavour[NJET];
+    float HadronFlavour[NJET];
     // GEN JET
-    float GenJetY[NJET+1];
-    float GenJetEta[NJET+1];
-    float GenJetPhi[NJET+1];
-    float GenJetPt[NJET+1];
-    float GenJetE[NJET+1];
-    float GenJetCharge[NJET+1];
+    float GenJetY[NJET];
+    float GenJetEta[NJET];
+    float GenJetPhi[NJET];
+    float GenJetPt[NJET];
+    float GenJetE[NJET];
+    float GenJetCharge[NJET];
     // CONSTITUENTS
-    float muonMultiplicity[NJET+1];
-    float PhotonEnergy[NJET+1];
-    float ElectronEnergy[NJET+1];
-    float MuonEnergy[NJET+1];
-    float HFHadronEnergy[NJET+1];
-    float HFEMEnergy[NJET+1];
-    float ChargedHadronMultiplicity[NJET+1];
-    float numberOfDaughters[NJET+1];
-    float chargedMultiplicity[NJET+1];
-    float neutralHadronMultiplicity[NJET+1];
-    float neutralHadronEnergy[NJET+1];
-    float neutralEmEnergy[NJET+1];
-    float chargedEmEnergy[NJET+1];
-    float chargedHadronEnergy[NJET+1];
-    float photonMultiplicity[NJET+1];
-    float electronMultiplicity[NJET+1];
-    float HFHadronMultiplicity[NJET+1];
-    float HFEMMultiplicity[NJET+1];
-    float ChargeMuEnergy[NJET+1];
-    float neutralMultiplicity[NJET+1];
+    float muonMultiplicity[NJET];
+    float PhotonEnergy[NJET];
+    float ElectronEnergy[NJET];
+    float MuonEnergy[NJET];
+    float HFHadronEnergy[NJET];
+    float HFEMEnergy[NJET];
+    float ChargedHadronMultiplicity[NJET];
+    float numberOfDaughters[NJET];
+    float chargedMultiplicity[NJET];
+    float neutralHadronMultiplicity[NJET];
+    float neutralHadronEnergy[NJET];
+    float neutralEmEnergy[NJET];
+    float chargedEmEnergy[NJET];
+    float chargedHadronEnergy[NJET];
+    float photonMultiplicity[NJET];
+    float electronMultiplicity[NJET];
+    float HFHadronMultiplicity[NJET];
+    float HFEMMultiplicity[NJET];
+    float ChargeMuEnergy[NJET];
+    float neutralMultiplicity[NJET];
     //FOR JEC
-    float jecFactor0[NJET+1];
-    float jetArea[NJET+1];
+    float jecFactor0[NJET];
+    float jetArea[NJET];
     // FOR SYSTEMATICS
-    float SmearedPt[NJET+1];
-    float SmearedPEta[NJET+1];
-    float SmearedPhi[NJET+1];
-    float SmearedE[NJET+1];
-    float JERup[NJET+1];
-    float JERdown[NJET+1];
+    float SmearedPt[NJET];
+    float SmearedPEta[NJET];
+    float SmearedPhi[NJET];
+    float SmearedE[NJET];
+    float JERup[NJET];
+    float JERdown[NJET];
     
     void init() {
-      for (size_t i=0; i<=NJET; ++i) {
+      for (size_t i=0; i<NJET; ++i) {
         Mass[i]=NOVAL_F;
         Pt[i]=NOVAL_F;
         Eta[i]=NOVAL_F;
@@ -454,82 +371,29 @@ public:
       }
     }
     
-    void SetCurrent(size_t it) {
-      Mass[NJET]                        = Mass[it];			      
-      Pt[NJET]			        = Pt[it];			      
-      Eta[NJET]			        = Eta[it];			      
-      Y[NJET]			        = Y[it];			      
-      Phi[NJET]			        = Phi[it];			      
-      E[NJET]			        = E[it];			      
-      Charge[NJET]		        = Charge[it];		      
-      CSV[NJET]			        = CSV[it];			      
-      CSVV1[NJET]		        = CSVV1[it];		      
-      GenPartonY[NJET]		        = GenPartonY[it];		      
-      GenPartonEta[NJET]		= GenPartonEta[it];		      
-      GenPartonPhi[NJET]		= GenPartonPhi[it];		      
-      GenPartonPt[NJET]		        = GenPartonPt[it];		      
-      GenPartonE[NJET]		        = GenPartonE[it];		      
-      GenPartonCharge[NJET]	        = GenPartonCharge[it];	      
-      PartonFlavour[NJET]	        = PartonFlavour[it];	      
-      HadronFlavour[NJET]	        = HadronFlavour[it];	      
-      GenJetY[NJET]		        = GenJetY[it];		      
-      GenJetEta[NJET]		        = GenJetEta[it];		      
-      GenJetPhi[NJET]		        = GenJetPhi[it];		      
-      GenJetPt[NJET]		        = GenJetPt[it];		      
-      GenJetE[NJET]		        = GenJetE[it];		      
-      GenJetCharge[NJET]		= GenJetCharge[it];		      
-      muonMultiplicity[NJET]	        = muonMultiplicity[it];	      
-      PhotonEnergy[NJET]		= PhotonEnergy[it];		      
-      ElectronEnergy[NJET]	        = ElectronEnergy[it];	      
-      MuonEnergy[NJET]		        = MuonEnergy[it];		      
-      HFHadronEnergy[NJET]	        = HFHadronEnergy[it];	      
-      HFEMEnergy[NJET]		        = HFEMEnergy[it];		      
-      ChargedHadronMultiplicity[NJET]   = ChargedHadronMultiplicity[it];  
-      numberOfDaughters[NJET]	        = numberOfDaughters[it];	      
-      chargedMultiplicity[NJET]	        = chargedMultiplicity[it];	      
-      neutralHadronMultiplicity[NJET]   = neutralHadronMultiplicity[it];  
-      neutralHadronEnergy[NJET]         = neutralHadronEnergy[it];
-      neutralEmEnergy[NJET]             = neutralEmEnergy[it];    
-      chargedEmEnergy[NJET]             = chargedEmEnergy[it];    
-      chargedHadronEnergy[NJET]         = chargedHadronEnergy[it];
-      photonMultiplicity[NJET]	        = photonMultiplicity[it];	      
-      electronMultiplicity[NJET]	= electronMultiplicity[it];	      
-      HFHadronMultiplicity[NJET]	= HFHadronMultiplicity[it];	      
-      HFEMMultiplicity[NJET]	        = HFEMMultiplicity[it];	      
-      ChargeMuEnergy[NJET]	        = ChargeMuEnergy[it];	      
-      neutralMultiplicity[NJET]	        = neutralMultiplicity[it];
-      jecFactor0[NJET]                  = jecFactor0[it];
-      jetArea[NJET]                     = jetArea[it];
-      SmearedPt[NJET]		        = SmearedPt[it];		      
-      SmearedPEta[NJET]		        = SmearedPEta[it];		      
-      SmearedPhi[NJET]		        = SmearedPhi[it];		      
-      SmearedE[NJET]		        = SmearedE[it];		      
-      JERup[NJET]		        = JERup[it];		      
-      JERdown[NJET]                     = JERdown[it];
-    }
   } jet;
   
   class AK8Vars {
   public:
-    float vSubjetIndex0[NJET+1];
-    float vSubjetIndex1[NJET+1];
-    float topSubjetIndex0[NJET+1];
-    float topSubjetIndex1[NJET+1];
-    float topSubjetIndex2[NJET+1];
-    float topSubjetIndex3[NJET+1];
-    float tau1[NJET+1];
-    float tau2[NJET+1];
-    float tau3[NJET+1];
-    float trimmedMass[NJET+1];
-    float prunedMass[NJET+1];
-    float filteredMass[NJET+1];
-    float topMass[NJET+1];
-    float wMass[NJET+1];
-    float nSubJets[NJET+1];
-    float minmass[NJET+1];
+    float vSubjetIndex0[NJET];
+    float vSubjetIndex1[NJET];
+    float topSubjetIndex0[NJET];
+    float topSubjetIndex1[NJET];
+    float topSubjetIndex2[NJET];
+    float topSubjetIndex3[NJET];
+    float tau1[NJET];
+    float tau2[NJET];
+    float tau3[NJET];
+    float trimmedMass[NJET];
+    float prunedMass[NJET];
+    float filteredMass[NJET];
+    float topMass[NJET];
+    float wMass[NJET];
+    float nSubJets[NJET];
+    float minmass[NJET];
     
     void init() {
-      for (size_t it=0; it<=NJET; ++it) {
+      for (size_t it=0; it<NJET; ++it) {
 	vSubjetIndex0[it]=NOVAL_F;
 	vSubjetIndex1[it]=NOVAL_F;
 	topSubjetIndex0[it]=NOVAL_F;
@@ -549,24 +413,6 @@ public:
       }
     }
     
-    void SetCurrent(size_t it) {
-      vSubjetIndex0[NJET] = vSubjetIndex0[it];
-      vSubjetIndex1[NJET] = vSubjetIndex1[it];
-      topSubjetIndex0[NJET] = topSubjetIndex0[it];
-      topSubjetIndex1[NJET] = topSubjetIndex1[it];
-      topSubjetIndex2[NJET] = topSubjetIndex2[it];
-      topSubjetIndex3[NJET] = topSubjetIndex3[it];
-      tau1[NJET]	 = tau1[it];
-      tau2[NJET]	 = tau2[it];
-      tau3[NJET]	 = tau3[it];
-      trimmedMass[NJET]	 = trimmedMass[it];
-      prunedMass[NJET]	 = prunedMass[it];
-      filteredMass[NJET] = filteredMass[it];
-      topMass[NJET]	 = topMass[it];
-      wMass[NJET]	 = wMass[it];
-      nSubJets[NJET]	 = nSubJets[it];
-      minmass[NJET]	 = minmass[it];
-    }
   } AK8;
   
   class AK4JetVars : public JetVars {
@@ -598,7 +444,6 @@ public:
     bool Loop() {
       ++it;
       if (it<(size_t)size) {
-	JetVars::SetCurrent(it);
 	return 1;
       } else {
 	it=-1;
@@ -637,8 +482,6 @@ public:
     bool Loop() {
       ++it;
       if (it<(size_t)size) {
-	JetVars::SetCurrent(it);
-	AK8Vars::SetCurrent(it);
 	return 1;
       } else {
 	it=-1;
@@ -652,14 +495,14 @@ public:
     AK8SubJetVars() { init(); }
     ~AK8SubJetVars() {}
     
-    float subjetCSV[NJET+1];
+    float subjetCSV[NJET];
     
     size_t it;
     int size;
     
     void init() {
       JetVars::init();
-      for (size_t it=0; it<=NJET; ++it) subjetCSV[it]=NOVAL_F;
+      for (size_t it=0; it<NJET; ++it) subjetCSV[it]=NOVAL_F;
       
       it = -1;
       size = 0;
@@ -668,7 +511,6 @@ public:
     bool Loop() {
       ++it;
       if (it<(size_t)size) {
-	JetVars::SetCurrent(it);
 	subjetCSV[NJET] = subjetCSV[it];
 	return 1;
       } else {
@@ -696,7 +538,6 @@ public:
     bool Loop() {
       ++it;
       if (it<(size_t)size) {
-	JetVars::SetCurrent(it);
 	return 1;
       } else {
 	it=-1;
@@ -792,14 +633,14 @@ public:
     int neletight;
     int nmuveto;
     int neleveto;
-    float DRJetLep[NJET+1];
-    float EleDRJet[NLEP+1];
-    float MuDRJet[NLEP+1];
-    float RelPtJetLep[NJET+1];
-    float EleRelPtJet[NLEP+1];
-    float MuRelPtJet[NLEP+1];
-    float EleJetCombMass[NLEP+1];
-    float MuJetCombMass[NLEP+1];
+    float DRJetLep[NJET];
+    float EleDRJet[NLEP];
+    float MuDRJet[NLEP];
+    float RelPtJetLep[NJET];
+    float EleRelPtJet[NLEP];
+    float MuRelPtJet[NLEP];
+    float EleJetCombMass[NLEP];
+    float MuJetCombMass[NLEP];
     int nhadtoplike;
 
     // Development 20 April
@@ -886,11 +727,11 @@ public:
       neletight=NOVAL_I;
       nmuveto=NOVAL_I;
       neleveto=NOVAL_I;
-      for (size_t i=0; i<=NJET; ++i) {
+      for (size_t i=0; i<NJET; ++i) {
 	DRJetLep[i]=NOVAL_F;
 	RelPtJetLep[i]=NOVAL_F;
       }
-      for (size_t i=0; i<=NLEP; ++i) {
+      for (size_t i=0; i<NLEP; ++i) {
 	EleDRJet[i]=NOVAL_F;
 	MuDRJet[i]=NOVAL_F;
 	EleRelPtJet[i]=NOVAL_F;
@@ -950,27 +791,27 @@ public:
       evt.GenTopType[gen.it] = NOVAL_I;
       evt.GenTopHasMatchedJet[gen.it]=0;
       evt.GenTopHasMatchedTopTagJet[gen.it]=0;
-      if (gen.Pt[NGEN]>0) {
-	TLorentzVector genp; genp.SetPtEtaPhiE(gen.Pt[NGEN], gen.Eta[NGEN], gen.Phi[NGEN], gen.E[NGEN]);
-        if (gen.ID[NGEN]!=gen.MomID[NGEN]) {
-          if (abs(gen.ID[NGEN])==6) { 
+      if (gen.Pt[gen.it]>0) {
+	TLorentzVector genp; genp.SetPtEtaPhiE(gen.Pt[gen.it], gen.Eta[gen.it], gen.Phi[gen.it], gen.E[gen.it]);
+        if (gen.ID[gen.it]!=gen.MomID[gen.it]) {
+          if (abs(gen.ID[gen.it])==6) { 
 	    evt.IsGenTop[gen.it]=1; 
 	    gen_top.push_back(genp); 
 	    gen_top_it.push_back(gen.it); 
-	    gen_top_ID.push_back(gen.ID[NGEN]);
+	    gen_top_ID.push_back(gen.ID[gen.it]);
 	    evt.GenTopType[gen.it] = 0;
 	  }
-          if (abs(gen.ID[NGEN])==5&&abs(gen.MomID[NGEN])==6) { gen_b.push_back(genp); gen_b_ID.push_back(gen.ID[NGEN]); }
-          if (abs(gen.ID[NGEN])==24&&abs(gen.MomID[NGEN])==6) { gen_W.push_back(genp); gen_W_ID.push_back(gen.ID[NGEN]); }
-          if ((abs(gen.ID[NGEN])==11||abs(gen.ID[NGEN])==13)&&(abs(gen.MomID[NGEN])==24)) gen_lep.push_back(genp);
-          if ((abs(gen.ID[NGEN])==12||abs(gen.ID[NGEN])==14)&&(abs(gen.MomID[NGEN])==24)) gen_neu.push_back(genp);
-        } else if (gen.ID[NGEN]==gen.MomID[NGEN]) {
+          if (abs(gen.ID[gen.it])==5&&abs(gen.MomID[gen.it])==6) { gen_b.push_back(genp); gen_b_ID.push_back(gen.ID[gen.it]); }
+          if (abs(gen.ID[gen.it])==24&&abs(gen.MomID[gen.it])==6) { gen_W.push_back(genp); gen_W_ID.push_back(gen.ID[gen.it]); }
+          if ((abs(gen.ID[gen.it])==11||abs(gen.ID[gen.it])==13)&&(abs(gen.MomID[gen.it])==24)) gen_lep.push_back(genp);
+          if ((abs(gen.ID[gen.it])==12||abs(gen.ID[gen.it])==14)&&(abs(gen.MomID[gen.it])==24)) gen_neu.push_back(genp);
+        } else if (gen.ID[gen.it]==gen.MomID[gen.it]) {
 	  // tops emit gluons(?) and has to match consecutive tops to the original one
-	  if (abs(gen.ID[NGEN])==6) {
+	  if (abs(gen.ID[gen.it])==6) {
 	    size_t i=0, i_m_dR = -1, i_m_dE = -1;
 	    double min_dE = 9999, min_dR = 9999;
 	    while(i<gen_top.size()) {
-	      if (gen_top_ID[i]==gen.MomID[NGEN]) {
+	      if (gen_top_ID[i]==gen.MomID[gen.it]) {
 		double dE = gen_top[i].E()-genp.E();
 		double dR = gen_top[i].DeltaR(genp);
 		if (fabs(dE)<fabs(min_dE)) {
@@ -997,21 +838,21 @@ public:
     }
     
     // std::cout<<"Start looping on Gen\n";
-    // //while(gen.Loop()) if (abs(gen.ID[NGEN])==1000021&&gen.ID[NGEN]!=gen.MomID[NGEN]) std::cout<<"Found ~g, it="<<gen.it<<" ID=~"<<(abs(gen.ID[NGEN])-1e6)<<" MomID="<<gen.MomID[NGEN]<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
-    // //while(gen.Loop()) if (abs(gen.ID[NGEN])==1000006&&gen.ID[NGEN]!=gen.MomID[NGEN]) std::cout<<"Found ~t, it="<<gen.it<<" ID=~"<<(abs(gen.ID[NGEN])-1e6)<<" MomID=~"<<(abs(gen.MomID[NGEN])-1e6)<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
-    // //while(gen.Loop()) if (abs(gen.ID[NGEN])==1000024&&gen.ID[NGEN]!=gen.MomID[NGEN]) std::cout<<"Found ~chi+, it="<<gen.it<<" ID=~"<<(abs(gen.ID[NGEN])-1e6)<<" MomID=~"<<(abs(gen.MomID[NGEN])-1e6)<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
-    // //while(gen.Loop()) if (abs(gen.ID[NGEN])==1000022&&gen.ID[NGEN]!=gen.MomID[NGEN]) std::cout<<"Found ~chi0, it="<<gen.it<<" ID=~"<<(abs(gen.ID[NGEN])-1e6)<<" MomID=~"<<(abs(gen.MomID[NGEN])-1e6)<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
-    // while(gen.Loop()) if (abs(gen.ID[NGEN])==6&&gen.ID[NGEN]!=gen.MomID[NGEN]) std::cout<<"Found t, it="<<gen.it<<" MomID="<<gen.MomID[NGEN]<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
-    // while(gen.Loop()) if (abs(gen.ID[NGEN])==5&&gen.ID[NGEN]!=gen.MomID[NGEN]) std::cout<<"Found b, it="<<gen.it<<" MomID="<<gen.MomID[NGEN]<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
-    // while(gen.Loop()) if (abs(gen.ID[NGEN])==24&&gen.ID[NGEN]!=gen.MomID[NGEN]) std::cout<<"Found W, it="<<gen.it<<" MomID="<<gen.MomID[NGEN]<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
-    // while(gen.Loop()) if ((abs(gen.ID[NGEN])==11||abs(gen.ID[NGEN])==13)&&(abs(gen.MomID[NGEN])==24||abs(gen.MomID[NGEN])>1e6)) std::cout<<"Found mu/e, it="<<gen.it<<" MomID="<<gen.MomID[NGEN]<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
+    // //while(gen.Loop()) if (abs(gen.ID[gen.it])==1000021&&gen.ID[gen.it]!=gen.MomID[gen.it]) std::cout<<"Found ~g, it="<<gen.it<<" ID=~"<<(abs(gen.ID[gen.it])-1e6)<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
+    // //while(gen.Loop()) if (abs(gen.ID[gen.it])==1000006&&gen.ID[gen.it]!=gen.MomID[gen.it]) std::cout<<"Found ~t, it="<<gen.it<<" ID=~"<<(abs(gen.ID[gen.it])-1e6)<<" MomID=~"<<(abs(gen.MomID[gen.it])-1e6)<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
+    // //while(gen.Loop()) if (abs(gen.ID[gen.it])==1000024&&gen.ID[gen.it]!=gen.MomID[gen.it]) std::cout<<"Found ~chi+, it="<<gen.it<<" ID=~"<<(abs(gen.ID[gen.it])-1e6)<<" MomID=~"<<(abs(gen.MomID[gen.it])-1e6)<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
+    // //while(gen.Loop()) if (abs(gen.ID[gen.it])==1000022&&gen.ID[gen.it]!=gen.MomID[gen.it]) std::cout<<"Found ~chi0, it="<<gen.it<<" ID=~"<<(abs(gen.ID[gen.it])-1e6)<<" MomID=~"<<(abs(gen.MomID[gen.it])-1e6)<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
+    // while(gen.Loop()) if (abs(gen.ID[gen.it])==6&&gen.ID[gen.it]!=gen.MomID[gen.it]) std::cout<<"Found t, it="<<gen.it<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
+    // while(gen.Loop()) if (abs(gen.ID[gen.it])==5&&gen.ID[gen.it]!=gen.MomID[gen.it]) std::cout<<"Found b, it="<<gen.it<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
+    // while(gen.Loop()) if (abs(gen.ID[gen.it])==24&&gen.ID[gen.it]!=gen.MomID[gen.it]) std::cout<<"Found W, it="<<gen.it<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
+    // while(gen.Loop()) if ((abs(gen.ID[gen.it])==11||abs(gen.ID[gen.it])==13)&&(abs(gen.MomID[gen.it])==24||abs(gen.MomID[gen.it])>1e6)) std::cout<<"Found mu/e, it="<<gen.it<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
     // std::cout<<"\n";
     //if ((gen_top[0].Pt()>400&&gen_top[1].Pt()>400)&&gen_lep.size()>0) {
     //  std::cout<<"Start looping on Gen\n";
-    //  while(gen.Loop()) if (abs(gen.ID[NGEN])==6&&gen.ID[NGEN]!=gen.MomID[NGEN]) std::cout<<"Found t, it="<<gen.it<<" MomID="<<gen.MomID[NGEN]<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
-    //  while(gen.Loop()) if (abs(gen.ID[NGEN])==5&&abs(gen.MomID[NGEN])==6) std::cout<<"Found b, it="<<gen.it<<" MomID="<<gen.MomID[NGEN]<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
-    //  while(gen.Loop()) if (abs(gen.ID[NGEN])==24&&abs(gen.MomID[NGEN])==6) std::cout<<"Found W, it="<<gen.it<<" MomID="<<gen.MomID[NGEN]<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
-    //  while(gen.Loop()) if ((abs(gen.ID[NGEN])==11||abs(gen.ID[NGEN])==13)&&abs(gen.MomID[NGEN])==24) std::cout<<"Found mu/e from W mother, it="<<gen.it<<" MomID="<<gen.MomID[NGEN]<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
+    //  while(gen.Loop()) if (abs(gen.ID[gen.it])==6&&gen.ID[gen.it]!=gen.MomID[gen.it]) std::cout<<"Found t, it="<<gen.it<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
+    //  while(gen.Loop()) if (abs(gen.ID[gen.it])==5&&abs(gen.MomID[gen.it])==6) std::cout<<"Found b, it="<<gen.it<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
+    //  while(gen.Loop()) if (abs(gen.ID[gen.it])==24&&abs(gen.MomID[gen.it])==6) std::cout<<"Found W, it="<<gen.it<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
+    //  while(gen.Loop()) if ((abs(gen.ID[gen.it])==11||abs(gen.ID[gen.it])==13)&&abs(gen.MomID[gen.it])==24) std::cout<<"Found mu/e from W mother, it="<<gen.it<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
     //  if (good_W_matches&&nlep_from_top>0) for (size_t i=0; i<gen_top_matched_W_matched_lep.size(); ++i) {
     //    TLorentzVector b = gen_top_matched_b[top_parent[i]];
     //    TLorentzVector W = gen_top_matched_W[top_parent[i]];
@@ -1062,13 +903,13 @@ public:
       }
     }
     //if (!good_W_matches) {
-    //  while(gen.Loop()) std::cout<<"it="<<gen.it<<" ID=   "<<gen.ID[NGEN]<<" MomID=   "<<gen.MomID[NGEN]<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<" E="<<gen.E[NGEN]<<std::endl;
+    //  while(gen.Loop()) std::cout<<"it="<<gen.it<<" ID=   "<<gen.ID[gen.it]<<" MomID=   "<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<" E="<<gen.E[gen.it]<<std::endl;
     //  std::cout<<""<<std::endl;
     //}
-    //while(gen.Loop()) if (gen.ID[NGEN]==6) std::cout<<"Found t it="<<gen.it<<" ID="<<gen.ID[NGEN]<<" MomID="<<gen.MomID[NGEN]<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
-    //while(gen.Loop()) if (gen.ID[NGEN]==-6) std::cout<<"Found t it="<<gen.it<<" ID="<<gen.ID[NGEN]<<" MomID="<<gen.MomID[NGEN]<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
-    //while(gen.Loop()) if (gen.MomID[NGEN]==6) std::cout<<"Found child it="<<gen.it<<" ID="<<gen.ID[NGEN]<<" MomID="<<gen.MomID[NGEN]<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
-    //while(gen.Loop()) if (gen.MomID[NGEN]==-6) std::cout<<"Found child it="<<gen.it<<" ID="<<gen.ID[NGEN]<<" MomID="<<gen.MomID[NGEN]<<" Pt="<<gen.Pt[NGEN]<<" Eta="<<gen.Eta[NGEN]<<" Phi="<<gen.Phi[NGEN]<<std::endl;
+    //while(gen.Loop()) if (gen.ID[gen.it]==6) std::cout<<"Found t it="<<gen.it<<" ID="<<gen.ID[gen.it]<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
+    //while(gen.Loop()) if (gen.ID[gen.it]==-6) std::cout<<"Found t it="<<gen.it<<" ID="<<gen.ID[gen.it]<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
+    //while(gen.Loop()) if (gen.MomID[gen.it]==6) std::cout<<"Found child it="<<gen.it<<" ID="<<gen.ID[gen.it]<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
+    //while(gen.Loop()) if (gen.MomID[gen.it]==-6) std::cout<<"Found child it="<<gen.it<<" ID="<<gen.ID[gen.it]<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
     
     // If we have lepton from W, find parent
     // Do as above with tops, but use neutrino and lepton instead to find W parent
@@ -1122,7 +963,7 @@ public:
       for (size_t i=0; i<temp.size(); ++i) {
 	TLorentzVector top = temp[i];
 	while(jetsAK8.Loop()) {
-	  TLorentzVector jet; jet.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
+	  TLorentzVector jet; jet.SetPtEtaPhiE(jetsAK8.Pt[jetsAK8.it], jetsAK8.Eta[jetsAK8.it], jetsAK8.Phi[jetsAK8.it], jetsAK8.E[jetsAK8.it]);
 	  double DR = jet.DeltaR(top);
 	  if (DR<min_DR) {
 	    min_DR = DR;
@@ -1148,7 +989,7 @@ public:
 	  for (size_t i=0; i<temp.size(); ++i) {
 	    TLorentzVector top = temp[i];
 	    while(jetsAK8.Loop()) {
-	      TLorentzVector jet; jet.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
+	      TLorentzVector jet; jet.SetPtEtaPhiE(jetsAK8.Pt[jetsAK8.it], jetsAK8.Eta[jetsAK8.it], jetsAK8.Phi[jetsAK8.it], jetsAK8.E[jetsAK8.it]);
 	      double DR = jet.DeltaR(top);
 	      std::cout<<"  top(gen) it="<<temp_it[i]<<" jet it="<<jetsAK8.it<<" dR="<<DR<<(jet_gentop_it.count(jetsAK8.it)?" (Already found)":"")<<std::endl;
 	    }
@@ -1178,12 +1019,12 @@ public:
     evt.nmuveto = 0;
     evt.neleveto = 0;
     while(ele.Loop()) {
-      TLorentzVector el; el.SetPtEtaPhiE(ele.Pt[NLEP], ele.Eta[NLEP], ele.Phi[NLEP], ele.E[NLEP]);
+      TLorentzVector el; el.SetPtEtaPhiE(ele.Pt[ele.it], ele.Eta[ele.it], ele.Phi[ele.it], ele.E[ele.it]);
       evt.EleDRJet[ele.it] = 9999;
       evt.EleRelPtJet[ele.it] = 9999;
       evt.EleJetCombMass[ele.it] = 9999;
       while(jetsAK8.Loop()) {
-        TLorentzVector jet; jet.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
+        TLorentzVector jet; jet.SetPtEtaPhiE(jetsAK8.Pt[jetsAK8.it], jetsAK8.Eta[jetsAK8.it], jetsAK8.Phi[jetsAK8.it], jetsAK8.E[jetsAK8.it]);
         double dR = el.DeltaR(jet);
 	if (dR<evt.EleDRJet[jetsAK8.it]) {
           evt.EleDRJet[ele.it] = dR;
@@ -1191,24 +1032,24 @@ public:
           evt.EleJetCombMass[ele.it] = (jet+el).M();
         }
       }
-      if (ele.Pt[NLEP] > 35 && fabs(ele.Eta[NLEP]) < 2.5) {
+      if (ele.Pt[ele.it] > 35 && fabs(ele.Eta[ele.it]) < 2.5) {
 	++ngoodleptons;
 	++evt.nele;
 	goodleps.push_back(el);
-	evt.HTlep += ele.Pt[NLEP];
-	if (ele.isVeto[NLEP]>0) ++evt.neleveto;
-	if (ele.isTight[NLEP]>0) { // New 05 March
+	evt.HTlep += ele.Pt[ele.it];
+	if (ele.isVeto[ele.it]>0) ++evt.neleveto;
+	if (ele.isTight[ele.it]>0) { // New 05 March
 	  ++evt.neletight;
 	}
       }
     }
     while(mu.Loop()) {
-      TLorentzVector muon; muon.SetPtEtaPhiE(mu.Pt[NLEP], mu.Eta[NLEP], mu.Phi[NLEP], mu.E[NLEP]);
+      TLorentzVector muon; muon.SetPtEtaPhiE(mu.Pt[mu.it], mu.Eta[mu.it], mu.Phi[mu.it], mu.E[mu.it]);
       evt.MuDRJet[mu.it] = 9999;
       evt.MuRelPtJet[mu.it] = 9999;
       evt.MuJetCombMass[mu.it] = 9999;
       while(jetsAK8.Loop()) {
-        TLorentzVector jet; jet.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
+        TLorentzVector jet; jet.SetPtEtaPhiE(jetsAK8.Pt[jetsAK8.it], jetsAK8.Eta[jetsAK8.it], jetsAK8.Phi[jetsAK8.it], jetsAK8.E[jetsAK8.it]);
         double dR = muon.DeltaR(jet);
         if (dR<evt.MuDRJet[jetsAK8.it]) {
           evt.MuDRJet[mu.it] = dR;
@@ -1216,14 +1057,14 @@ public:
           evt.MuJetCombMass[mu.it] = (jet+muon).M();
         }
       }
-      if (mu.Pt[NLEP] > 45 && fabs(mu.Eta[NLEP]) < 2.1) {
-	if (mu.IsTightMuon[NLEP]>0) {
+      if (mu.Pt[mu.it] > 45 && fabs(mu.Eta[mu.it]) < 2.1) {
+	if (mu.IsTightMuon[mu.it]>0) {
 	  ++ngoodleptons;
 	  ++evt.nmu;
 	  goodleps.push_back(muon);
-	  evt.HTlep += mu.Pt[NLEP];
+	  evt.HTlep += mu.Pt[mu.it];
 	}
-	if (mu.IsSoftMuon[NLEP]>0) ++evt.nmuveto;
+	if (mu.IsSoftMuon[mu.it]>0) ++evt.nmuveto;
       }
     }
     
@@ -1241,7 +1082,7 @@ public:
     evt.nhadtoplike = 0;
     while(jetsAK8.Loop()) {
       bool is_top = false;
-      TLorentzVector jet; jet.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
+      TLorentzVector jet; jet.SetPtEtaPhiE(jetsAK8.Pt[jetsAK8.it], jetsAK8.Eta[jetsAK8.it], jetsAK8.Phi[jetsAK8.it], jetsAK8.E[jetsAK8.it]);
       // Gen particle truth
       evt.JetGenTruth[jetsAK8.it] = gen_top.size()>0;
       evt.JetHasMatchedGenTop[jetsAK8.it] = 0;
@@ -1282,34 +1123,34 @@ public:
       
       // Subjets
       evt.maxSubjetCSV[jetsAK8.it] = 0;
-      for (size_t i=0; i<jetsAK8.nSubJets[NJET]; ++i) if (i<2) {
-	size_t subjet_it = i==0 ? jetsAK8.vSubjetIndex0[NJET] : jetsAK8.vSubjetIndex1[NJET];
+      for (size_t i=0; i<jetsAK8.nSubJets[jetsAK8.it]; ++i) if (i<2) {
+	size_t subjet_it = i==0 ? jetsAK8.vSubjetIndex0[jetsAK8.it] : jetsAK8.vSubjetIndex1[jetsAK8.it];
 	float sjCSV = subjetsAK8.subjetCSV[subjet_it];
 	if (sjCSV > evt.maxSubjetCSV[jetsAK8.it]) evt.maxSubjetCSV[jetsAK8.it] = sjCSV;
       }
-      //printf("Subjets of jet it: %d  pt: %3.1f  eta: %1.2f  phi: %1.2f minSjCSV: %1.2f\n", int(jetsAK8.it), jetsAK8.Pt[NJET], jetsAK8.Eta[NJET], jetsAK8.Phi[NJET], evt.maxSubjetCSV[jetsAK8.it]);
+      //printf("Subjets of jet it: %d  pt: %3.1f  eta: %1.2f  phi: %1.2f minSjCSV: %1.2f\n", int(jetsAK8.it), jetsAK8.Pt[jetsAK8.it], jetsAK8.Eta[jetsAK8.it], jetsAK8.Phi[jetsAK8.it], evt.maxSubjetCSV[jetsAK8.it]);
       //while(subjetsAK8.Loop()) {
-      //  TLorentzVector subjet; subjet.SetPtEtaPhiE(subjetsAK8.Pt[NJET], subjetsAK8.Eta[NJET], subjetsAK8.Phi[NJET], subjetsAK8.E[NJET]);
+      //  TLorentzVector subjet; subjet.SetPtEtaPhiE(subjetsAK8.Pt[jetsAK8.it], subjetsAK8.Eta[jetsAK8.it], subjetsAK8.Phi[jetsAK8.it], subjetsAK8.E[jetsAK8.it]);
       //  if (jet.DeltaR(subjet)<0.8) {
-      //    printf("    subjet it: %d  pt: %3.1f  eta: %1.2f  phi: %1.2f CSV: %12f\n", int(subjetsAK8.it), subjetsAK8.Pt[NJET], subjetsAK8.Eta[NJET], subjetsAK8.Phi[NJET], subjetsAK8.subjetCSV[NJET]);
+      //    printf("    subjet it: %d  pt: %3.1f  eta: %1.2f  phi: %1.2f CSV: %12f\n", int(subjetsAK8.it), subjetsAK8.Pt[jetsAK8.it], subjetsAK8.Eta[jetsAK8.it], subjetsAK8.Phi[jetsAK8.it], subjetsAK8.subjetCSV[jetsAK8.it]);
       //  }
       //}
       
       // fully hadronic tops
       evt.JetIsHadTopTagged[jetsAK8.it] = 0;
-      //if (jetsAK8.tau1[NJET]>0 && jetsAK8.tau2[NJET]>0 ? jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 140 && (jetsAK8.tau2[NJET]/jetsAK8.tau1[NJET]) < 0.75 : 0) { // orig
-      if ( (jetsAK8.tau2[NJET]>0 && jetsAK8.tau3[NJET]>0 ? jetsAK8.tau3[NJET]/jetsAK8.tau2[NJET] < 0.75 : 0 ) &&
-           //jetsAK8.nSubJets[NJET] > 2 &&
-           //jetsAK8.minmass[NJET] > 50 &&
-           jetsAK8.Pt[NJET] > 400 &&
-           jetsAK8.prunedMass[NJET] > 140) { // Latest
+      //if (jetsAK8.tau1[jetsAK8.it]>0 && jetsAK8.tau2[jetsAK8.it]>0 ? jetsAK8.Pt[jetsAK8.it] > 400 && jetsAK8.prunedMass[jetsAK8.it] > 140 && (jetsAK8.tau2[jetsAK8.it]/jetsAK8.tau1[jetsAK8.it]) < 0.75 : 0) { // orig
+      if ( (jetsAK8.tau2[jetsAK8.it]>0 && jetsAK8.tau3[jetsAK8.it]>0 ? jetsAK8.tau3[jetsAK8.it]/jetsAK8.tau2[jetsAK8.it] < 0.75 : 0 ) &&
+           //jetsAK8.nSubJets[jetsAK8.it] > 2 &&
+           //jetsAK8.minmass[jetsAK8.it] > 50 &&
+           jetsAK8.Pt[jetsAK8.it] > 400 &&
+           jetsAK8.prunedMass[jetsAK8.it] > 140) { // Latest
 	evt.JetIsHadTopTagged[jetsAK8.it] = 1;
         ++evt.nhadtops;
         ++evt.nhadtoplike;
         is_top = true;
         hadtop.push_back(jet);
-      } else if (jetsAK8.Pt[NJET] > 400 && jetsAK8.prunedMass[NJET] > 140) { // Top like jets for sideband fitting
-      //} else if (jetsAK8.Pt[NJET] > 400) { // High pT jets for sideband fitting
+      } else if (jetsAK8.Pt[jetsAK8.it] > 400 && jetsAK8.prunedMass[jetsAK8.it] > 140) { // Top like jets for sideband fitting
+      //} else if (jetsAK8.Pt[jetsAK8.it] > 400) { // High pT jets for sideband fitting
         ++evt.nhadtoplike;
         hadtoplike.push_back(jet);
       }
@@ -1332,8 +1173,8 @@ public:
         leptop.push_back(lepjet);
       }
       // Extra - all except above hadronic/leptonic tops
-      evt.HT += jetsAK8.Pt[NJET];
-      if (is_top) evt.HTtt += jetsAK8.Pt[NJET];
+      evt.HT += jetsAK8.Pt[jetsAK8.it];
+      if (is_top) evt.HTtt += jetsAK8.Pt[jetsAK8.it];
     }
     evt.HTall = evt.HT + met.Pt + evt.HTlep;
     //std::cout<<evt.HTall<<" "<<evt.HT<<" "<<met.Pt<<" "<<evt.HTlep<<std::endl;
@@ -1542,11 +1383,11 @@ public:
     // Select the best pair of jets (AK4, pt>40, |eta| < 3.0)
     std::vector<TLorentzVector> sjetl;
     while(jetsAK4.Loop()) {
-      if (!(jetsAK4.Pt[NJET] > 40) ) continue;
-      if (!(fabs(jetsAK4.Eta[NJET]) < 3) ) continue;
+      if (!(jetsAK4.Pt[jetsAK4.it] > 40) ) continue;
+      if (!(fabs(jetsAK4.Eta[jetsAK4.it]) < 3) ) continue;
       TLorentzVector jl;
-      jl.SetPtEtaPhiE(jetsAK4.Pt[NJET], jetsAK4.Eta[NJET],
-      		jetsAK4.Phi[NJET], jetsAK4.E[NJET]);
+      jl.SetPtEtaPhiE(jetsAK4.Pt[jetsAK4.it], jetsAK4.Eta[jetsAK4.it],
+      		jetsAK4.Phi[jetsAK4.it], jetsAK4.E[jetsAK4.it]);
       sjetl.push_back(jl);
     }
     std::vector<TLorentzVector> hemis = CombineJets_(sjetl);
@@ -1571,11 +1412,11 @@ public:
     // Select the best pair of jets (AK8, pt>40, |eta| < 3.0)
     std::vector<TLorentzVector> sjetl;
     while(jetsAK8.Loop()) {
-      if (!(jetsAK8.Pt[NJET] > 40) ) continue;
-      if (!(fabs(jetsAK8.Eta[NJET]) < 3) ) continue;
+      if (!(jetsAK8.Pt[jetsAK8.it] > 40) ) continue;
+      if (!(fabs(jetsAK8.Eta[jetsAK8.it]) < 3) ) continue;
       TLorentzVector jl;
-      jl.SetPtEtaPhiE(jetsAK8.Pt[NJET], jetsAK8.Eta[NJET],
-      		jetsAK8.Phi[NJET], jetsAK8.E[NJET]);
+      jl.SetPtEtaPhiE(jetsAK8.Pt[jetsAK8.it], jetsAK8.Eta[jetsAK8.it],
+      		jetsAK8.Phi[jetsAK8.it], jetsAK8.E[jetsAK8.it]);
       sjetl.push_back(jl);
     }
     std::vector<TLorentzVector> hemis = CombineJets_(sjetl);

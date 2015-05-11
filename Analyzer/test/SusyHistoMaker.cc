@@ -146,10 +146,10 @@ int main(int argc, char* argv[]) {
   sh.AddNewCut("NoMultiJet",         [&looper,nsignal,nttbar](){ return looper.it_sample<nsignal+nttbar; });
   
   // Ele
-  sh.AddNewCut("GoodEle",       [&d](){ return d.ele.Pt[NLEP] > 35 && fabs(d.ele.Eta[NLEP]) < 2.5 && d.ele.isTight[NLEP] > 0; });
+  sh.AddNewCut("GoodEle",       [&d](){ return d.ele.Pt[d.ele.it] > 35 && fabs(d.ele.Eta[d.ele.it]) < 2.5 && d.ele.isTight[d.ele.it] > 0; });
   sh.AddNewCut("EleJetCombMass>90", [&d](){ return d.evt.EleJetCombMass[d.ele.it] > 90; });
   // Mu
-  sh.AddNewCut("GoodMu",        [&d](){ return d.mu.Pt[NLEP] > 45 && fabs(d.mu.Eta[NLEP]) < 2.1 && d.mu.IsTightMuon[NLEP] > 0; });
+  sh.AddNewCut("GoodMu",        [&d](){ return d.mu.Pt[d.mu.it] > 45 && fabs(d.mu.Eta[d.mu.it]) < 2.1 && d.mu.IsTightMuon[d.mu.it] > 0; });
   sh.AddNewCut("MuJetCombMass>90",  [&d](){ return d.evt.MuJetCombMass[d.mu.it] > 90; });
   
   // Jets
@@ -157,11 +157,11 @@ int main(int argc, char* argv[]) {
   sh.AddNewCut("AK4Highest3Jet",   [&d](){ return d.jetsAK4.size>=3 && d.jetsAK4.it<3; });
   sh.AddNewCut("Highest2Jet",   [&d](){ return d.jetsAK8.size>=2 && d.jetsAK8.it<2; });
   sh.AddNewCut("Highest3Jet",   [&d](){ return d.jetsAK8.size>=3 && d.jetsAK8.it<3; });
-  sh.AddNewCut("HadTop",           [&d](){ return d.jetsAK8.Pt[NJET] > 400 && d.jetsAK8.prunedMass[NJET] > 140 && (d.jetsAK8.tau3[NJET]/d.jetsAK8.tau2[NJET]) < 0.75; });
-  sh.AddNewCut("HadTopNoPtCut",    [&d](){ return d.jetsAK8.prunedMass[NJET] > 140 && (d.jetsAK8.tau3[NJET]/d.jetsAK8.tau2[NJET]) < 0.75; });
-  sh.AddNewCut("HadTopNoTauCut",   [&d](){ return d.jetsAK8.Pt[NJET] > 400 && d.jetsAK8.prunedMass[NJET] > 140; });
-  sh.AddNewCut("HadTopNoMassCut",  [&d](){ return d.jetsAK8.Pt[NJET] > 400 && (d.jetsAK8.tau3[NJET]/d.jetsAK8.tau2[NJET]) < 0.75; });
-  sh.AddNewCut("HadTopNoMassNoTauCut", [&d](){ return d.jetsAK8.Pt[NJET] > 400; });
+  sh.AddNewCut("HadTop",           [&d](){ return d.jetsAK8.Pt[d.jetsAK8.it] > 400 && d.jetsAK8.prunedMass[d.jetsAK8.it] > 140 && (d.jetsAK8.tau3[d.jetsAK8.it]/d.jetsAK8.tau2[d.jetsAK8.it]) < 0.75; });
+  sh.AddNewCut("HadTopNoPtCut",    [&d](){ return d.jetsAK8.prunedMass[d.jetsAK8.it] > 140 && (d.jetsAK8.tau3[d.jetsAK8.it]/d.jetsAK8.tau2[d.jetsAK8.it]) < 0.75; });
+  sh.AddNewCut("HadTopNoTauCut",   [&d](){ return d.jetsAK8.Pt[d.jetsAK8.it] > 400 && d.jetsAK8.prunedMass[d.jetsAK8.it] > 140; });
+  sh.AddNewCut("HadTopNoMassCut",  [&d](){ return d.jetsAK8.Pt[d.jetsAK8.it] > 400 && (d.jetsAK8.tau3[d.jetsAK8.it]/d.jetsAK8.tau2[d.jetsAK8.it]) < 0.75; });
+  sh.AddNewCut("HadTopNoMassNoTauCut", [&d](){ return d.jetsAK8.Pt[d.jetsAK8.it] > 400; });
   sh.AddNewCut("JetHasMatchedGenTop",  [&d](){ return d.evt.JetHasMatchedGenTop[d.jetsAK8.it]; });
   sh.AddNewCut("GenLepTop",            [&d](){ return d.evt.JetMatchedGenTopType[d.jetsAK8.it]==1; });
   sh.AddNewCut("JetIsHadTopTagged",    [&d](){ return d.evt.JetIsHadTopTagged[d.jetsAK8.it]; });
@@ -212,10 +212,10 @@ int main(int argc, char* argv[]) {
   // Jets
   sh.AddNewPostfix("AK4JetsPtOrdered", [&d](){ return d.jetsAK4.it; }, "Jet[1to10]", "1st Jet;2nd Jet;3rd Jet;[4to10]th Jet", "1-10");
   sh.AddNewPostfix("JetsPtOrdered",    [&d](){ return d.jetsAK8.it; }, "Jet[1to10]", "1st Jet;2nd Jet;3rd Jet;[4to10]th Jet", "1-10");
-  sh.AddNewPostfix("NSubJet",          [&d](){ return (size_t)d.jetsAK8.nSubJets[NJET]; }, "NSubJet[0to4]", "N_{subjet}=[0to4]", "1-5");
-  sh.AddNewPostfix("JetMassCut",       [&d](){ return (size_t)(d.jetsAK8.prunedMass[NJET] > 140); }, "MassBelow140;MassAbove140", "M_{pruned} < 140;M_{pruned} > 140", "2,3");
-  sh.AddNewPostfix("JetTau32Cut",      [&d](){ return (size_t)(d.jetsAK8.tau3[NJET]/d.jetsAK8.tau2[NJET] < 0.75); }, "Tau32Above0p75;Tau32Below0p75", "#tau_{3}/#tau_{2} > 0.75;#tau_{3}/#tau_{2} < 0.75", "2,3");
-  sh.AddNewPostfix("JetPtCut",         [&d](){ return (size_t)(d.jetsAK8.Pt[NJET] > 400); }, "PtBelow400;PtAbove400", "p_{T} < 400;p_{T} > 400", "2,3");
+  sh.AddNewPostfix("NSubJet",          [&d](){ return (size_t)d.jetsAK8.nSubJets[d.jetsAK8.it]; }, "NSubJet[0to4]", "N_{subjet}=[0to4]", "1-5");
+  sh.AddNewPostfix("JetMassCut",       [&d](){ return (size_t)(d.jetsAK8.prunedMass[d.jetsAK8.it] > 140); }, "MassBelow140;MassAbove140", "M_{pruned} < 140;M_{pruned} > 140", "2,3");
+  sh.AddNewPostfix("JetTau32Cut",      [&d](){ return (size_t)(d.jetsAK8.tau3[d.jetsAK8.it]/d.jetsAK8.tau2[d.jetsAK8.it] < 0.75); }, "Tau32Above0p75;Tau32Below0p75", "#tau_{3}/#tau_{2} > 0.75;#tau_{3}/#tau_{2} < 0.75", "2,3");
+  sh.AddNewPostfix("JetPtCut",         [&d](){ return (size_t)(d.jetsAK8.Pt[d.jetsAK8.it] > 400); }, "PtBelow400;PtAbove400", "p_{T} < 400;p_{T} > 400", "2,3");
   
   sh.AddNewPostfix("JetGenTruth",              [&d](){ return (size_t)(d.evt.JetGenTruth[d.jetsAK8.it]); }, "NoTopInEvt;NoTopMatch;NonMergedTopJet;MergedHadTop;MergedLepTop;BadWMatch", "No top in event;No top matched;Matched non-merged top;Merged (R<0.7) top - hadronic;Merged (R<0.7) top - leptonic;Bad W Match (unknown)", "1,13,2,3,4,5");
   sh.AddNewPostfix("JetMatchedGenTopType",     [&d](){ return (size_t)(d.evt.JetMatchedGenTopType[d.jetsAK8.it]!=-9999 ? d.evt.JetMatchedGenTopType[d.jetsAK8.it] : -1); }, "MatchedGenTopHad;MatchedGenTopLep", "Hadronic top;Semi-leptonic top", "2,4");
@@ -249,15 +249,15 @@ int main(int argc, char* argv[]) {
   sh.AddNewFillParam("Sample",            { .nbin= 50,  .bins={   0,     50}, .fill=[&looper](){ return looper.it_sample;     }, .axis_title="iSample"});
   
   // Muons
-  sh.AddNewFillParam("MuEnergy",          { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.mu.E[NLEP];              }, .axis_title="Muon Energy (GeV)"});
-  sh.AddNewFillParam("MuPt",              { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.mu.Pt[NLEP];             }, .axis_title="Muon p_{T} (GeV/c)"});
+  sh.AddNewFillParam("MuEnergy",          { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.mu.E[d.mu.it];              }, .axis_title="Muon Energy (GeV)"});
+  sh.AddNewFillParam("MuPt",              { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.mu.Pt[d.mu.it];             }, .axis_title="Muon p_{T} (GeV/c)"});
   sh.AddNewFillParam("MuDRJet",           { .nbin=  60, .bins={   0,      6}, .fill=[&d](){ return d.evt.MuDRJet[d.mu.it];    }, .axis_title="#DeltaR (#mu, jet)"});
   sh.AddNewFillParam("MuRelPtJet",        { .nbin=  50, .bins={   0,    500}, .fill=[&d](){ return d.evt.MuRelPtJet[d.mu.it]; }, .axis_title="p_{T}^{rel} (#mu, jet) (GeV/c)"});
   sh.AddNewFillParam("MuJetCombMass",     { .nbin=  80, .bins={   0,   2000}, .fill=[&d](){ return d.evt.MuJetCombMass[d.mu.it]; }, .axis_title="Mass_{#mu+jet comb.} (GeV/c^{2})"});
   
   // Electrons
-  sh.AddNewFillParam("EleEnergy",         { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.ele.E[NLEP];              }, .axis_title="Electron Energy (GeV)"});
-  sh.AddNewFillParam("ElePt",             { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.ele.Pt[NLEP];             }, .axis_title="Electron p_{T} (GeV/c)"});
+  sh.AddNewFillParam("EleEnergy",         { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.ele.E[d.ele.it];              }, .axis_title="Electron Energy (GeV)"});
+  sh.AddNewFillParam("ElePt",             { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.ele.Pt[d.ele.it];             }, .axis_title="Electron p_{T} (GeV/c)"});
   sh.AddNewFillParam("EleDRJet",          { .nbin=  60, .bins={   0,      6}, .fill=[&d](){ return d.evt.EleDRJet[d.ele.it];   }, .axis_title="#DeltaR (e, jet)"});
   sh.AddNewFillParam("EleRelPtJet",       { .nbin=  50, .bins={   0,    500}, .fill=[&d](){ return d.evt.EleRelPtJet[d.ele.it];}, .axis_title="p_{T}^{rel} (e, jet) (GeV/c)"});
   sh.AddNewFillParam("EleJetCombMass",    { .nbin=  80, .bins={   0,   2000}, .fill=[&d](){ return d.evt.EleJetCombMass[d.ele.it]; }, .axis_title="Mass_{e+jet comb.} (GeV/c^{2})"});
@@ -266,32 +266,32 @@ int main(int argc, char* argv[]) {
   sh.AddNewFillParam("MetPt",             { .nbin= 100, .bins={   0,   2000}, .fill=[&d](){ return d.met.Pt;                   }, .axis_title="MET p_{T} (GeV/c)"});
   
   // AK4 Jets
-  sh.AddNewFillParam("AK4JetEnergy",      { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK4.E[NJET];          }, .axis_title="AK4-jet Energy (GeV)"});
-  sh.AddNewFillParam("AK4JetPt",          { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK4.Pt[NJET];         }, .axis_title="AK4-jet p_{T} (GeV/c)"});
-  sh.AddNewFillParam("AK4JetMass",        { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK4.Mass[NJET];       }, .axis_title="AK4-jet Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("AK4JetEnergy",      { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK4.E[d.jetsAK8.it];          }, .axis_title="AK4-jet Energy (GeV)"});
+  sh.AddNewFillParam("AK4JetPt",          { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK4.Pt[d.jetsAK8.it];         }, .axis_title="AK4-jet p_{T} (GeV/c)"});
+  sh.AddNewFillParam("AK4JetMass",        { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK4.Mass[d.jetsAK8.it];       }, .axis_title="AK4-jet Mass (GeV/c^{2})"});
   
   // Jets (AK8)
-  sh.AddNewFillParam("JetEnergy",          { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.E[NJET];                    }, .axis_title="AK8-jet Energy (GeV)"});
-  sh.AddNewFillParam("JetPt",              { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.Pt[NJET];                   }, .axis_title="AK8-jet p_{T} (GeV/c)"});
-  sh.AddNewFillParam("JetPtCoarse",        { .nbin= 100, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.Pt[NJET];                   }, .axis_title="AK8-jet p_{T} (GeV/c)"});
-  sh.AddNewFillParam("JetPtBins",          { .nbin=  14, .bins={0, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 800, 1000, 1400, 2000}, .fill=[&d](){ return d.jetsAK8.Pt[NJET]; }, .axis_title="AK8-jet p_{T} (GeV/c)"});
-  sh.AddNewFillParam("JetPtFewBins",       { .nbin=   5, .bins={0, 300, 400, 600, 1000, 2000}, .fill=[&d](){ return d.jetsAK8.Pt[NJET]; }, .axis_title="AK8-jet p_{T} (GeV/c)"});
-  sh.AddNewFillParam("JetPtOneBin",        { .nbin=   1, .bins={400, 5000}, .fill=[&d](){ return d.jetsAK8.Pt[NJET]; }, .axis_title="AK8-jet p_{T} (GeV/c)"});
+  sh.AddNewFillParam("JetEnergy",          { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.E[d.jetsAK8.it];                    }, .axis_title="AK8-jet Energy (GeV)"});
+  sh.AddNewFillParam("JetPt",              { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.Pt[d.jetsAK8.it];                   }, .axis_title="AK8-jet p_{T} (GeV/c)"});
+  sh.AddNewFillParam("JetPtCoarse",        { .nbin= 100, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.Pt[d.jetsAK8.it];                   }, .axis_title="AK8-jet p_{T} (GeV/c)"});
+  sh.AddNewFillParam("JetPtBins",          { .nbin=  14, .bins={0, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 800, 1000, 1400, 2000}, .fill=[&d](){ return d.jetsAK8.Pt[d.jetsAK8.it]; }, .axis_title="AK8-jet p_{T} (GeV/c)"});
+  sh.AddNewFillParam("JetPtFewBins",       { .nbin=   5, .bins={0, 300, 400, 600, 1000, 2000}, .fill=[&d](){ return d.jetsAK8.Pt[d.jetsAK8.it]; }, .axis_title="AK8-jet p_{T} (GeV/c)"});
+  sh.AddNewFillParam("JetPtOneBin",        { .nbin=   1, .bins={400, 5000}, .fill=[&d](){ return d.jetsAK8.Pt[d.jetsAK8.it]; }, .axis_title="AK8-jet p_{T} (GeV/c)"});
   
-  sh.AddNewFillParam("JetMass",            { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.Mass[NJET];                 }, .axis_title="AK8-jet Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("JetPrunedMass",      { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.prunedMass[NJET];           }, .axis_title="AK8-jet Pruned Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("JetPrunedMassCoarse",{ .nbin= 200, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.prunedMass[NJET];           }, .axis_title="AK8-jet Pruned Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("JetFilteredMass",    { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.filteredMass[NJET];         }, .axis_title="AK8-jet Filtered Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("JetTrimmedMass",     { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.trimmedMass[NJET];          }, .axis_title="AK8-jet Trimmed Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("JetTopMass",         { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.topMass[NJET];              }, .axis_title="AK8-jet Top Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("JetMinMass",         { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.minmass[NJET];              }, .axis_title="AK8-jet Min. Subjet-pair Mass (GeV/c^{2})"});
-  sh.AddNewFillParam("JetNSubJets",        { .nbin=  11, .bins={-0.5,   10.5}, .fill=[&d](){ return d.jetsAK8.nSubJets[NJET];             }, .axis_title="AK8-jet N_{subjet}"});
-  sh.AddNewFillParam("JetTau1",            { .nbin= 100, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau1[NJET];                 }, .axis_title="#tau_{1}"});
-  sh.AddNewFillParam("JetTau2",            { .nbin= 100, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau2[NJET];                 }, .axis_title="#tau_{2}"});
-  sh.AddNewFillParam("JetTau3",            { .nbin= 100, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau3[NJET];                 }, .axis_title="#tau_{3}"});
-  sh.AddNewFillParam("JetTau21",           { .nbin=  50, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau2[NJET]/d.jetsAK8.tau1[NJET];   }, .axis_title="#tau_{2}/#tau_{1}"});
-  sh.AddNewFillParam("JetTau31",           { .nbin=  50, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau3[NJET]/d.jetsAK8.tau1[NJET];   }, .axis_title="#tau_{3}/#tau_{1}"});
-  sh.AddNewFillParam("JetTau32",           { .nbin=  50, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau3[NJET]/d.jetsAK8.tau2[NJET];   }, .axis_title="#tau_{3}/#tau_{2}"});
+  sh.AddNewFillParam("JetMass",            { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.Mass[d.jetsAK8.it];                 }, .axis_title="AK8-jet Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("JetPrunedMass",      { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.prunedMass[d.jetsAK8.it];           }, .axis_title="AK8-jet Pruned Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("JetPrunedMassCoarse",{ .nbin= 200, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.prunedMass[d.jetsAK8.it];           }, .axis_title="AK8-jet Pruned Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("JetFilteredMass",    { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.filteredMass[d.jetsAK8.it];         }, .axis_title="AK8-jet Filtered Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("JetTrimmedMass",     { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.trimmedMass[d.jetsAK8.it];          }, .axis_title="AK8-jet Trimmed Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("JetTopMass",         { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.topMass[d.jetsAK8.it];              }, .axis_title="AK8-jet Top Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("JetMinMass",         { .nbin= 400, .bins={   0,   2000}, .fill=[&d](){ return d.jetsAK8.minmass[d.jetsAK8.it];              }, .axis_title="AK8-jet Min. Subjet-pair Mass (GeV/c^{2})"});
+  sh.AddNewFillParam("JetNSubJets",        { .nbin=  11, .bins={-0.5,   10.5}, .fill=[&d](){ return d.jetsAK8.nSubJets[d.jetsAK8.it];             }, .axis_title="AK8-jet N_{subjet}"});
+  sh.AddNewFillParam("JetTau1",            { .nbin= 100, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau1[d.jetsAK8.it];                 }, .axis_title="#tau_{1}"});
+  sh.AddNewFillParam("JetTau2",            { .nbin= 100, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau2[d.jetsAK8.it];                 }, .axis_title="#tau_{2}"});
+  sh.AddNewFillParam("JetTau3",            { .nbin= 100, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau3[d.jetsAK8.it];                 }, .axis_title="#tau_{3}"});
+  sh.AddNewFillParam("JetTau21",           { .nbin=  50, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau2[d.jetsAK8.it]/d.jetsAK8.tau1[d.jetsAK8.it];   }, .axis_title="#tau_{2}/#tau_{1}"});
+  sh.AddNewFillParam("JetTau31",           { .nbin=  50, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau3[d.jetsAK8.it]/d.jetsAK8.tau1[d.jetsAK8.it];   }, .axis_title="#tau_{3}/#tau_{1}"});
+  sh.AddNewFillParam("JetTau32",           { .nbin=  50, .bins={   0,      1}, .fill=[&d](){ return d.jetsAK8.tau3[d.jetsAK8.it]/d.jetsAK8.tau2[d.jetsAK8.it];   }, .axis_title="#tau_{3}/#tau_{2}"});
   sh.AddNewFillParam("JetDRLep",           { .nbin=  60, .bins={   0,      6}, .fill=[&d](){ return d.evt.DRJetLep[d.jetsAK8.it];         }, .axis_title="#DeltaR (lepton, jet)"});
   sh.AddNewFillParam("JetRelPtLep",        { .nbin= 100, .bins={   0,    500}, .fill=[&d](){ return d.evt.RelPtJetLep[d.jetsAK8.it];      }, .axis_title="p_{T}^{rel} (lepton, jet) [GeV/c]"});
   
@@ -548,7 +548,7 @@ int main(int argc, char* argv[]) {
           while(d.mu.Loop())     sh.Fill("mu");  if (debug) cout<<"Fill Muons ok\n";
           while(d.ele.Loop())    sh.Fill("ele"); if (debug) cout<<"Fill Electrons ok\n";
           while(d.jetsAK4.Loop()) {
-            //std::cout<<d.jetsAK4.it<<" "<<d.jetsAK4.Pt[NJET]<<std::endl;
+            //std::cout<<d.jetsAK4.it<<" "<<d.jetsAK4.Pt[d.jetsAK8.it]<<std::endl;
             sh.Fill("jetsAK4");
           } if (debug) cout<<"Fill AK4Jets ok\n";
           while(d.jetsAK8.Loop()) sh.Fill("jetsAK8"); if (debug) cout<<"Fill AK8Jets ok\n";
