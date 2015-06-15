@@ -5,7 +5,7 @@
 #define NOVAL_F -9999.0
 
 #define NLEP 20
-#define NJET 50
+#define NJET 100
 #define NGEN 500
 
 #include <cassert>
@@ -1254,7 +1254,7 @@ public:
       evt.tt_R2 = pow(evt.tt_R, 2);
       //if (evt.nhadtops == 2)
       //  std::cout<<"TT : pt1="<<top1.Pt()<<" pt2="<<top2.Pt()<<" MET="<<met.Pt<<" MR="<<evt.tt_MR<<" MTR="<<evt.tt_MTR<<" R="<<evt.tt_R<<std::endl;
-	
+      
       //std::cout<<evt.NTopHad<<" "<<evt.nhadtops<<std::endl;
       if (evt.NTopHad==2) {
       //  std::cout<<evt.NLep<<" "<<ngoodleptons<<std::endl;

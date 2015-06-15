@@ -725,7 +725,7 @@ public:
     bool spec = (s!=(size_t)-1||s2!=(size_t)-1);
     std::string name_1d = name;
     std::string name_2d = (s!=(size_t)-1) ? std::string(name).replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]) : (s2!=(size_t)-1) ? std::string(name).erase(0,spec2_[s2][0].size()) : name;
-    std::string title_1d = (s!=(size_t)-1) ? title : (s2!=(size_t)-1) ? std::string(title).insert(title.find(";")+1,spec2_[s2][1]) : title;
+    std::string title_1d = (s!=(size_t)-1) ? title : (s2!=(size_t)-1) ? std::string(title).insert(title.find(";",title.find(";")+1,1)+1,spec2_[s2][1]) : title;
     std::string title_2d = (s!=(size_t)-1) ? std::string(title).replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]) : title;
     if (npf_==0) {
       if (binsx.size()==2&&binsy.size()==2) {
@@ -1228,9 +1228,8 @@ public:
     // Draw multiple histograms, set their marker/line color/style
     // Then Draw legend for all histo with titles from a postfix
     std::vector<int> col = string_to_vector_(colz);
-    std::vector<Int_t> marker = { 20, 21, 22, 23, 29, //full circle, square, tri-up, tri-down, star
-				  20, 21, 22, 23, 29,
-				  20, 21, 22, 23, 29 };
+    std::vector<Int_t> marker = { 20, 21, 22, 23, 29 }; //full circle, square, tri-up, tri-down, star
+    
     int nleg = 0;
     //size_t i_highest = -1;
     //double highest = 0;
@@ -1245,7 +1244,7 @@ public:
       //}
       if ((draw_.find("P")!=std::string::npos)) { 
 	hvec[i]->SetMarkerColor((Color_t)col[i-(keep_?skip:0)]); 
-	hvec[i]->SetMarkerStyle(marker[i-(keep_?skip:0)]); 
+	hvec[i]->SetMarkerStyle(marker[(i-(keep_?skip:0))%5]); 
       } else { 
 	hvec[i]->SetLineColor((Color_t)col[i-(keep_?skip:0)]);
 	hvec[i]->SetLineWidth(2);
