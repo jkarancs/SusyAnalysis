@@ -9,30 +9,35 @@
 
 class B2GTreeReader {
 public:
-  B2GTreeReader() {}
+  B2GTreeReader() { debug_=0; }
   ~B2GTreeReader() {}
   
   Data data;
   
   void Load_Tree(TFile &f, const char* name = "B2GTTreeMaker/B2GTree") {
     tree_ = (TTree*)f.Get(name);
-    bool debug = false;
     
     set_branch_("gen_size", &data.gen.size, 1);
-    set_branch_("gen_Mass", &data.gen.Mass, 1);
+    set_branch_("gen_Mass", &data.gen.Mass, 0);
     set_branch_("gen_Pt", &data.gen.Pt, 1);
     set_branch_("gen_Eta", &data.gen.Eta, 1);
     set_branch_("gen_Y", &data.gen.Y, 0);
     set_branch_("gen_Phi", &data.gen.Phi, 1);
     set_branch_("gen_E", &data.gen.E, 1);
     set_branch_("gen_Charge", &data.gen.Charge, 0);
+#if PHYS14 == 1
+    set_branch_("gen_ID", &data.gen._ID, 1);
+    set_branch_("gen_Status", &data.gen._Status, 1);
+    set_branch_("gen_MomID", &data.gen._MomID, 1);
+#else
     set_branch_("gen_ID", &data.gen.ID, 1);
     set_branch_("gen_Status", &data.gen.Status, 1);
     set_branch_("gen_MomID", &data.gen.MomID, 1);
-    if (debug) std::cout<<"B2GTreeReader: gen particles loaded"<<std::endl;
+#endif
+    if (debug_) std::cout<<"B2GTreeReader: gen particles loaded"<<std::endl;
     
     set_branch_("el_size", &data.ele.size, 1);
-    set_branch_("el_Mass", &data.ele.Mass, 1);
+    set_branch_("el_Mass", &data.ele.Mass, 0);
     set_branch_("el_Pt", &data.ele.Pt, 1);
     set_branch_("el_Eta", &data.ele.Eta, 1);
     set_branch_("el_Y", &data.ele.Y, 0);
@@ -55,10 +60,10 @@ public:
     set_branch_("el_isTight", &data.ele.isTight, 1);
     set_branch_("el_isMedium", &data.ele.isMedium, 1);
     set_branch_("el_scEta", &data.ele.scEta, 0);
-    if (debug) std::cout<<"B2GTreeReader: electrons loaded"<<std::endl;
+    if (debug_) std::cout<<"B2GTreeReader: electrons loaded"<<std::endl;
     
     set_branch_("mu_size", &data.mu.size, 1);
-    set_branch_("mu_Mass", &data.mu.Mass, 1);
+    set_branch_("mu_Mass", &data.mu.Mass, 0);
     set_branch_("mu_Pt", &data.mu.Pt, 1);
     set_branch_("mu_Eta", &data.mu.Eta, 1);
     set_branch_("mu_Y", &data.mu.Y, 0);
@@ -96,21 +101,22 @@ public:
     set_branch_("mu_GenMuonPt", &data.mu.GenMuonPt, 0);
     set_branch_("mu_GenMuonE", &data.mu.GenMuonE, 0);
     set_branch_("mu_GenMuonCharge", &data.mu.GenMuonCharge, 0);
-    if (debug) std::cout<<"B2GTreeReader: muons loaded"<<std::endl;
+    if (debug_) std::cout<<"B2GTreeReader: muons loaded"<<std::endl;
     
     set_branch_("met_Pt", &data.met.Pt, 1);
     set_branch_("met_Phi", &data.met.Phi, 1);
     set_branch_("met_Px", &data.met.Px, 1);
     set_branch_("met_Py", &data.met.Py, 1);
-    if (debug) std::cout<<"B2GTreeReader: met loaded"<<std::endl;
+    if (debug_) std::cout<<"B2GTreeReader: met loaded"<<std::endl;
     
-    set_branch_("jetAK4_size", &data.jetsAK4.size, 1);
-    set_branch_("jetAK4_Mass", &data.jetsAK4.Mass, 1);			
-    set_branch_("jetAK4_Pt", &data.jetsAK4.Pt, 1);
-    set_branch_("jetAK4_Eta", &data.jetsAK4.Eta, 1);
+    bool AK4_on = 0;
+    set_branch_("jetAK4_size", &data.jetsAK4.size, AK4_on);
+    set_branch_("jetAK4_Mass", &data.jetsAK4.Mass, 0);
+    set_branch_("jetAK4_Pt", &data.jetsAK4.Pt, AK4_on);
+    set_branch_("jetAK4_Eta", &data.jetsAK4.Eta, AK4_on);
     set_branch_("jetAK4_Y", &data.jetsAK4.Y, 0);
-    set_branch_("jetAK4_Phi", &data.jetsAK4.Phi, 1);
-    set_branch_("jetAK4_E", &data.jetsAK4.E, 1);
+    set_branch_("jetAK4_Phi", &data.jetsAK4.Phi, AK4_on);
+    set_branch_("jetAK4_E", &data.jetsAK4.E, AK4_on);
     set_branch_("jetAK4_Charge", &data.jetsAK4.Charge, 0);
     set_branch_("jetAK4_CSV", &data.jetsAK4.CSV, 0);
     set_branch_("jetAK4_CSVV1", &data.jetsAK4.CSVV1, 0);
@@ -156,10 +162,10 @@ public:
     set_branch_("jetAK4_SmearedE", &data.jetsAK4.SmearedE, 0);
     set_branch_("jetAK4_JERup", &data.jetsAK4.JERup, 0);
     set_branch_("jetAK4_JERdown", &data.jetsAK4.JERdown, 0);
-    if (debug) std::cout<<"B2GTreeReader: AK4 jets loaded"<<std::endl;
+    if (debug_) std::cout<<"B2GTreeReader: AK4 jets loaded"<<std::endl;
     
     set_branch_("jetAK8_size", &data.jetsAK8.size, 1);
-    set_branch_("jetAK8_Mass", &data.jetsAK8.Mass, 1);			
+    set_branch_("jetAK8_Mass", &data.jetsAK8.Mass, 0);
     set_branch_("jetAK8_Pt", &data.jetsAK8.Pt, 1);
     set_branch_("jetAK8_Eta", &data.jetsAK8.Eta, 1);
     set_branch_("jetAK8_Y", &data.jetsAK8.Y, 0);
@@ -219,6 +225,9 @@ public:
     set_branch_("jetAK8_tau1", &data.jetsAK8.tau1, 1);
     set_branch_("jetAK8_tau2", &data.jetsAK8.tau2, 1);
     set_branch_("jetAK8_tau3", &data.jetsAK8.tau3, 1);
+#if PHYS14 == 0
+    set_branch_("jetAK8_softDropMass", &data.jetsAK8.softDropMass, 1);
+#endif
     set_branch_("jetAK8_trimmedMass", &data.jetsAK8.trimmedMass, 1);
     set_branch_("jetAK8_prunedMass", &data.jetsAK8.prunedMass, 1);
     set_branch_("jetAK8_filteredMass", &data.jetsAK8.filteredMass, 1);
@@ -226,10 +235,10 @@ public:
     set_branch_("jetAK8_wMass", &data.jetsAK8.wMass, 1);
     set_branch_("jetAK8_nSubJets", &data.jetsAK8.nSubJets, 1);
     set_branch_("jetAK8_minmass", &data.jetsAK8.minmass, 1);
-    if (debug) std::cout<<"B2GTreeReader: AK8 jets loaded"<<std::endl;
+    if (debug_) std::cout<<"B2GTreeReader: AK8 jets loaded"<<std::endl;
     
     set_branch_("subjetAK8_size", &data.subjetsAK8.size, 1);
-    set_branch_("subjetAK8_Mass", &data.subjetsAK8.Mass, 1);			
+    set_branch_("subjetAK8_Mass", &data.subjetsAK8.Mass, 0);			
     set_branch_("subjetAK8_Pt", &data.subjetsAK8.Pt, 1);
     set_branch_("subjetAK8_Eta", &data.subjetsAK8.Eta, 1);
     set_branch_("subjetAK8_Y", &data.subjetsAK8.Y, 0);
@@ -280,8 +289,10 @@ public:
     set_branch_("subjetAK8_SmearedE", &data.subjetsAK8.SmearedE, 0);
     set_branch_("subjetAK8_JERup", &data.subjetsAK8.JERup, 0);
     set_branch_("subjetAK8_JERdown", &data.subjetsAK8.JERdown, 0);
+#if PHYS14 == 1
     set_branch_("subjetAK8_subjetCSV", &data.subjetsAK8.subjetCSV, 1);
-    if (debug) std::cout<<"B2GTreeReader: AK8 subjets loaded"<<std::endl;
+#endif
+    if (debug_) std::cout<<"B2GTreeReader: AK8 subjets loaded"<<std::endl;
     
     set_branch_("subjetsCmsTopTag_size", &data.subjetsCmsTopTag.size, 0);
     set_branch_("subjetsCmsTopTag_Mass", &data.subjetsCmsTopTag.Mass, 0);			
@@ -335,8 +346,9 @@ public:
     set_branch_("subjetsCmsTopTag_SmearedE", &data.subjetsCmsTopTag.SmearedE, 0);
     set_branch_("subjetsCmsTopTag_JERup", &data.subjetsCmsTopTag.JERup, 0);
     set_branch_("subjetsCmsTopTag_JERdown", &data.subjetsCmsTopTag.JERdown, 0);
-    if (debug) std::cout<<"B2GTreeReader: CMS top-tag subjets loaded"<<std::endl;
+    if (debug_) std::cout<<"B2GTreeReader: CMS top-tag subjets loaded"<<std::endl;
     
+    // Extra variables
     set_branch_("evt_NLep", &data.evt.NLep, 1);
     set_branch_("evt_NTopHad", &data.evt.NTopHad, 1);
     set_branch_("evt_NTopLep", &data.evt.NTopLep, 1);
@@ -363,8 +375,78 @@ public:
     set_branch_("evt_MTR", &data.evt.MTR, 1);
     set_branch_("evt_R", &data.evt.R, 1);
     set_branch_("evt_R2", &data.evt.R2, 1);
+#if PHYS14 == 0
+    set_branch_("evt_AK4_MR", &data.evt.AK4_MR, 1);
+    set_branch_("evt_AK4_MTR", &data.evt.AK4_MTR, 1);
+    set_branch_("evt_AK4_R", &data.evt.AK4_R, 1);
+    set_branch_("evt_AK4_R2", &data.evt.AK4_R2, 1);
+    set_branch_("evt_weight", &data.evt.weight, 1);
     
-    if (debug) {
+    set_branch_("HLT_AK8PFJet360_TrimMass30", &data.evt.HLT_AK8PFJet360_TrimMass30, 1);
+    set_branch_("HLT_PFJet450", &data.evt.HLT_PFJet450, 1);
+    set_branch_("HLT_PFJet500", &data.evt.HLT_PFJet500, 1);
+    set_branch_("HLT_AK8PFHT700_TrimR0p1PT0p03Mass50", &data.evt.HLT_AK8PFHT700_TrimR0p1PT0p03Mass50, 1);
+    set_branch_("HLT_PFHT750_4Jet", &data.evt.HLT_PFHT750_4Jet, 1);
+    set_branch_("HLT_PFHT750_4JetPt50", &data.evt.HLT_PFHT750_4JetPt50, 1);
+    set_branch_("HLT_ECALHT800", &data.evt.HLT_ECALHT800, 1);
+    set_branch_("HLT_PFHT800", &data.evt.HLT_PFHT800, 1);
+    set_branch_("HLT_PFHT900", &data.evt.HLT_PFHT900, 1);
+    set_branch_("HLT_PFHT350", &data.evt.HLT_PFHT350, 1);
+    set_branch_("HLT_PFHT400", &data.evt.HLT_PFHT400, 1);
+    set_branch_("HLT_PFHT475", &data.evt.HLT_PFHT475, 1);
+    set_branch_("HLT_PFHT600", &data.evt.HLT_PFHT600, 1);
+    set_branch_("HLT_PFHT650", &data.evt.HLT_PFHT650, 1);
+    set_branch_("HLT_PFHT550_4Jet", &data.evt.HLT_PFHT550_4Jet, 1);
+    set_branch_("HLT_PFHT650_4Jet", &data.evt.HLT_PFHT650_4Jet, 1);
+    set_branch_("HLT_Rsq0p25", &data.evt.HLT_Rsq0p25, 1);
+    set_branch_("HLT_Rsq0p30", &data.evt.HLT_Rsq0p30, 1);
+    set_branch_("HLT_RsqMR240_Rsq0p09_MR200_4jet", &data.evt.HLT_RsqMR240_Rsq0p09_MR200_4jet, 1);
+    set_branch_("HLT_RsqMR240_Rsq0p09_MR200", &data.evt.HLT_RsqMR240_Rsq0p09_MR200, 1);
+    set_branch_("HLT_RsqMR270_Rsq0p09_MR200_4jet", &data.evt.HLT_RsqMR270_Rsq0p09_MR200_4jet, 1);
+    set_branch_("HLT_RsqMR270_Rsq0p09_MR200", &data.evt.HLT_RsqMR270_Rsq0p09_MR200, 1);
+    set_branch_("HLT_Mu10_CentralPFJet30_BTagCSV0p5PF", &data.evt.HLT_Mu10_CentralPFJet30_BTagCSV0p5PF, 1);
+    set_branch_("HLT_Ele10_CaloIdM_TrackIdM_CentralPFJet30_BTagCSV0p5PF", &data.evt.HLT_Ele10_CaloIdM_TrackIdM_CentralPFJet30_BTagCSV0p5PF, 1);
+    set_branch_("HLT_Ele15_IsoVVVL_BTagtop8CSV07_PFHT400", &data.evt.HLT_Ele15_IsoVVVL_BTagtop8CSV07_PFHT400, 1);
+    set_branch_("HLT_Ele15_IsoVVVL_PFHT600", &data.evt.HLT_Ele15_IsoVVVL_PFHT600, 1);
+    set_branch_("HLT_Ele15_PFHT300", &data.evt.HLT_Ele15_PFHT300, 1);
+    set_branch_("HLT_Mu15_IsoVVVL_BTagCSV07_PFHT400", &data.evt.HLT_Mu15_IsoVVVL_BTagCSV07_PFHT400, 1);
+    set_branch_("HLT_Mu15_IsoVVVL_PFHT600", &data.evt.HLT_Mu15_IsoVVVL_PFHT600, 1);
+    set_branch_("HLT_Mu15_PFHT300", &data.evt.HLT_Mu15_PFHT300, 1);
+    set_branch_("HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50", &data.evt.HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50, 1);
+    set_branch_("HLT_Mu40_eta2p1_PFJet200_PFJet50", &data.evt.HLT_Mu40_eta2p1_PFJet200_PFJet50, 1);
+    set_branch_("HLT_Mu45_eta2p1", &data.evt.HLT_Mu45_eta2p1, 1);
+    set_branch_("HLT_Mu50", &data.evt.HLT_Mu50, 1);
+    set_branch_("HLT_Ele32_eta2p1_WPLoose_Gsf", &data.evt.HLT_Ele32_eta2p1_WPLoose_Gsf, 1);
+    set_branch_("HLT_Ele32_eta2p1_WPTight_Gsf", &data.evt.HLT_Ele32_eta2p1_WPTight_Gsf, 1);
+    set_branch_("HLT_IsoMu24_eta2p1", &data.evt.HLT_IsoMu24_eta2p1, 1);
+    set_branch_("HLT_IsoMu27", &data.evt.HLT_IsoMu27, 1);
+    set_branch_("HLT_IsoTkMu24_eta2p1", &data.evt.HLT_IsoTkMu24_eta2p1, 1);
+    set_branch_("HLT_IsoTkMu27", &data.evt.HLT_IsoTkMu27, 1);
+    
+    set_branch_("jetAK8_HasNearGenTop", &data.jetsAK8.HasNearGenTop, 1);
+    set_branch_("jetAK8_NearGenTopIsHadronic", &data.jetsAK8.NearGenTopIsHadronic, 1);
+    set_branch_("jetAK8_NearGenWIsHadronic", &data.jetsAK8.NearGenWIsHadronic, 1);
+    set_branch_("jetAK8_NearGenWToENu", &data.jetsAK8.NearGenWToENu, 1);
+    set_branch_("jetAK8_NearGenWToMuNu", &data.jetsAK8.NearGenWToMuNu, 1);
+    set_branch_("jetAK8_NearGenWToTauNu", &data.jetsAK8.NearGenWToTauNu, 1);
+    set_branch_("jetAK8_PassTopTag", &data.jetsAK8.PassTopTag, 1);
+    set_branch_("jetAK8_DRNearGenTop", &data.jetsAK8.DRNearGenTop, 1);
+    set_branch_("jetAK8_DRNearGenWFromTop", &data.jetsAK8.DRNearGenWFromTop, 1);
+    set_branch_("jetAK8_DRNearGenBFromTop", &data.jetsAK8.DRNearGenBFromTop, 1);
+    set_branch_("jetAK8_DRNearGenLepFromSLTop", &data.jetsAK8.DRNearGenLepFromSLTop, 1);
+    set_branch_("jetAK8_DRNearGenNuFromSLTop", &data.jetsAK8.DRNearGenNuFromSLTop, 1);
+    set_branch_("jetAK8_PtNearGenTop", &data.jetsAK8.PtNearGenTop, 1);
+    set_branch_("jetAK8_PtNearGenBFromTop", &data.jetsAK8.PtNearGenBFromTop, 1);
+    set_branch_("jetAK8_PtNearGenWFromTop", &data.jetsAK8.PtNearGenWFromTop, 1);
+    set_branch_("jetAK8_PtNearGenLepFromSLTop", &data.jetsAK8.PtNearGenLepFromSLTop, 1);
+    set_branch_("jetAK8_PtNearGenNuFromSLTop", &data.jetsAK8.PtNearGenNuFromSLTop, 1);
+    set_branch_("el_DRNearGenEleFromSLTop", &data.ele.DRNearGenEleFromSLTop, 1);
+    set_branch_("el_PtNearGenEleFromSLTop", &data.ele.PtNearGenEleFromSLTop, 1);
+    set_branch_("mu_DRNearGenMuFromSLTop", &data.mu.DRNearGenMuFromSLTop, 1);
+    set_branch_("mu_PtNearGenMuFromSLTop", &data.mu.PtNearGenMuFromSLTop, 1);
+#endif
+    
+    if (debug_) {
       std::cout<<"B2GTreeReader: Event variables loaded"<<std::endl;
       std::cout<<"B2GTreeReader: All objects loaded successfully"<<std::endl;
     }
@@ -389,10 +471,12 @@ private:
   void set_branch_(std::string name, void* address, bool status) {
     //tree_->GetBranch(name.c_str())->SetAddress(address);
     //tree_->SetBranchStatus(name.c_str(), status);
+    if (debug_) std::cout<<"loading branch "<<name<<std::endl;
     if (status) tree_->GetBranch(name.c_str())->SetAddress(address);
   }
   
   TTree* tree_;
+  bool debug_;
   
 };
 

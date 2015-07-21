@@ -1,0 +1,17 @@
+source /cvmfs/cms.cern.ch/cmsset_default.csh
+setenv SCRAM_ARCH slc6_amd64_gcc491
+cmsrel CMSSW_7_4_4_patch1
+cd CMSSW_7_4_4_patch1/src
+cmsenv
+git clone https://github.com/cmsb2g/B2GAnaFW Analysis/B2GAnaFW
+git clone https://github.com/jkarancs/B2GTTrees Analysis/B2GTTrees
+git clone https://github.com/jkarancs/SusyAnalysis
+
+source /cvmfs/cms.cern.ch/cmsset_default.csh
+setenv SCRAM_ARCH slc6_amd64_gcc491
+cd /uscms_data/d3/jkarancs/CMSSW/CMSSW_7_4_4_patch1/src
+cmsenv
+cd -
+scp grid18.kfki.hu:/data/jkarancs/CMSSW/SusyAnalysis/CMSSW_7_3_1_patch2/src/Analysis/B2GTTrees/test/crab3/dl_Apr02_edm_Apr01.csh dl_Apr02_edm_Apr01.csh
+source dl_Apr02_edm_Apr01.csh B2GTTreeNtuple/Apr02
+

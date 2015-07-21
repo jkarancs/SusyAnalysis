@@ -9,38 +9,56 @@ void EstimateBg() {
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
   
-  const char* filename = "ROOT_output/NotePlots_AllSamples_fullstat.root";
-
-  bool latex = true;
+  bool latex = false;
+  bool RunIIMC = true;
+  
+  //const char* filename = RunIIMC ? "ROOT_output/RunIIMC_Bands_OldTopDef_fullstat.root" : "ROOT_output/NotePlots_AllSamples_fullstat.root";
+  const char* filename = RunIIMC ? "ROOT_output/RunIIMC_Bands_NewTopDef_fullstat.root" : "ROOT_output/NotePlots_AllSamples_fullstat.root";
   
   std::vector<std::string> samples[4];
-  // DPhi sideband - Better estimate for TTbar
-  samples[0].push_back("TTJets");
-  //samples[0].push_back("TT");
-  
-  // Main method - NTop Sideband - separately
-  samples[1].push_back("TTJets");
-  //samples[1].push_back("TT");
-  //samples[1].push_back("WJets");
-  samples[1].push_back("WJets");
-  samples[1].push_back("ZJets");
-  samples[1].push_back("QCD");
-  //samples[1].push_back("QCD_Pt_bcToE");
-  samples[1].push_back("T_tW");
-  //samples[1].push_back("TToLep_s_t");
-  //samples[1].push_back("DYJets_HT");
-  //samples[1].push_back("DYJets");
-  //samples[1].push_back("GJets_HT");
-  
-  // NTop Sideband All background summed
-  samples[2].push_back("All Bkg.");
-  
-  // Signal in NTop bins
-  samples[3].push_back("T5ttttDeg_4bodydec_mGo1300");
-  samples[3].push_back("T5ttttDeg_3bodydec_mGo1300");
-  samples[3].push_back("T5ttttDeg_4bodydec_mGo1000");
-  samples[3].push_back("T5ttttDeg_3bodydec_mGo1000");
-  samples[3].push_back("T1tttt_mGl1500_mLSP100");
+  if (RunIIMC) {
+    //samples[0].push_back("TTJets_NLO");
+    samples[0].push_back("TTJets_LO_madgraph");
+    //samples[0].push_back("TTJets_LO_pythia8");
+    
+    //samples[1].push_back("TTJets_NLO");
+    samples[1].push_back("TTJets_LO_madgraph");
+    //samples[1].push_back("TTJets_LO_pythia8");
+    samples[1].push_back("WJets");
+    samples[1].push_back("ST");
+    //samples[1].push_back("Diboson");
+    
+    //samples[2].push_back("All Bkg.");
+  } else {
+    // PHYS14 Samples
+    // DPhi sideband - Better estimate for TTbar
+    samples[0].push_back("TTJets");
+    //samples[0].push_back("TT");
+    
+    // Main method - NTop Sideband - separately
+    samples[1].push_back("TTJets");
+    //samples[1].push_back("TT");
+    //samples[1].push_back("WJets");
+    samples[1].push_back("WJets");
+    samples[1].push_back("ZJets");
+    samples[1].push_back("QCD");
+    //samples[1].push_back("QCD_Pt_bcToE");
+    samples[1].push_back("T_tW");
+    //samples[1].push_back("TToLep_s_t");
+    //samples[1].push_back("DYJets_HT");
+    //samples[1].push_back("DYJets");
+    //samples[1].push_back("GJets_HT");
+    
+    // NTop Sideband All background summed
+    samples[2].push_back("All Bkg.");
+    
+    // Signal in NTop bins
+    samples[3].push_back("T5ttttDeg_4bodydec_mGo1300");
+    samples[3].push_back("T5ttttDeg_3bodydec_mGo1300");
+    samples[3].push_back("T5ttttDeg_4bodydec_mGo1000");
+    samples[3].push_back("T5ttttDeg_3bodydec_mGo1000");
+    samples[3].push_back("T1tttt_mGl1500_mLSP100");
+  }
   
   bool baderror = false;
   double weight[] = { 0.32686, 0.0505037, 0.00921411, 6.80717, 0.354934, 0.00484915 };
@@ -92,6 +110,13 @@ void EstimateBg() {
 	iMethod==1 ? (std::string(dphi_sideband[iSample] ? "RFine/DPhi2p8_2HadTop_" : "RFine/NTopHad_DPhiBelow2p8_")+samples[iMethod][iSample]) :
 	iMethod==2 ? (dphi_sideband[iSample] ? "RBins/CutDPhi_2HadTop" : "RBins/NTopHad_DPhiBelow2p8") : 
 	iMethod==3 ? (std::string("RBins/NTopHad_DPhiBelow2p8_")+samples[iMethod][iSample]) : "";
+      if (RunIIMC) {
+        canname = 
+          iMethod==0 ? std::string("DPhiBinsNew/RBins_2HadTop_")+samples[iMethod][iSample] :
+          iMethod==1 ? (std::string(dphi_sideband[iSample] ? "RFine/DPhi2p8_2HadTop_" : "RFine/NTopBandsNew_DPhiBelow2p8_")+samples[iMethod][iSample]) :
+          iMethod==2 ? (dphi_sideband[iSample] ? "RBins/DPhiBandsNew_2HadTop" : "RBins/NTopBandsNew_DPhiBelow2p8") : 
+          iMethod==3 ? (std::string("RBins/NTopBandsNew_DPhiBelow2p8_")+samples[iMethod][iSample]) : "";
+      }
       TCanvas *can = (TCanvas*)(f->Get(canname.c_str())); 
       can = (TCanvas*)can->Clone();
       can->Draw();
@@ -311,15 +336,16 @@ void EstimateBg() {
 	printf("Combined Bkg. & & & &  $%.2f \\pm %.2f$ &  $%.2f \\pm %.2f$ &  $%.2f \\pm %.2f$ &  %.2f & \\\\\n", comb_d_abcd, comb_d_abcd_err, comb_d, comb_d_err, comb_d_ratio, comb_d_ratio_err, comb_d_pull);
 	printf("\\hline\n");
       } else {
-	printf("| Combined Bkg.| | | |  %.2f +- %.2f |  %.2f +-m %.2f |  %.2f +-m %.2f |  %.2f | - |\n", comb_d_abcd, comb_d_abcd_err, comb_d, comb_d_err, comb_d_ratio, comb_d_ratio_err, comb_d_pull);
+	printf("| Combined Bkg.| | | |  %.2f +- %.2f |  %.2f +- %.2f |  %.2f +- %.2f |  %.2f | - |\n", comb_d_abcd, comb_d_abcd_err, comb_d, comb_d_err, comb_d_ratio, comb_d_ratio_err, comb_d_pull);
       }
     }
   }
-  printf("\\hline\n");
-  printf("\\end{tabular}\n");
-  printf("\\end{center}\n");
-  printf("\\end{table*}\n");
-  
+  if (latex) {
+    printf("\\hline\n");
+    printf("\\end{tabular}\n");
+    printf("\\end{center}\n");
+    printf("\\end{table*}\n");
+  }
 }
 /*
 mv RBins_NTopHad_DPhiBelow2p8_T1tttt_mGl1500_mLSP100.png     /afs/cern.ch/user/j/jkarancs/public/SUSY/Analysis/Plots/2015_05_28/RBins_NTopSB_DPhiCut_T1tttt_mGl1500_mLSP100.png	 

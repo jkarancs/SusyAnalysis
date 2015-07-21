@@ -22,8 +22,8 @@ SUSYHISTOMAKERO      = SusyHistoMaker.$(ObjSuf)
 SUSYHISTOMAKERS      = SusyHistoMaker.$(SrcSuf)
 SUSYHISTOMAKER       = SusyHistoMaker$(ExeSuf)
 
-OBJS          = $(SUSYHISTOMAKERO)
-PROGRAMS      = $(SUSYHISTOMAKER)
+OBJS          += $(SUSYHISTOMAKERO)
+PROGRAMS      += $(SUSYHISTOMAKER)
 
 #------------------------------------------------------------------------------
 DRAWEVENTO      = DrawEvent.$(ObjSuf)

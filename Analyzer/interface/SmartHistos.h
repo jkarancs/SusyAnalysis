@@ -153,13 +153,14 @@ public:
     if (ncut_>4) cut5_ = cuts[4];
     draw_=draw;
     norm_  = opt.find("Norm")!=std::string::npos;
+    logx_  = opt.find("logX")!=std::string::npos;
     log_  = opt.find("Log")!=std::string::npos;
     keep_  = opt.find("Keep")!=std::string::npos;
     stat_  = opt.find("Stat")!=std::string::npos ? 1110 : 0;
     sumw2_ = opt.find("Sumw2")!=std::string::npos;
     axis_ranges_=axis_ranges;
-    if (npf_>5) std::cout<<"!!! ERROR: SmartHisto::constructor: Fixme! - More than 4 postfixes, only use max 4, or redefine functions!\n";
-    if (ndim_>3) std::cout<<"!!! ERROR: SmartHisto::constructor: More than 4 dimension, define a maximum of 3!\n";
+    if (npf_>5) std::cout<<"!!! ERROR: SmartHisto::constructor: Fixme! - More than 5 postfixes, only use max 4, or redefine functions!\n";
+    if (ndim_>3) std::cout<<"!!! ERROR: SmartHisto::constructor: More than 3 dimension, define a maximum of 3!\n";
     if (ncut_>5) std::cout<<"!!! ERROR: SmartHisto::constructor: Fixme! - More than 5 cuts specified, please add new variables to store them!\n";
     if (nweight_>3) std::cout<<"!!! ERROR: SmartHisto::constructor: Fixme! - More than 3 weights specified, please add new variables to store them!\n";
     init_();
@@ -199,7 +200,8 @@ private:
   // STAT - draw stat boxes)
   std::string draw_;
   bool norm_; // Normalize histo
-  bool log_; // Normalize histo
+  bool logx_; // X log scale
+  bool log_; // Y/Z log scale
   bool keep_; // Keep colors/markers in order
   Int_t stat_; // Draw Stat boxes
   bool sumw2_;
@@ -247,9 +249,17 @@ private:
     spec_.push_back({"TopTagEfficiency", "JetIsHadTopTagged", "Top-tagging Efficiency", "Jet is hadronic top-tagged (bool)"});
     spec_.push_back({"Pt300TopTagEfficiency", "JetIsPt300HadTopTagged", "Top-tagging Efficiency", "Jet is hadronic top-tagged (bool)"});
     spec_.push_back({"MisTagRate", "JetHasNoGenTop", "Mis-tag Rate", "Jet is mis-matched (bool)"});
+    spec_.push_back({"NewTopFindingEfficiency", "HasNewHadTopTaggedJet", "Top finding Efficiency", "Has hadronic top-tagged Jet (bool)"});
+    spec_.push_back({"NewTopTagEfficiency", "JetIsNewHadTopTagged", "Top-tagging Efficiency", "Jet is hadronic top-tagged (bool)"});
+    spec_.push_back({"HLTEfficiencyAK8PFJet360TrimMass30",          "HLTAK8PFJet360TrimMass30",          "HLT_AK8PFJet360_TrimMass30",          "#epsilon_{HLT_AK8PFJet360_TrimMass30}"});
+    spec_.push_back({"HLTEfficiencyAK8PFHT700TrimR0p1PT0p03Mass50", "HLTAK8PFHT700TrimR0p1PT0p03Mass50", "HLT_AK8PFHT700_TrimR0p1PT0p03Mass50", "#epsilon_{HLT_AK8PFHT700_TrimR0p1PT0p03Mass50}"});
+    spec_.push_back({"HLTEfficiencyPFHT750_4Jet",                   "HLTPFHT750_4Jet",                   "HLT_PFHT750_4Jet",                    "#epsilon_{HLT_PFHT750_4Jet}"});
+    spec_.push_back({"HLTEfficiencyPFHT350",                        "HLTPFHT350",                        "HLT_PFHT350",                         "#epsilon_{HLT_PFHT350"});
+    spec_.push_back({"HLTEfficiencyPFHT900",                        "HLTPFHT900",                        "HLT_PFHT900",                         "#epsilon_{HLT_PFHT900"});
     
     //                Name Prefix, Title Prefix
     spec2_.push_back({"Avg","Avg. "});
+    spec2_.push_back({"MPV","MPV "});
     
     // Get Hit Eff vs DCol Eff functions (previously measured)
     std::string fname[3] = {"hiteff_vs_dcol_l1", "hiteff_vs_dcol_l2", "hiteff_vs_dcol_l3"};
@@ -276,13 +286,16 @@ private:
   }
   size_t find_spec2_(std::string name) {
     size_t find = -1;
-    for (size_t s=0; s<spec2_.size(); ++s) if (name.find(spec2_[s][0])==0) find = s;
+    for (size_t s=0; s<spec2_.size(); ++s) 
+      if ((s==0)? name.find(spec2_[s][0])==0 : name.find(spec2_[s][0])!=std::string::npos)
+	find = s;
     return find;
   }
   
   // Define which functions to use for each special histo
   void calc_spec_1d_(TH1D* h1d, TH2D* h2d) {
     if (find_spec2_(name_)==0) calc_eff_1d_(h1d, h2d, 0); // Average (Use Profile)
+    if (find_spec2_(name_)==1) calc_mpv_1d_(h1d, h2d); // MPV
     else switch ( find_spec_(name_) ) {
     case 1 : calc_dcol_1d_(h1d, h2d); break;
     default : calc_eff_1d_(h1d, h2d); // Efficiencies/Fractions/Rates
@@ -291,6 +304,7 @@ private:
   
   void calc_spec_2d_(TH2D* h2d, TH3D* h3d) {
     if (find_spec2_(name_)==0) calc_eff_2d_(h2d, h3d); // Average (Use 3DProfile)
+    //if (find_spec2_(name_)==1) calc_mpv_2d_(h1d, h2d); // MPV (To be implemented if needed)
     else switch ( find_spec_(name_) ) {
     case 1 : /* calc_dcol_2d_(h2d, h3d); */ break;
     default : calc_eff_2d_(h2d, h3d); // Efficiencies/Fractions/Rates
@@ -376,6 +390,83 @@ private:
     }
     delete p;
     h2d->SetEntries(h3d->GetEntries());
+  }
+  
+  // ****************** Most Probable Value ******************
+  void calc_mpv_1d_(TH1D* h1d, TH2D* h2d) {
+    if (h2d->GetEntries()) {
+      Int_t nbiny = h2d->GetNbinsY();
+      double ylow = h2d->GetYaxis()->GetXmin();
+      double yup = h2d->GetYaxis()->GetXmax();
+      for (int i=1; i<=h2d->GetNbinsX(); i++) {
+	// Get Y-slice in bin of X
+	double entries = 0;
+	TH1D *slice_x = new TH1D("slice_x","slice_x",nbiny,ylow,yup);
+	for (int j=1; j<=nbiny; j++) {
+	  double cont = h2d->GetBinContent(i,j);
+	  entries += cont;
+	  slice_x->SetBinContent(j,cont);
+	}
+	if (entries>100) {
+	  double mpv, error;
+	  fit_landau_plus_gaus_(slice_x, mpv, error);
+	  h1d->SetBinContent(i,mpv);
+	  h1d->SetBinError(i,error);
+	}
+	delete slice_x;
+      }
+    }
+    h1d->SetEntries(h2d->GetEntries());
+  }
+  
+  void fit_landau_plus_gaus_(TH1D* h, double &mpv, double &error) {
+    double xmax = h->GetBinCenter(h->GetMaximumBin());
+    double ymax = h->GetMaximum();
+    // First fit with landau to get some parameter estimates
+    TF1 *f = new TF1((std::string(h->GetName())+"_fit").c_str(),"landau", (xmax<25 ? 0 : xmax-25), xmax+25);
+    f->SetParameter(0, 5.5*ymax);
+    f->SetParLimits(0, 4*ymax,7*ymax);
+    f->SetParameter(1, xmax);
+    f->SetParLimits(1, xmax<5 ? 0: xmax-5, xmax + 5);
+    f->SetParameter(2, 2.3);
+    f->SetParLimits(2, 0.1, 5);
+    h->Fit((std::string(h->GetName())+"_fit").c_str(),"RBQ0");
+    //double Chi2NDoF = f->GetChisquare()/f->GetNDF();
+    double Const = f->GetParameter(0);
+    //double MPV = f->GetParameter(1);
+    double Sigma = f->GetParameter(2);
+    //double YMax = f->GetMaximum();
+    double XMax = f->GetMaximumX();
+    //std::cout<<printf( "Chi2/NDoF: %10.1f  Const: %2.1f  MPV: %3.1f  Sigma: %2.2f", Chi2NDoF, Const/ymax, MPV, Sigma)<<std::endl;
+    delete f;
+    // Fit again with added gaus
+    f = new TF1((std::string(h->GetName())+"_fit").c_str(),"landau(0)+gaus(3)", (XMax<25 ? 0 : XMax-25), XMax+25);
+    f->SetParameter(0, 1.4*Const);
+    f->SetParLimits(0, 2*ymax,10*ymax);
+    f->SetParameter(1, XMax);
+    f->SetParLimits(1, XMax<6.5 ? 1.5: XMax-5, XMax + 5);
+    f->SetParameter(2, Sigma);
+    f->SetParLimits(2, 0.1,10);
+    f->SetParameter(3, -0.75*ymax);
+    f->SetParLimits(3, -1.5*ymax,ymax);
+    f->SetParameter(4, XMax);
+    f->SetParLimits(4, 1, 45);
+    f->SetParameter(5, Sigma);
+    f->SetParLimits(5, 0, 8);
+    h->Fit((std::string(h->GetName())+"_fit").c_str(),"RBQ0+");
+    //Chi2NDoF = f->GetChisquare()/f->GetNDF();
+    //double old_Const = Const;
+    //Const = f->GetParameter(0);
+    //MPV = f->GetParameter(1);
+    Sigma = f->GetParameter(2);
+    //double Const2 = f->GetParameter(3);
+    //double Mean = f->GetParameter(4);
+    //double Sigma2 = f->GetParameter(5);
+    //YMax = f->GetMaximum();
+    XMax = f->GetMaximumX();
+    //std::cout<<printf( "Chi2/NDoF: %4.1f  C1: %2.1f  MPV: %3.1f  S1: %2.2f  C2: %5.2f  M: %3.1f  S2: %2.2f", Chi2NDoF, Const/ymax, MPV, Sigma, Const2/ymax, Mean, Sigma2)<<std::endl;
+    mpv = XMax;
+    error = f->GetParError(1);
   }
   
   // ******************** DColEfficiency *********************
@@ -724,8 +815,13 @@ public:
     size_t s2 =find_spec2_(name);
     bool spec = (s!=(size_t)-1||s2!=(size_t)-1);
     std::string name_1d = name;
-    std::string name_2d = (s!=(size_t)-1) ? std::string(name).replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]) : (s2!=(size_t)-1) ? std::string(name).erase(0,spec2_[s2][0].size()) : name;
-    std::string title_1d = (s!=(size_t)-1) ? title : (s2!=(size_t)-1) ? std::string(title).insert(title.find(";",title.find(";")+1,1)+1,spec2_[s2][1]) : title;
+    std::string name_2d = (s!=(size_t)-1) ? std::string(name).replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]) : (s2!=(size_t)-1) ? std::string(name).erase(name.find(spec2_[s2][0]),spec2_[s2][0].size()) : name;
+    std::string title_1d = 
+      (s!=(size_t)-1) ? title : 
+      (s2!=(size_t)-1) ? (s2==0 ? 
+			  std::string(title).insert(title.find(";",title.find(";")+1,1)+1,spec2_[s2][1]) : // Avg (Put "Avg. " before axis title)
+			  std::string(title).insert(title.find("(",title.find(";")+1,1),spec2_[s2][1]) ) // MPV (Put "MPV " before axis unit "( unit )")
+      : title;
     std::string title_2d = (s!=(size_t)-1) ? std::string(title).replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]) : title;
     if (npf_==0) {
       if (binsx.size()==2&&binsy.size()==2) {
@@ -853,8 +949,14 @@ public:
     size_t s2 =find_spec2_(name);
     bool spec = (s!=(size_t)-1||s2!=(size_t)-1);
     std::string name_2d = name;
-    std::string name_3d = (s!=(size_t)-1) ? std::string(name).replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]) : (s2!=(size_t)-1) ? std::string(name).erase(0,spec2_[s2][0].size()) : name;
-    std::string title_2d = (s!=(size_t)-1) ? title : (s2!=(size_t)-1) ? std::string(title).insert(1,spec2_[s2][1]) : title;
+    std::string name_3d = (s!=(size_t)-1) ? std::string(name).replace(name.find(spec_[s][0]),spec_[s][0].size(),spec_[s][1]) : (s2!=(size_t)-1) ? std::string(name).erase(name.find(spec2_[s2][0]),spec2_[s2][0].size()) : name;
+    std::string title_2d = 
+      (s!=(size_t)-1) ? title : 
+      (s2!=(size_t)-1) ? 
+      ( s2==0 ? 
+	std::string(title).insert(title.find(";",title.find(";")+1,1)+1,spec2_[s2][1]) : // Avg (Put "Avg. " before axis title)
+	std::string(title).insert(title.find("(",title.find(";")+1,1),spec2_[s2][1]) ) // MPV (Put "MPV " before axis unit "( unit )")
+      : title;
     std::string title_3d = (s!=(size_t)-1) ? std::string(title).replace(title.find(spec_[s][2]),spec_[s][2].size(),spec_[s][3]) : title;
     if (npf_==0) {
       if (binsx.size()==2&&binsy.size()==2&&binsz.size()==2) {
@@ -1038,48 +1140,51 @@ public:
   // Write histos in a file
   void Write() {
     if (npf_==0) {
-      write_(h1d_0p_);
-      write_(h2d_0p_);
-      write_(h3d_0p_);
+      if (h1d_0p_) write_(h1d_0p_);
+      if (h2d_0p_) write_(h2d_0p_);
+      if (h3d_0p_) write_(h3d_0p_);
     } else if (npf_==1) {
-      for (size_t i=0; i<h1d_1p_.size(); ++i) write_(h1d_1p_[i]);
-      for (size_t i=0; i<h2d_1p_.size(); ++i) write_(h2d_1p_[i]);
-      for (size_t i=0; i<h3d_1p_.size(); ++i) write_(h3d_1p_[i]);
+      for (size_t i=0; i<h1d_1p_.size(); ++i) if (h1d_1p_[i]->GetEntries()) write_(h1d_1p_[i]);
+      for (size_t i=0; i<h2d_1p_.size(); ++i) if (h2d_1p_[i]->GetEntries()) write_(h2d_1p_[i]);
+      for (size_t i=0; i<h3d_1p_.size(); ++i) if (h3d_1p_[i]->GetEntries()) write_(h3d_1p_[i]);
     } else if (npf_==2) {
-      for (size_t i=0; i<h1d_2p_.size(); ++i) for (size_t j=0; j<h1d_2p_[i].size(); ++j) write_(h1d_2p_[i][j]);
-      for (size_t i=0; i<h2d_2p_.size(); ++i) for (size_t j=0; j<h2d_2p_[i].size(); ++j) write_(h2d_2p_[i][j]);
-      for (size_t i=0; i<h3d_2p_.size(); ++i) for (size_t j=0; j<h3d_2p_[i].size(); ++j) write_(h3d_2p_[i][j]);
+      for (size_t i=0; i<h1d_2p_.size(); ++i) for (size_t j=0; j<h1d_2p_[i].size(); ++j) if (h1d_2p_[i][j]->GetEntries()) write_(h1d_2p_[i][j]);
+      for (size_t i=0; i<h2d_2p_.size(); ++i) for (size_t j=0; j<h2d_2p_[i].size(); ++j) if (h2d_2p_[i][j]->GetEntries()) write_(h2d_2p_[i][j]);
+      for (size_t i=0; i<h3d_2p_.size(); ++i) for (size_t j=0; j<h3d_2p_[i].size(); ++j) if (h3d_2p_[i][j]->GetEntries()) write_(h3d_2p_[i][j]);
     } else if (npf_==3) {
       for (size_t i=0; i<h1d_3p_.size(); ++i) for (size_t j=0; j<h1d_3p_[i].size(); ++j)
-        for (size_t k=0; k<h1d_3p_[i][j].size(); ++k) write_(h1d_3p_[i][j][k]);
+        for (size_t k=0; k<h1d_3p_[i][j].size(); ++k) if (h1d_3p_[i][j][k]->GetEntries()) write_(h1d_3p_[i][j][k]);
       for (size_t i=0; i<h2d_3p_.size(); ++i) for (size_t j=0; j<h2d_3p_[i].size(); ++j) 
-        for (size_t k=0; k<h2d_3p_[i][j].size(); ++k) write_(h2d_3p_[i][j][k]);
+        for (size_t k=0; k<h2d_3p_[i][j].size(); ++k) if (h2d_3p_[i][j][k]->GetEntries()) write_(h2d_3p_[i][j][k]);
       for (size_t i=0; i<h3d_3p_.size(); ++i) for (size_t j=0; j<h3d_3p_[i].size(); ++j) 
-        for (size_t k=0; k<h3d_3p_[i][j].size(); ++k) write_(h3d_3p_[i][j][k]);
+        for (size_t k=0; k<h3d_3p_[i][j].size(); ++k) if (h3d_3p_[i][j][k]->GetEntries()) write_(h3d_3p_[i][j][k]);
     } else if (npf_==4) {
       for (size_t i=0; i<h1d_4p_.size(); ++i) for (size_t j=0; j<h1d_4p_[i].size(); ++j) 
-        for (size_t k=0; k<h1d_4p_[i][j].size(); ++k) for (size_t l=0; l<h1d_4p_[i][j][k].size(); ++l) write_(h1d_4p_[i][j][k][l]);
+        for (size_t k=0; k<h1d_4p_[i][j].size(); ++k) for (size_t l=0; l<h1d_4p_[i][j][k].size(); ++l) 
+	  if (h1d_4p_[i][j][k][l]->GetEntries()) write_(h1d_4p_[i][j][k][l]);
       for (size_t i=0; i<h2d_4p_.size(); ++i) for (size_t j=0; j<h2d_4p_[i].size(); ++j) 
-        for (size_t k=0; k<h2d_4p_[i][j].size(); ++k) for (size_t l=0; l<h2d_4p_[i][j][k].size(); ++l) write_(h2d_4p_[i][j][k][l]);
+        for (size_t k=0; k<h2d_4p_[i][j].size(); ++k) for (size_t l=0; l<h2d_4p_[i][j][k].size(); ++l) 
+	  if (h2d_4p_[i][j][k][l]->GetEntries()) write_(h2d_4p_[i][j][k][l]);
       for (size_t i=0; i<h3d_4p_.size(); ++i) for (size_t j=0; j<h3d_4p_[i].size(); ++j) 
-        for (size_t k=0; k<h3d_4p_[i][j].size(); ++k) for (size_t l=0; l<h3d_4p_[i][j][k].size(); ++l) write_(h3d_4p_[i][j][k][l]);
+        for (size_t k=0; k<h3d_4p_[i][j].size(); ++k) for (size_t l=0; l<h3d_4p_[i][j][k].size(); ++l) 
+	  if (h3d_4p_[i][j][k][l]->GetEntries()) write_(h3d_4p_[i][j][k][l]);
     } else if (npf_==5) {
       for (size_t i=0; i<h1d_5p_.size(); ++i) for (size_t j=0; j<h1d_5p_[i].size(); ++j) 
         for (size_t k=0; k<h1d_5p_[i][j].size(); ++k) for (size_t l=0; l<h1d_5p_[i][j][k].size(); ++l)
-	  for (size_t m=0; m<h1d_5p_[i][j][k][l].size(); ++m) write_(h1d_5p_[i][j][k][l][m]);
+	  for (size_t m=0; m<h1d_5p_[i][j][k][l].size(); ++m) if (h1d_5p_[i][j][k][l][m]->GetEntries()) write_(h1d_5p_[i][j][k][l][m]);
       for (size_t i=0; i<h2d_5p_.size(); ++i) for (size_t j=0; j<h2d_5p_[i].size(); ++j) 
         for (size_t k=0; k<h2d_5p_[i][j].size(); ++k) for (size_t l=0; l<h2d_5p_[i][j][k].size(); ++l)
-	  for (size_t m=0; m<h2d_5p_[i][j][k][l].size(); ++m) write_(h2d_5p_[i][j][k][l][m]);
+	  for (size_t m=0; m<h2d_5p_[i][j][k][l].size(); ++m) if (h2d_5p_[i][j][k][l][m]->GetEntries()) write_(h2d_5p_[i][j][k][l][m]);
       for (size_t i=0; i<h3d_5p_.size(); ++i) for (size_t j=0; j<h3d_5p_[i].size(); ++j) 
         for (size_t k=0; k<h3d_5p_[i][j].size(); ++k) for (size_t l=0; l<h3d_5p_[i][j][k].size(); ++l)
-	  for (size_t m=0; m<h3d_5p_[i][j][k][l].size(); ++m) write_(h3d_5p_[i][j][k][l][m]);
+	  for (size_t m=0; m<h3d_5p_[i][j][k][l].size(); ++m) if (h3d_5p_[i][j][k][l][m]->GetEntries()) write_(h3d_5p_[i][j][k][l][m]);
     }
   }
   
   //______________________________________________________________________
   //                       Multidraw functions
   
-  TCanvas* custom_can_(TH1D* h, std::string canname, int gx = 0, int gy = 0,
+  TCanvas* custom_can_(TH1D* h, std::string canname, int gx = 1, int gy = 1,
         	       int histosize_x = 500, int histosize_y = 500,
         	       int mar_left = 80, int mar_right = 20, int mar_top = 20, int mar_bottom = 60) {
     mar_top += (std::string(h->GetTitle()).size()>0)*20;
@@ -1121,6 +1226,7 @@ public:
     pad->SetTopMargin((Float_t)mar_top/padsize_y);
     pad->SetBottomMargin((Float_t)mar_bottom/padsize_y);
     canvas->SetGrid(gx,gy);
+    if (logx_) canvas->SetLogx(1);
     if (log_) canvas->SetLogy(1);
     return canvas;
   }
@@ -1184,6 +1290,7 @@ public:
       }
     }
     gStyle->SetOptTitle(0);
+    if (logx_) canvas->SetLogx(1);
     if (log_) canvas->SetLogz(1);
     return canvas;
   }
@@ -1584,7 +1691,7 @@ public:
       f->Close();
     }
   }
-
+  
   void CalcSpecials() { for (auto vs : sh_) for (auto s : vs.second) s->CalcSpecials(); }
   
   void Fill(std::string name) { 

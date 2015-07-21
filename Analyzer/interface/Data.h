@@ -4,7 +4,7 @@
 #define NOVAL_I -9999
 #define NOVAL_F -9999.0
 
-#define NLEP 20
+#define NLEP 40
 #define NJET 100
 #define NGEN 500
 
@@ -35,9 +35,12 @@ public:
     float Phi[NGEN];
     float E[NGEN];
     float Charge[NGEN];
-    float ID[NGEN];
-    float Status[NGEN];
-    float MomID[NGEN];
+    float _ID[NGEN];
+    float _Status[NGEN];
+    float _MomID[NGEN];
+    int ID[NGEN];
+    int Status[NGEN];
+    int MomID[NGEN];
     
     size_t it;
     int size;
@@ -51,6 +54,9 @@ public:
         Phi[i]=NOVAL_F;
         E[i]=NOVAL_F;
         Charge[i]=NOVAL_F;
+        _ID[i]=NOVAL_F;
+	_Status[i]=NOVAL_F;
+        _MomID[i]=NOVAL_F;
         ID[i]=NOVAL_F;
 	Status[i]=NOVAL_F;
         MomID[i]=NOVAL_F;
@@ -62,6 +68,11 @@ public:
     bool Loop() {
       ++it;
       if (it<(size_t)size) {
+#if PHYS14 == 1
+	ID[it]=_ID[it];
+	Status[it]=_Status[it];
+        MomID[it]=_MomID[it];
+#endif
 	return 1;
       } else {
 	it=-1;
@@ -105,6 +116,8 @@ public:
     size_t it;
     int size;
 
+    float DRNearGenEleFromSLTop[NLEP];
+    float PtNearGenEleFromSLTop[NLEP];
     
     void init() {
       for (size_t i=0; i<NLEP; ++i) {
@@ -196,7 +209,10 @@ public:
     
     size_t it;
     int size;
-    
+
+    float DRNearGenMuFromSLTop[NLEP];
+    float PtNearGenMuFromSLTop[NLEP];
+
     void init() {
       for (size_t i=0; i<NLEP; ++i) {
         Mass[i]=NOVAL_F;
@@ -315,6 +331,24 @@ public:
     float JERup[NJET];
     float JERdown[NJET];
     
+    int HasNearGenTop[NJET];
+    int NearGenTopIsHadronic[NJET];
+    int NearGenWIsHadronic[NJET];
+    int NearGenWToENu[NJET];
+    int NearGenWToMuNu[NJET];
+    int NearGenWToTauNu[NJET];
+    int PassTopTag[NJET];
+    float DRNearGenTop[NJET];
+    float DRNearGenWFromTop[NJET];
+    float DRNearGenBFromTop[NJET];
+    float DRNearGenLepFromSLTop[NJET];
+    float DRNearGenNuFromSLTop[NJET];
+    float PtNearGenTop[NJET];
+    float PtNearGenBFromTop[NJET];
+    float PtNearGenWFromTop[NJET];
+    float PtNearGenLepFromSLTop[NJET];
+    float PtNearGenNuFromSLTop[NJET];
+    
     void init() {
       for (size_t i=0; i<NJET; ++i) {
         Mass[i]=NOVAL_F;
@@ -384,6 +418,7 @@ public:
     float tau1[NJET];
     float tau2[NJET];
     float tau3[NJET];
+    float softDropMass[NJET];
     float trimmedMass[NJET];
     float prunedMass[NJET];
     float filteredMass[NJET];
@@ -403,6 +438,7 @@ public:
 	tau1[it]=NOVAL_F;
 	tau2[it]=NOVAL_F;
 	tau3[it]=NOVAL_F;
+	softDropMass[it]=NOVAL_F;
 	trimmedMass[it]=NOVAL_F;
 	prunedMass[it]=NOVAL_F;
 	filteredMass[it]=NOVAL_F;
@@ -594,6 +630,11 @@ public:
     float MTR;
     float R;
     float R2;
+    float AK4_MR;
+    float AK4_MTR;
+    float AK4_R;
+    float AK4_R2;
+    float weight;
     
     // Top tagging variables
     float nhadtops;
@@ -601,6 +642,7 @@ public:
     float ntops;
     float tt_dR;
     float tt_dPhi;
+    float tt_dPhi_new;
     float tt_dEta;
     float tt_Mass;
     float tt_Pz;
@@ -642,7 +684,8 @@ public:
     float EleJetCombMass[NLEP];
     float MuJetCombMass[NLEP];
     int nhadtoplike;
-
+    int nhadtoplikenew;
+    
     // Development 20 April
     int JetGenTruth[NJET];
     bool JetHasMatchedGenTop[NJET];
@@ -660,8 +703,62 @@ public:
     int GenTopType[NGEN];
     bool GenTopHasMatchedJet[NGEN];
     bool GenTopHasMatchedTopTagJet[NGEN];
+    bool GenTopHasMatchedTopTagJetNew[NGEN];
     bool JetIsHadTopTagged[NJET];
+    bool JetIsHadTopTaggedNew[NJET];
     float maxSubjetCSV[NJET];
+    
+    // June 15
+    int NHadTopTag;
+    int NHadTopTagNew;
+    
+    // Triggers
+    // Hadronic
+    int HLT_AK8PFJet360_TrimMass30;
+    int HLT_PFJet450;
+    int HLT_PFJet500;
+    int HLT_AK8PFHT700_TrimR0p1PT0p03Mass50;
+    int HLT_PFHT750_4Jet;
+    int HLT_PFHT750_4JetPt50;
+    int HLT_ECALHT800;
+    int HLT_PFHT800;
+    int HLT_PFHT900;
+    // Hadronic - Prescaled Auxilary
+    int HLT_PFHT350;
+    int HLT_PFHT400;
+    int HLT_PFHT475;
+    int HLT_PFHT600;
+    int HLT_PFHT650;
+    int HLT_PFHT550_4Jet;
+    int HLT_PFHT650_4Jet;
+    // Razor
+    int HLT_Rsq0p25;
+    int HLT_Rsq0p30;
+    int HLT_RsqMR240_Rsq0p09_MR200_4jet;
+    int HLT_RsqMR240_Rsq0p09_MR200;
+    int HLT_RsqMR270_Rsq0p09_MR200_4jet;
+    int HLT_RsqMR270_Rsq0p09_MR200;
+    // Lepton + B-tag
+    int HLT_Mu10_CentralPFJet30_BTagCSV0p5PF;
+    int HLT_Ele10_CaloIdM_TrackIdM_CentralPFJet30_BTagCSV0p5PF;
+    int HLT_Ele15_IsoVVVL_BTagtop8CSV07_PFHT400;
+    int HLT_Ele15_IsoVVVL_PFHT600;
+    int HLT_Ele15_PFHT300;
+    int HLT_Mu15_IsoVVVL_BTagCSV07_PFHT400;
+    int HLT_Mu15_IsoVVVL_PFHT600;
+    int HLT_Mu15_PFHT300;
+    // Lepton - Non-isolated
+    int HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50;
+    int HLT_Mu40_eta2p1_PFJet200_PFJet50;
+    int HLT_Mu45_eta2p1;
+    int HLT_Mu50;
+    // Lepton - Isolated
+    int HLT_Ele32_eta2p1_WPLoose_Gsf;
+    int HLT_Ele32_eta2p1_WPTight_Gsf;
+    int HLT_IsoMu24_eta2p1;
+    int HLT_IsoMu27;
+    int HLT_IsoTkMu24_eta2p1;
+    int HLT_IsoTkMu27;
     
     void init() {
       NLep=NOVAL_I;
@@ -696,6 +793,7 @@ public:
       ntops=NOVAL_F;
       tt_dR=NOVAL_F;
       tt_dPhi=NOVAL_F;
+      tt_dPhi_new=NOVAL_F;
       tt_dEta=NOVAL_F;
       tt_Mass=NOVAL_F;
       tt_Pz=NOVAL_F;
@@ -740,6 +838,7 @@ public:
 	MuJetCombMass[i]=NOVAL_F;
       }
       nhadtoplike=NOVAL_I;
+      nhadtoplikenew=NOVAL_I;
       
       // Development 20 April
       for (size_t i=0; i<NJET; ++i) {
@@ -755,6 +854,7 @@ public:
         GenLepJetDR[i]=NOVAL_F;
         GenLepGenBDR[i]=NOVAL_F;
 	JetIsHadTopTagged[i]=0;
+	JetIsHadTopTaggedNew[i]=0;
 	maxSubjetCSV[i]=NOVAL_F;
       }
       NGenLepFromTop=NOVAL_I;
@@ -763,7 +863,59 @@ public:
 	GenTopType[i]=NOVAL_I;
 	GenTopHasMatchedJet[i]=0;
 	GenTopHasMatchedTopTagJet[i]=0;
+	GenTopHasMatchedTopTagJetNew[i]=0;
       }
+      
+      NHadTopTag=NOVAL_I;
+      NHadTopTagNew=NOVAL_I;
+      
+      // Triggers
+      // Hadronic
+      HLT_AK8PFJet360_TrimMass30=NOVAL_I;
+      HLT_PFJet450=NOVAL_I;
+      HLT_PFJet500=NOVAL_I;
+      HLT_AK8PFHT700_TrimR0p1PT0p03Mass50=NOVAL_I;
+      HLT_PFHT750_4Jet=NOVAL_I;
+      HLT_PFHT750_4JetPt50=NOVAL_I;
+      HLT_ECALHT800=NOVAL_I;
+      HLT_PFHT800=NOVAL_I;
+      HLT_PFHT900=NOVAL_I;
+      // Hadronic - Prescaled Auxilary
+      HLT_PFHT350=NOVAL_I;
+      HLT_PFHT400=NOVAL_I;
+      HLT_PFHT475=NOVAL_I;
+      HLT_PFHT600=NOVAL_I;
+      HLT_PFHT650=NOVAL_I;
+      HLT_PFHT550_4Jet=NOVAL_I;
+      HLT_PFHT650_4Jet=NOVAL_I;
+      // Razor
+      HLT_Rsq0p25=NOVAL_I;
+      HLT_Rsq0p30=NOVAL_I;
+      HLT_RsqMR240_Rsq0p09_MR200_4jet=NOVAL_I;
+      HLT_RsqMR240_Rsq0p09_MR200=NOVAL_I;
+      HLT_RsqMR270_Rsq0p09_MR200_4jet=NOVAL_I;
+      HLT_RsqMR270_Rsq0p09_MR200=NOVAL_I;
+      // Lepton + B-tag
+      HLT_Mu10_CentralPFJet30_BTagCSV0p5PF=NOVAL_I;
+      HLT_Ele10_CaloIdM_TrackIdM_CentralPFJet30_BTagCSV0p5PF=NOVAL_I;
+      HLT_Ele15_IsoVVVL_BTagtop8CSV07_PFHT400=NOVAL_I;
+      HLT_Ele15_IsoVVVL_PFHT600=NOVAL_I;
+      HLT_Ele15_PFHT300=NOVAL_I;
+      HLT_Mu15_IsoVVVL_BTagCSV07_PFHT400=NOVAL_I;
+      HLT_Mu15_IsoVVVL_PFHT600=NOVAL_I;
+      HLT_Mu15_PFHT300=NOVAL_I;
+      // Lepton - Non-isolated
+      HLT_Ele45_CaloIdVT_GsfTrkIdT_PFJet200_PFJet50=NOVAL_I;
+      HLT_Mu40_eta2p1_PFJet200_PFJet50=NOVAL_I;
+      HLT_Mu45_eta2p1=NOVAL_I;
+      HLT_Mu50=NOVAL_I;
+      // Lepton - Isolated
+      HLT_Ele32_eta2p1_WPLoose_Gsf=NOVAL_I;
+      HLT_Ele32_eta2p1_WPTight_Gsf=NOVAL_I;
+      HLT_IsoMu24_eta2p1=NOVAL_I;
+      HLT_IsoMu27=NOVAL_I;
+      HLT_IsoTkMu24_eta2p1=NOVAL_I;
+      HLT_IsoTkMu27=NOVAL_I;
     }
   } evt;
   
@@ -778,35 +930,34 @@ public:
     
     // Make a list of Generator level objects and save them to vectors
     std::vector<TLorentzVector> gen_top;
-    std::vector<size_t > gen_top_it;
+    std::vector<size_t > gen_top_index;
     std::vector<int> gen_top_ID;
-    std::vector<TLorentzVector> gen_W;
-    std::vector<int> gen_W_ID;
-    std::vector<TLorentzVector> gen_b;
-    std::vector<int> gen_b_ID;
-    std::vector<TLorentzVector> gen_lep;
-    std::vector<TLorentzVector> gen_neu;
+    std::vector<TLorentzVector> gen_W_from_top;
+    std::vector<TLorentzVector> gen_b_from_top;
+    std::vector<TLorentzVector> gen_lep_from_W;
+    std::vector<TLorentzVector> gen_neu_from_W;
     while(gen.Loop()) {
       evt.IsGenTop[gen.it]=0;
       evt.GenTopType[gen.it] = NOVAL_I;
       evt.GenTopHasMatchedJet[gen.it]=0;
       evt.GenTopHasMatchedTopTagJet[gen.it]=0;
+      evt.GenTopHasMatchedTopTagJetNew[gen.it]=0;
       if (gen.Pt[gen.it]>0) {
 	TLorentzVector genp; genp.SetPtEtaPhiE(gen.Pt[gen.it], gen.Eta[gen.it], gen.Phi[gen.it], gen.E[gen.it]);
         if (gen.ID[gen.it]!=gen.MomID[gen.it]) {
           if (abs(gen.ID[gen.it])==6) { 
 	    evt.IsGenTop[gen.it]=1; 
 	    gen_top.push_back(genp); 
-	    gen_top_it.push_back(gen.it); 
+	    gen_top_index.push_back(gen.it); 
 	    gen_top_ID.push_back(gen.ID[gen.it]);
 	    evt.GenTopType[gen.it] = 0;
 	  }
-          if (abs(gen.ID[gen.it])==5&&abs(gen.MomID[gen.it])==6) { gen_b.push_back(genp); gen_b_ID.push_back(gen.ID[gen.it]); }
-          if (abs(gen.ID[gen.it])==24&&abs(gen.MomID[gen.it])==6) { gen_W.push_back(genp); gen_W_ID.push_back(gen.ID[gen.it]); }
-          if ((abs(gen.ID[gen.it])==11||abs(gen.ID[gen.it])==13)&&(abs(gen.MomID[gen.it])==24)) gen_lep.push_back(genp);
-          if ((abs(gen.ID[gen.it])==12||abs(gen.ID[gen.it])==14)&&(abs(gen.MomID[gen.it])==24)) gen_neu.push_back(genp);
+          if (abs(gen.ID[gen.it])==5&&abs(gen.MomID[gen.it])==6) { gen_b_from_top.push_back(genp); }
+          if (abs(gen.ID[gen.it])==24&&abs(gen.MomID[gen.it])==6) { gen_W_from_top.push_back(genp); }
+          if ((abs(gen.ID[gen.it])==11||abs(gen.ID[gen.it])==13||abs(gen.ID[gen.it])==15)&&(abs(gen.MomID[gen.it])==24)) gen_lep_from_W.push_back(genp);
+          if ((abs(gen.ID[gen.it])==12||abs(gen.ID[gen.it])==14||abs(gen.ID[gen.it])==16)&&(abs(gen.MomID[gen.it])==24)) gen_neu_from_W.push_back(genp);
         } else if (gen.ID[gen.it]==gen.MomID[gen.it]) {
-	  // tops emit gluons(?) and has to match consecutive tops to the original one
+	  // tops emit particles and we have to match consecutive tops to the original one
 	  if (abs(gen.ID[gen.it])==6) {
 	    size_t i=0, i_m_dR = -1, i_m_dE = -1;
 	    double min_dE = 9999, min_dR = 9999;
@@ -828,10 +979,10 @@ public:
 	    //std::cout<<"match: dE: "<<gen_top[imatch].E()-genp.E()<<" Ep: "<<gen_top[imatch].E()<<" Ec: "<<genp.E()<<" dR: "<<genp.DeltaR(gen_top[imatch])<<std::endl;
 	    //if (i_m_dE!=i_m_dR) printf("match: dE: %03.1f iE: %d   Ep: %04.1f Ec: %04.1f dR: %1.3f      min_dR: %1.3f Ec2: %4.1f iR: %d\n", double(min_dE), int(i_m_dE), double(gen_top[i_m_dE].E()), double(genp.E()), double(gen_top[i_m_dE].DeltaR(genp)), double(min_dR), double(gen_top[i_m_dR].E()), int(i_m_dR));
 	    size_t imatch = (i_m_dE==i_m_dR) ? i_m_dE : ( (fabs(min_dE)/gen_top[i_m_dE].E()<0.1) ? i_m_dE : i_m_dR );
-	    evt.IsGenTop[gen_top_it[imatch]]=0;
+	    evt.IsGenTop[gen_top_index[imatch]]=0;
 	    evt.IsGenTop[gen.it]=1;
 	    gen_top[imatch]=genp;
-	    gen_top_it[imatch]=gen.it;
+	    gen_top_index[imatch]=gen.it;
 	  }
 	}
       }
@@ -847,7 +998,7 @@ public:
     // while(gen.Loop()) if (abs(gen.ID[gen.it])==24&&gen.ID[gen.it]!=gen.MomID[gen.it]) std::cout<<"Found W, it="<<gen.it<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
     // while(gen.Loop()) if ((abs(gen.ID[gen.it])==11||abs(gen.ID[gen.it])==13)&&(abs(gen.MomID[gen.it])==24||abs(gen.MomID[gen.it])>1e6)) std::cout<<"Found mu/e, it="<<gen.it<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
     // std::cout<<"\n";
-    //if ((gen_top[0].Pt()>400&&gen_top[1].Pt()>400)&&gen_lep.size()>0) {
+    //if ((gen_top[0].Pt()>400&&gen_top[1].Pt()>400)&&gen_lep_from_W.size()>0) {
     //  std::cout<<"Start looping on Gen\n";
     //  while(gen.Loop()) if (abs(gen.ID[gen.it])==6&&gen.ID[gen.it]!=gen.MomID[gen.it]) std::cout<<"Found t, it="<<gen.it<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
     //  while(gen.Loop()) if (abs(gen.ID[gen.it])==5&&abs(gen.MomID[gen.it])==6) std::cout<<"Found b, it="<<gen.it<<" MomID="<<gen.MomID[gen.it]<<" Pt="<<gen.Pt[gen.it]<<" Eta="<<gen.Eta[gen.it]<<" Phi="<<gen.Phi[gen.it]<<std::endl;
@@ -874,13 +1025,13 @@ public:
       // Match b and W to t
       size_t j_b = -1, k_W = -1;
       double min_DM = 9999, min_DR = 9999;
-      if (gen_b.size()<gen_top.size()||gen_W.size()<gen_top.size()) {
+      if (gen_b_from_top.size()<gen_top.size()||gen_W_from_top.size()<gen_top.size()) {
 	//std::cout<<"Not enough b/W with top parent"<<std::endl;
 	good_W_matches = false;
       } else {
-        for (size_t j=0; j<gen_b.size(); ++j) {
-          for (size_t k=0; k<gen_W.size(); ++k) {
-            TLorentzVector bW_comb = gen_b[j]+gen_W[k];
+        for (size_t j=0; j<gen_b_from_top.size(); ++j) {
+          for (size_t k=0; k<gen_W_from_top.size(); ++k) {
+            TLorentzVector bW_comb = gen_b_from_top[j]+gen_W_from_top[k];
             double DR = gen_top[i].DeltaR(bW_comb);
             double DM = fabs(gen_top[i].M()-bW_comb.M());
             if (DR<0.8) {
@@ -895,8 +1046,8 @@ public:
         }
 	//printf("W/b to top match: %.6f %.6f\n", min_DR, min_DM);
 	if (min_DR<0.8&&min_DM<1) {
-	  gen_top_matched_b.push_back(gen_b[j_b]);
-	  gen_top_matched_W.push_back(gen_W[k_W]);
+	  gen_top_matched_b.push_back(gen_b_from_top[j_b]);
+	  gen_top_matched_W.push_back(gen_W_from_top[k_W]);
 	} else {
 	  good_W_matches = false;
 	}
@@ -922,9 +1073,9 @@ public:
       // Match lep and neutrino to W
       size_t j_l = -1, k_n = -1;
       double min_DM = 9999, min_DR = 9999;
-      for (size_t j=0; j<gen_lep.size(); ++j) {
-	for (size_t k=0; k<gen_neu.size(); ++k) {
-	  TLorentzVector ln_comb = gen_lep[j]+gen_neu[k];
+      for (size_t j=0; j<gen_lep_from_W.size(); ++j) {
+	for (size_t k=0; k<gen_neu_from_W.size(); ++k) {
+	  TLorentzVector ln_comb = gen_lep_from_W[j]+gen_neu_from_W[k];
 	  double DR = gen_top_matched_W[i].DeltaR(ln_comb);
 	  double DM = fabs(gen_top_matched_W[i].M()-ln_comb.M());
 	  if (DR<0.8) {
@@ -939,11 +1090,11 @@ public:
       }
       bool lep_found = (min_DR<0.8&&min_DM<1);
       W_is_leptonic.push_back(lep_found);
-      evt.GenTopType[gen_top_it[i]] = 1;
+      evt.GenTopType[gen_top_index[i]] = 1;
       //printf("l/v to W match: %.6f %.6f\n", min_DR, min_DM);
       if (lep_found) {
-	lep = gen_lep[j_l];
-	neu = gen_neu[k_n];
+	lep = gen_lep_from_W[j_l];
+	neu = gen_neu_from_W[k_n];
 	++evt.NGenLepFromTop;
       }
       gen_top_matched_W_matched_lep.push_back(lep);
@@ -953,7 +1104,7 @@ public:
     // Match jets to tops (find the closest jet to top, sort by distance from gen)
     // Could also do genjet matching (but this is done in B2G)
     std::vector<TLorentzVector> temp = gen_top;
-    std::vector<size_t > temp_it = gen_top_it;
+    std::vector<size_t > temp_it = gen_top_index;
     std::map<size_t, size_t > jet_gentop_it;
     const bool verbose = 0;
     while (temp.size()) {
@@ -981,6 +1132,8 @@ public:
 	jet_gentop_it[jet_m_it] = top_m_it;
 	evt.GenTopHasMatchedJet[temp_it[top_m_it]] = 1;
 	evt.GenTopHasMatchedTopTagJet[temp_it[top_m_it]] = min_DR<0.8 && jetsAK8.tau3[jet_m_it]/jetsAK8.tau2[jet_m_it]<0.75 && jetsAK8.Pt[jet_m_it]>400 && jetsAK8.prunedMass[jet_m_it]>140;
+	evt.GenTopHasMatchedTopTagJetNew[temp_it[top_m_it]] = min_DR<0.8 && (jetsAK8.tau3[jet_m_it]/jetsAK8.tau2[jet_m_it])<0.8 && jetsAK8.Pt[jet_m_it]>350 && 
+	  jetsAK8.softDropMass[jet_m_it] > 130 && jetsAK8.softDropMass[jet_m_it] < 430;
 	temp.erase(temp.begin()+top_m_it);
 	temp_it.erase(temp_it.begin()+top_m_it);
       } else if (jetsAK8.size) {
@@ -1074,12 +1227,17 @@ public:
     
     std::vector<TLorentzVector> hadtop;
     std::vector<TLorentzVector> hadtoplike;
+    std::vector<TLorentzVector> hadtopnew;
+    std::vector<TLorentzVector> hadtoplikenew;
     std::vector<TLorentzVector> leptop;
     evt.ntops = 0;
     evt.nhadtops = 0;
     evt.nleptops = 0;
     evt.HT = 0;
     evt.nhadtoplike = 0;
+    evt.nhadtoplikenew = 0;
+    evt.NHadTopTag = 0;
+    evt.NHadTopTagNew = 0;
     while(jetsAK8.Loop()) {
       bool is_top = false;
       TLorentzVector jet; jet.SetPtEtaPhiE(jetsAK8.Pt[jetsAK8.it], jetsAK8.Eta[jetsAK8.it], jetsAK8.Phi[jetsAK8.it], jetsAK8.E[jetsAK8.it]);
@@ -1148,11 +1306,26 @@ public:
         ++evt.nhadtops;
         ++evt.nhadtoplike;
         is_top = true;
+	++evt.NHadTopTag;
         hadtop.push_back(jet);
       } else if (jetsAK8.Pt[jetsAK8.it] > 400 && jetsAK8.prunedMass[jetsAK8.it] > 140) { // Top like jets for sideband fitting
       //} else if (jetsAK8.Pt[jetsAK8.it] > 400) { // High pT jets for sideband fitting
         ++evt.nhadtoplike;
         hadtoplike.push_back(jet);
+      }
+      // New hadronic top tag
+      evt.JetIsHadTopTaggedNew[jetsAK8.it] = 0;
+      if ((jetsAK8.tau2[jetsAK8.it]>0 && jetsAK8.tau3[jetsAK8.it]>0 ? jetsAK8.tau3[jetsAK8.it]/jetsAK8.tau2[jetsAK8.it] < 0.8 : 0 ) &&
+	  jetsAK8.Pt[jetsAK8.it] > 350 &&
+	  jetsAK8.softDropMass[jetsAK8.it] > 130 && jetsAK8.softDropMass[jetsAK8.it] < 430) {
+	evt.JetIsHadTopTaggedNew[jetsAK8.it] = 1;
+	++evt.NHadTopTagNew;
+        ++evt.nhadtoplikenew;
+        hadtopnew.push_back(jet);
+	// Top like jets for sideband fitting
+      } else if (jetsAK8.Pt[jetsAK8.it] > 350 && jetsAK8.softDropMass[jetsAK8.it] > 130 && jetsAK8.softDropMass[jetsAK8.it] < 430) {
+        ++evt.nhadtoplikenew;
+        hadtoplikenew.push_back(jet);
       }
       
       // semi-leptonic tops
@@ -1198,6 +1371,18 @@ public:
       } else if (evt.nhadtops == 0) {
 	top1 = hadtoplike[0];
 	top2 = hadtoplike[1];
+      }
+    }
+    
+    // Test new pair selection
+    evt.tt_dPhi_new=NOVAL_F;
+    if (evt.nhadtoplikenew>= 2) {
+      if (evt.NHadTopTagNew == 2) {
+	evt.tt_dPhi_new = hadtopnew[0].DeltaPhi(hadtopnew[1]);
+      } else if (evt.NHadTopTagNew == 1) {
+	evt.tt_dPhi_new = hadtoplikenew[0].DeltaPhi(hadtopnew[0]);
+      } else if (evt.NHadTopTagNew == 0) {
+	evt.tt_dPhi_new = hadtoplikenew[0].DeltaPhi(hadtoplikenew[1]);
       }
     }
     
